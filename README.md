@@ -1,81 +1,99 @@
-```markdown
-# FleetLogSystem
+# FleetLogSystem 🚚📦
 
 ## Description
-The **FleetLogSystem** is a **FMS (Fleet Management System)** developed in **.NET 6**, using **Entity Framework (EF)** and **SQL Server**. It was created to manage integration and logistics flow for ERPs such as **Bling**, **Tiny**, and marketplaces like **Mercado Livre**.
 
-This system handles the entire integration chain between marketplaces and ERPs, enabling full inventory control, invoice issuance, and logistics tracking.
+**FleetLogSystem** is a comprehensive **Fleet Management System (FMS)** developed in **.NET 6**, designed to streamline integration and logistics workflows for Enterprise Resource Planning (ERP) systems and marketplaces.
 
-## Features
-- **ERP Integration**: Supports Bling, Tiny, and other systems.
-- **Marketplace Synchronization**: Direct integration with Mercado Livre.
-- **Inventory Management**: Real-time synchronization between ERP and marketplace.
-- **Invoice Issuance**: Automatic generation and submission of NF-e.
-- **Order Management**: Processing of orders from purchase to delivery.
-- **Monitoring and Logs**: Records all operations and transactions performed within the system.
+### Key Capabilities
+The system provides end-to-end management of the integration chain between marketplaces and ERPs, offering:
+- Full inventory control
+- Automatic invoice issuance
+- Real-time logistics tracking
 
-## Technologies Used
+## 🛠 Features
+
+- **ERP Integration**: Seamless support for Bling, Tiny, and other systems
+- **Marketplace Synchronization**: Direct integration with Mercado Livre
+- **Inventory Management**: Real-time ERP and marketplace stock synchronization
+- **Invoice Processing**: Automatic NF-e generation and submission
+- **Order Lifecycle Management**: Complete tracking from purchase to delivery
+- **Comprehensive Logging**: Detailed operation and transaction records
+
+## 💻 Technologies
+
+![.NET](https://img.shields.io/badge/.NET-6-purple)
+![Entity Framework](https://img.shields.io/badge/Entity%20Framework-Core-blue)
+![SQL Server](https://img.shields.io/badge/Database-SQL%20Server-red)
+![Authentication](https://img.shields.io/badge/Authentication-JWT-green)
+
 - **.NET 6**
 - **Entity Framework Core**
 - **SQL Server**
-- **ASP.NET Core MVC** with **Razor (CSHTML)**
+- **ASP.NET Core MVC** with **Razor**
 - **JWT Authentication**
 
-## Requirements
-Before starting, ensure you have the following installed:
-- **.NET 6 SDK**
-- **SQL Server**
-- **Entity Framework Core**
+## 🚀 Getting Started
 
-## Setup Instructions
+### Prerequisites
+
+- [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
+- SQL Server
+- Entity Framework Core
+
+### Installation
+
 1. Clone the repository:
-   ```sh
+   ```bash
    git clone https://github.com/pedro-fontinele/FleetLogSystem.git
-   ```
-2. Navigate to the project directory:
-   ```sh
    cd FleetLogSystem
    ```
-3. Configure the connection string in **appsettings.json**:
+
+2. Configure the connection string in `appsettings.json`:
    ```json
    "ConnectionStrings": {
-       "DefaultConnection": "Server=YOUR_SERVER;Database=FleetLogDB;User Id=YOUR_USER;Password=YOUR_PASSWORD;"
+     "DefaultConnection": "Server=YOUR_SERVER;Database=FleetLogDB;User Id=YOUR_USER;Password=YOUR_PASSWORD;"
    }
    ```
-4. Apply database migrations:
-   ```sh
+
+3. Apply database migrations:
+   ```bash
    dotnet ef database update
    ```
-5. Start the application:
-   ```sh
+
+4. Launch the application:
+   ```bash
    dotnet run
    ```
 
-## Contribution
-Feel free to contribute! To do so:
-1. Fork the repository.
-2. Create a new branch for your feature:
-   ```sh
-   git checkout -b my-new-feature
-   ```
-3. Make the necessary changes and commit:
-   ```sh
-   git commit -m "Adding a new feature"
-   ```
-4. Push your changes to your fork:
-   ```sh
-   git push origin my-new-feature
-   ```
-5. Open a Pull Request in the main repository.
+## 🤝 Contributing
 
-## License
-This project is licensed under the **MIT** license. For more details, see the [LICENSE](LICENSE) file.
+Contributions are welcome! Here's how you can help:
 
-## Contact
-For more information or support, reach out:
+1. Fork the repository
+2. Create a feature branch
+   ```bash
+   git checkout -b feature/amazing-improvement
+   ```
+3. Commit your changes
+   ```bash
+   git commit -m "Add an amazing improvement"
+   ```
+4. Push to your branch
+   ```bash
+   git push origin feature/amazing-improvement
+   ```
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## 📞 Contact
+
 - **Email**: contact@fleetlogsystem.com
-- **GitHub**: [pedro-fontinele](https://github.com/pedro-fontinele)
-- **LinkedIn**: [Pedro Fontinele](https://linkedin.com/in/pedro-fontinele)
+- **GitHub**: [@pedro-fontinele](https://github.com/pedro-fontinele)
+- **LinkedIn**: [Pedro Fontinele](https://www.linkedin.com/in/pedro-fontinele)
 
 ---
-**FleetLogSystem - Simplifying logistics for ERPs and Marketplaces!**
+
+**FleetLogSystem** - Simplifying Logistics for ERPs and Marketplaces! 🚢🌐
