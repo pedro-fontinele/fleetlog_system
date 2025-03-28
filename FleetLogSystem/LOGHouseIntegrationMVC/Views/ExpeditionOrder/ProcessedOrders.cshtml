@@ -1,0 +1,132 @@
+﻿@*@model IEnumerable<LOGHouseSystem.Models.ExpeditionOrder>*@
+
+@{
+    ViewData["Title"] = "Pedidos para Separação";
+}
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Separação de Produto para Expedição</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Cnpj)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ExternalNumber)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OrderOrigin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InvoiceAccessKey)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.IssueDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DeliveryDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShippingCompany)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Obs)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ApprovalState)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShippingMethod)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShippingMethodCodeOrder)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ClientId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShippingDetails)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClientName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Cnpj)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ExternalNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderOrigin)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InvoiceAccessKey)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IssueDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeliveryDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShippingCompany)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Obs)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ApprovalState)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShippingMethod)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShippingMethodCodeOrder)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ClientId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShippingDetails.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>*@

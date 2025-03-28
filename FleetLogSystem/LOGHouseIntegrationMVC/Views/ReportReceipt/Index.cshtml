@@ -1,0 +1,78 @@
+﻿@model LOGHouseSystem.ViewModels.ReceiptNoteReportViewModel
+@{
+    ViewBag.Title = "Relatório de Recebimento";
+}
+
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="~/css/site.css">
+
+<form asp-action="GenerateReport" target="_blank">
+    <div class="form-row d-flex justify-content-center">
+
+
+        @if(Model.UserLoged.PermissionLevel != LOGHouseSystem.Infra.Enums.PermissionLevel.Client)
+        {
+            <div class="form-group col-md-3">
+                <label for="entryDate">Nome do Cliente</label>
+                @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite o nome do cliente" } })*@
+                <input type="text" class="form-control" id="searchInput" placeholder="Nome do Cliente">
+                <input type="hidden" class="form-control" asp-for="ClientId" id="hfClient" placeholder="Data de entrada inicial">
+            </div>
+        }
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model => model.EntryDateStart)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Data de entrada inicia" } })*@
+            <input type="date" class="form-control" asp-for="EntryDateStart" id="EntryDateStart" placeholder="Data de entrada inicial">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model => model.EntryDateEnd)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Data de entrada final" } })*@
+            <input type="date" class="form-control" asp-for="EntryDateEnd" id="EntryDateEnd" placeholder="Data de entrada final">
+        </div>
+        <div class="">            
+            <button class="btn btn-primary ml-3 mt-md-4 mb-sm-3 col-md-12" type="submit" id="submitButton"><i class="fa fa-magnifying-glass mr-2"></i>Gerar Excel</button>
+        </div>
+
+    </div>
+</form>
+
+@section Scripts {
+
+    <script src="~/lib/jquery.steps-1.1.0/jquery.steps.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+            
+
+    <script>
+        //autocomplete function
+        $(function () {
+            $("#searchInput").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Client/AutoComplete/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText)
+                        }
+                    });
+                },
+                select: function (e, i, v) {
+                    $("#hfClient").val(i.item.val);
+                    //$("#cnpj").prop('disabled', true);
+                },
+                minLength: 1
+            });
+        });
+    </script>
+    
+}

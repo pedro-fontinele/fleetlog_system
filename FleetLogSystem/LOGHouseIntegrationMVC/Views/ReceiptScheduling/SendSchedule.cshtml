@@ -1,0 +1,93 @@
+﻿@model LOGHouseSystem.Models.ReceiptScheduling
+
+<link rel="stylesheet" href="~/css/site.css">
+
+<form asp-controller="ReceiptScheduling" asp-action="SendSchedule" method="post" id="CreateForm" enctype="multipart/form-data">
+    <div class="row  d-flex justify-content-center">
+        <div class="col-md-10 d-flex justify-content-center">
+            <div class="card">
+                <div class="card-body ">
+                     <div class="text-center">
+                        <img class="" src="~/img/logo150100.png" style="width:20%" />
+                        <h3 class="font-weight-bold">Aviso de Recebimento</h3>
+                        <h5>Prazo mínimo de 24 horas</h5>
+                     </div>
+                    <div class="form-row mt-5">
+                        
+                        <div class="form-group col-md-12">
+                            <label for="SocialReason">@Html.DisplayNameFor(model => model.Supplier)</label>
+                            <input asp-for="Supplier" type="text" class="form-control" id="Supplier" placeholder="Digite o nome do fornecedor">
+                            @Html.ValidationMessageFor(x => x.Supplier)
+                        </div>
+
+                    </div>
+                    <br />
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label for="NfNumber">@Html.DisplayNameFor(model => model.NfNumber)</label>
+                            <input asp-for="NfNumber" type="text" class="form-control" id="NfNumber" placeholder="Digite o número do NF">
+                            @Html.ValidationMessageFor(x => x.NfNumber)
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="VolumesQuantity">@Html.DisplayNameFor(model => model.VolumesQuantity)</label>
+                            <input asp-for="VolumesQuantity" type="number" class="form-control" id="VolumesQuantity" placeholder="Digite a quantidade de volumes">
+                            @Html.ValidationMessageFor(x => x.VolumesQuantity)
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="ReceiptDate">@Html.DisplayNameFor(model => model.ReceiptDate)</label>
+                            <input asp-for="ReceiptDate" type="date" class="form-control" id="ReceiptDate">
+                            @Html.ValidationMessageFor(x => x.ReceiptDate)
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row mt-3">
+
+                        <div class="form-group col-md-12">
+                            <label for="FilesPath">@Html.DisplayNameFor(model => model.FilesPath)</label>
+                            <input asp-for="FilesPath" name="filePath" type="file" accept="xml" class="form-control-file" id="file" required>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    
+    <br />
+
+    <div class="row d-flex  justify-content-center">
+
+        <button class="btn btn-light mb-5 col-md-2 mr-3" id="loadingSpinner" type="button">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+        </button>
+        
+        <button class="btn btn-primary mb-5 col-md-2 mr-3" type="submit" id="submitButton">Adicionar</button>
+        <a class="btn btn-secondary mb-5 col-md-2 mr-2" asp-controller="Home" asp-action="IndexClient" role="button">Voltar</a>
+    </div>
+
+
+</form>
+
+@section Scripts {
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            $("#loadingSpinner").hide();
+        });
+
+        $("#CreateForm").submit(() => {
+            $("#submitButton").hide();
+            $("#loadingSpinner").show();
+        })
+
+
+    </script>
+}
+
+

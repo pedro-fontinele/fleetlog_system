@@ -1,0 +1,31 @@
+Usuário teste mercado livre - Client Id 41:
+
+Os usuários ficam ativos por no maximo 60 dias após inatividade na conta, após isso, é necessário criar novos. É possível criar até 10 usuários por conta.
+
+POST https://api.mercadolibre.com/users/test_user
+- Authentication:: Bearer APP_USR-3108767212068172-053107-7adad0d5cbe9efc54e9ae369beb218ab-216780318
+
+Body:
+{
+   	"site_id":"MLB"
+}
+
+Retorno - Venda:
+
+{
+    "id": 1386881341,
+    "email": "test_user_1612264577@testuser.com",
+    "nickname": "TETEE20126",
+    "site_status": "active",
+    "password": "zPnodTtSYI"
+}
+
+Retorno - Compra:
+
+{
+    "id": 1387357470,
+    "email": "test_user_894254298@testuser.com",
+    "nickname": "TEST70645",
+    "site_status": "active",
+    "password": "QsL9iAo9cJ"
+}

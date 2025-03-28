@@ -1,0 +1,655 @@
+﻿@using LOGHouseSystem.Infra.Enums;
+@model LOGHouseSystem.ViewModels.ExpeditionOrderViewModel
+
+@{
+    ViewBag.Title = "Cadastrar Pedido";
+}
+
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="~/lib/jquery.steps-1.1.0/jquery.steps.css">
+<link rel="stylesheet" href="~/css/site.css">
+
+<style>
+    #productTable {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+        #productTable th, #productTable td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+            text-align: left;
+        }
+</style>
+
+
+@if(Model.Id == null || Model.Id == 0){
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item">
+        <a class="nav-link active" id="manual-tab" data-toggle="tab" href="#manual" role="tab" aria-controls="manual" aria-selected="true">Criaçao Manual</a>
+        </li>
+        <li class="nav-item">
+        <a class="nav-link" id="xml-tab" data-toggle="tab" href="#xml" role="tab" aria-controls="xml" aria-selected="false">Xml</a>
+        </li>              
+    </ul>
+}
+
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="manual" role="tabpanel" aria-labelledby="manual-tab">
+        <br>
+        <form asp-controller="ExpeditionOrder" asp-action="Create" method="post" id="CreateForm" enctype="multipart/form-data">
+
+            <div id="example-basic">
+                <h3>Dados do Pedido</h3>
+                <section>
+                    <input class="hidden" asp-for="OrderOrigin" value="@Model.OrderOrigin" />
+                    <input class="hidden" asp-for="InvoiceAccessKey" value="@Model.InvoiceAccessKey" />
+                    <input class="hidden" asp-for="InvoiceSerie" value="@Model.InvoiceSerie" />
+                    <input class="hidden" asp-for="ExternalNumber" value="@Model.ExternalNumber" />
+                    <legend class="text-center mb-3">Dados do Pedido</legend>
+            
+                          <br>
+                    <input type="hidden" asp-for="Id" id="Id" name="id" value="@Model.Id"/>
+                        <div class="form-row">                
+                            <div class="form-group col-md-6">
+                                <label for="SocialReason">@Html.DisplayNameFor(model => model.ClientName)</label>
+                                <input asp-for="ClientName" type="text" class="form-control" name="clientName" id="searchInput" value="@Model.ClientName" placeholder="Digite o nome do depositante" required>
+                                <input type="hidden" asp-for="ClientId" id="hfClient" name="ClientId"/>
+                                @Html.ValidationMessageFor(x => x.ClientName)
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="SocialReason">@Html.DisplayNameFor(model => model.Cnpj)</label>
+                                <input asp-for="Cnpj" type="text" class="form-control" id="cnpj" value="@Model.Cnpj" placeholder="Digite o CNPJ do fornecedor" required>
+                                @Html.ValidationMessageFor(x => x.Cnpj)
+                            </div>
+                        </div>
+            
+                        <br />
+
+                        <div class="form-row d-flex">
+                            <div class="form-group col-md-6">
+                                <label for="ReceiptDate">@Html.DisplayNameFor(model => model.ShippingCompany)</label>
+                                <input asp-for="ShippingCompany" type="text" class="form-control required" id="ShippingCompany" value="@Model.ShippingCompany" placeholder="Digite o nome da Transportadora">
+                                @Html.ValidationMessageFor(x => x.ShippingCompany)
+                            </div>
+                        <div class="form-group col-md-3">
+                            <label for="InvoiceNumber">@Html.DisplayNameFor(model => model.InvoiceNumber)</label>
+                            <input asp-for="InvoiceNumber" type="number" class="form-control required" value="@((Model.InvoiceNumber == 0) ? "" : Model.InvoiceNumber)" maxlength="6" id="invoiceNumber" placeholder="Digite o número da nota">
+                                @Html.ValidationMessageFor(x => x.InvoiceNumber)
+                        </div>
+                            <div class="form-group col-md-3">
+                                <label for="ReceiptDate">@Html.DisplayNameFor(model => model.InvoiceValue)</label>
+                                <input asp-for="InvoiceValue" type="text" class="form-control required" value="@Model.InvoiceValue" id="money" placeholder="Digite o valor total do pedido">
+                                    @Html.ValidationMessageFor(x => x.InvoiceValue)
+                            </div>
+                        <br />
+                        <div class="form-row col-md-12">
+
+                            <div class="form-group col-md-12">
+                                <label for="FilesPath">@Html.DisplayNameFor(model => model.Obs)</label>
+                                <textarea asp-for="Obs"  type="text" class="form-control" rows="3" value="@Model.Obs"></textarea>
+                            </div>
+
+                        </div>             
+            
+                </section>
+
+                <h3>Detalhes do Frete</h3>
+                <section>
+                    <input type="hidden" asp-for="ShippingDetailsId" id="ShippingDetailsId" name="ShippingDetailsId" value="@Model.ShippingDetailsId"/>
+                    <div class="form-row">
+                        <legend class="text-center mb-3">Detalhes do Frete</legend>
+                        <div class="form-group col-md-12">
+                            <label for="SocialReason">@Html.DisplayNameFor(model => model.Name)</label>
+                            <input asp-for="Name" type="text" class="form-control required" id="Name" placeholder="Digite o nome" value="@Model.Name">
+                            @Html.ValidationMessageFor(x => x.Name)
+                        </div>
+
+
+
+                    </div>
+                    <br />
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="SocialReason">@Html.DisplayNameFor(model => model.CpfCnpj)</label>
+                            <input asp-for="CpfCnpj" type="text" class="form-control required" id="cpfCnpj" value="@Model.CpfCnpj" maxlength="14" placeholder="Digite o CPF ou o CNPJ">
+                            <span class="error-message" style="display: none;"></span>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label for="ShippingMethod">@Html.DisplayNameFor(model => model.ShippingMethod)</label>
+                            <select asp-for="ShippingMethod" class="form-control" id="ShippingMethod">
+                                <option value="">Selecione um método de envio</option>
+                                @foreach (var value in Enum.GetValues(typeof(ShippingMethodEnum)))
+                                {
+                                    <option value="@value">@value.ToString()</option>
+                                }
+                            </select>
+                            @Html.ValidationMessageFor(x => x.ShippingMethod)
+                        </div>
+
+                    </div>
+                </section>
+
+                <h3>Endereço de Entrega</h3>
+                <section>
+                    <div class="form-row">
+                        <legend class="text-center mb-3">Endereço de Entrega</legend>
+                        <div class="form-group col-md-8">
+                            <label for="Address">@Html.DisplayNameFor(model => model.Address)</label>
+                            <input asp-for="Address" type="text" class="form-control required" id="Supplier" value="@Model.Address" placeholder="Digite endereço">
+                            @Html.ValidationMessageFor(x => x.Address)
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label for="Number">@Html.DisplayNameFor(model => model.Number)</label>
+                            <input asp-for="Number" type="number" class="form-control required" id="number" value="@Model.Number" placeholder="Digite o número">
+                            @Html.ValidationMessageFor(x => x.Number)
+                        </div>
+
+
+                    </div>
+                    <br />
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="SocialReason">@Html.DisplayNameFor(model => model.Neighborhood)</label>
+                            <input asp-for="Neighborhood" type="text" class="form-control required" id="Neighborhood" value="@Model.Neighborhood" placeholder="Digite o nome do bairro">
+                            @Html.ValidationMessageFor(x => x.Neighborhood)
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="SocialReason">@Html.DisplayNameFor(model => model.Cep)</label>
+                            <input asp-for="Cep" type="text" class="form-control required" id="Cep" value="@Model.Cep" placeholder="Digite o CEP" maxlength="8">
+                            @Html.ValidationMessageFor(x => x.Cep)
+                        </div>
+
+                    </div>
+                    <br />
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="SocialReason">@Html.DisplayNameFor(model => model.City)</label>
+                            <input asp-for="City" type="text" class="form-control required" id="City" value="@Model.City" placeholder="Digite o nome da cidade">
+                            @Html.ValidationMessageFor(x => x.City)
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="SocialReason">@Html.DisplayNameFor(model => model.Uf)</label>
+                            <input asp-for="Uf" type="text" class="form-control " id="Uf" value="@Model.Uf" maxlength="2" placeholder="Digite o nome da Unidade Federativa">
+                            @Html.ValidationMessageFor(x => x.Uf)
+                        </div>
+
+                    </div>
+                </section>
+
+                <h3>Enviar etiqueta</h3>
+
+                <section>
+
+                    <div class="">
+                        <legend class="text-center mb-3">Enviar Etiqueta</legend>
+                        <div class="alert alert-danger mb-2" role="alert">
+                            <p class="h5 text-center"><strong>Só é permitido o envio de etiquetas em Pdf no formato 100x150 ou em ZPL</strong></p>
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <div class="col-md-10">
+                                <label for="file">Selecione</label>
+                                <input type="file" if="file" id="file" name="file" />
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                @if(Model.Id == null)
+                {
+                    <h3>Adicionar Produtos</h3>
+                    <section>
+
+                        <div class="row">
+                            <div class="card col-md-5" style="max-height: 170px; overflow-y: auto;">
+                                <div class="card-header">
+                                    Adicione produto(s) ao seu pedido
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6">
+                                            <label for="name">Nome do Produto:</label>
+                                            <input name="Name" class="form-control" type="text" id="searchInputToProduct" />
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <!-- Adicionado 'form-group' e 'col-md-3' -->
+                                            <label for="quantity">Quantidade</label>
+                                            <input name="Quantity" class="form-control" type="number" id="quantity" />
+                                        </div>
+                                        <input type="hidden" id="productId" name="ProductId" />
+                                        <input type="hidden" name="Ean" id="eans" />
+                                        <input type="hidden" id="descriptions" name="Description" />
+                                        <div class="form-group col-md-3">
+                                            <!-- Adicionado container de coluna para o botão -->
+                                            <!-- Adicionado 'form-group' e 'col-md-3' -->
+                                            <button style="margin-top: 32px" class="btn btn-success" type="button" onclick="AddProduct()">Adicionar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-7" id="divProducts">
+                                <label for="SocialReason"></label>
+                                <div class="card" style="max-height: 450px; overflow-y: auto;">
+                                    <div class="card-body" id="productsAdeedList">
+                                        <h6 class="text-center texto"><strong>Produto (s) Selecionado (s):</strong></h6>
+                                        <table id="productTable">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mr-5">Descrição</th>
+                                                    <th>Quantidade</th>
+                                                    <th>#</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="productTableBody">
+                                                <!-- Corpo da Tabela -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </section>
+                }
+            </div>
+
+            <input class="hidden" id="productToAdd" name="products" />
+
+            <button class="hidden"  type="submit" id="submitButton">Adicionar</button>
+        </form>
+    </div>
+    <div class="tab-pane fade" id="xml" role="tabpanel" aria-labelledby="xml-tab">
+    <br>
+    <div class="form-row">
+        <div class="form-group col-md-3">
+        </div>
+        <div class="form-group col-md-6">
+            <button type="button" class="btn btn-primary btn-block" onclick="document.getElementById('xmlFiles').click()">Selecionar XML</button>
+        </div>
+        <div class="form-group col-md-3">
+        </div>
+    </div>                
+    </div>
+</div>          
+
+
+<form asp-controller="ExpeditionOrder" asp-action="UploadFiles" id="form" method="post" enctype="multipart/form-data" style="display: none;">
+    <div class="form-group">
+        <div class="col-md-10">            
+            <input type="file" name="files" id="xmlFiles" onchange="document.getElementById('sendXml').click()" multiple />
+        </div>
+    </div>
+
+    <div class="d-grid d-flex gap-2 justify-content-md-end mt-2">
+        <button id="sendXml" type="submit" class="btn btn-primary mr-2">Enviar</button>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="~/lib/jquery.steps-1.1.0/jquery.steps.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+    <script>
+
+
+
+        $(document).ready(function () {
+            //maks
+            $('#cnpj').mask('00.000.000/0000-00');
+            $('#phone').mask('(00) 00000-0000');
+            $('#money').mask('000.000.000.000.000,00', { reverse: true });
+            //$('#cpfCnpj').mask('00.000.000/0000-00', { reverse: true });
+
+            //steps buttons configure
+            $('#submitButton').hide();
+            $('a[href="#previous"]').text("Voltar");
+            $('a[href="#next"]').text("Próximo");
+            $('a[href="#finish"]').text("Enviar");
+            $('a[href="#finish"]').attr('onclick', 'submitForm()');
+        });
+
+        $(document).ready(function () {
+            $('#cpfCnpj').addClass('cpf-cnpj');
+
+            // Evento focusout para aplicar a máscara após o usuário terminar de digitar
+            $('#cpfCnpj').on('focusout', function () {
+                var value = $(this).val().replace(/\D/g, ''); // Remove todos os caracteres que não são dígitos
+
+                if (value.length === 11) {
+                    $(this).mask('000.000.000-00');
+                } else if (value.length === 14) {
+                    $(this).mask('00.000.000/0000-00');
+                } else {
+                    // Se não corresponder a nenhum, remove a máscara
+                    $(this).unmask();
+                }
+            });
+        });
+
+        var products = [];
+        function AddProduct() {
+            var text = $("#descriptions").val();
+            var quantity = $("#quantity").val();
+            
+            if (text === null || text === "") {
+                Swal.fire(
+                    'Ops!',
+                    'É necessário escolher um produto antes de adicionar',
+                    'warning'
+                );
+                return;
+            }
+
+            if (quantity === null || quantity <= 0) {
+                Swal.fire(
+                    'Ops!',
+                    'É necessário colocar uma quantidade válida para esse item. Valores iguais ou menores que 0 não são permitidos.',
+                    'warning'
+                );
+                return;
+            }
+
+            var productId = $('#productId').val();
+            var productDescription = $('#descriptions').val();
+            var productQuantity = $('#quantity').val();
+
+            var product = {
+                productId: productId,
+                quantity: productQuantity
+            };
+
+            ValidateToAddProduct(productId, productQuantity)
+                .then(function (isValid) {
+                    if (!isValid) {
+                        CleanInputsToAddProducts();
+                        return;
+                    }
+                    // Se a validação for bem-sucedida, continua com a adição do produto
+                    var product = {
+                        productId: productId,
+                        quantity: productQuantity
+                    };
+
+                    products.push(product);
+                    UpdateProductsAdded(productDescription, productQuantity, productId);
+                    $("#divProducts").show();
+                });
+        }
+
+        function UpdateProductsAdded(productDescription, productQuantity, productId) {
+            var $tableBody = $("#productTableBody");
+            var index = products.length - 1; // Índice do último produto adicionado
+
+
+            var newRow = "<tr id='productRow_" + productId + "'>" +
+                "<td>" + productDescription + "</td>" +
+                "<td>" + productQuantity + "</td>" +
+                "<td><button class='btn btn-danger btn-sm remove-btn' data-id='" + productId + "'>x</button></td>" +
+                "</tr>";
+
+            // Adicionar a nova linha ao corpo da tabela
+            $tableBody.append(newRow);
+
+            CleanInputsToAddProducts();
+        }
+
+        $(document).on("click", ".remove-btn", function () {
+            var productIdToRemove = $(this).data("id"); // Obtém o ID do produto a ser removido
+
+            // Remove o produto da tabela
+            $("#productRow_" + productIdToRemove).remove();
+
+            // Encontra o índice do produto com o ID fornecido no array 'products'
+            var indexToRemove = products.findIndex(function (product) {
+                return product.productId == productIdToRemove;
+            });
+
+            // Verifica se o produto com o ID fornecido foi encontrado
+            if (indexToRemove !== -1) {
+                // Remove o objeto do array 'products' no índice encontrado
+                products.splice(indexToRemove, 1);
+            } else {
+                Swal.fire(
+                    'Ops!',
+                    'Não foi possível apagar esse produto!',
+                    'warning'
+                );
+            }
+
+        });
+
+        function CleanInputsToAddProducts(){
+            $('#searchInputToProduct').val(null).trigger('change');
+            $('#productId').val(null).trigger('change');
+            $('#quantity').val(null).trigger('change');
+            $('#descriptions').val(null).trigger('change');
+        }
+
+        function ValidateToAddProduct(productId, productQuantity) {
+            return new Promise(function (resolve, reject) {
+                // Verificar se o produto já foi adicionado ao pedido
+                for (var i = 0; i < products.length; i++) {
+                    if (products[i].productId === productId) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Parece que você já adicionou esse produto a esse pedido, caso deseje alterar a quantidade, apague o produto e adicione novamente!",
+                        });
+                        return resolve(false); // Produto já foi adicionado, retorna false
+                    }
+                }
+
+                // Fazer uma chamada AJAX para validar a quantidade de estoque
+                $.ajax({
+                    type: "POST",
+                    url: "/Product/ValidateProductStockQuantity",
+                    data: { productId: productId, quantity: productQuantity },
+                    success: function (response) {
+                        if (!response.haveInStock) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: "O produto '" + response.productName + "' não possui quantidade suficiente em estoque. Quantidade disponível: " + response.availableQuantity,
+                            });
+                            resolve(false); // Produto não tem estoque suficiente, retorna false
+                        } else {
+                            resolve(true); // Produto tem estoque suficiente, retorna true
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Ocorreu um erro ao tentar processar esse pedido, se isso persistir, entre em contato com alguém de nossa gerência.",
+                        });
+                        resolve(false); // Erro na requisição AJAX, retorna false
+                    }
+                });
+            });
+        }
+
+
+        //autocomplete function
+        $(function () {
+            $("#searchInput").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Client/AutoComplete/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return  item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText)
+                        }
+                    });
+                },
+                select: function (e, i, v) {
+                    $("#hfClient").val(i.item.val);
+                    $("#cnpj").val(i.item.vald);
+                    //$("#cnpj").prop('disabled', true);
+                },
+                minLength: 1
+            });
+        });
+
+        //autocomplete to product when admin already selected a client
+        $(function () {
+            $("#searchInputToProduct").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Product/AutoCompleteById/',
+                        data: { "prefix": request.term, "id": $('#hfClient').val() },
+                        type: "POST",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText)
+                        }
+                    });
+                },
+                select: function (e, i,) {
+                    $("#productId").val(i.item.val);
+                    $("#eans").val(i.item.valx);
+                    $("#descriptions").val(i.item.valy);
+                },
+                minLength: 1
+            });
+        });
+
+
+        var orderId = '@Model.Id'
+        function ValidateIfNoteAlreadyExists() {
+            return new Promise(function (resolve, reject) {
+
+                var invoiceNumber = $('#invoiceNumber').val();
+                var clientId = $('#hfClient').val();
+
+                if (invoiceNumber === 0 || invoiceNumber === '0') {
+
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Oops...",
+                        text: "O número da nota não pode ser 0, por favor, troque por um número válido ",
+                    });
+                    resolve(false);
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/ExpeditionOrder/ValidateIfNoteAlreadyExists",
+                    data: { id: orderId, invoiceNumber: invoiceNumber, clientId: clientId },
+                    success: function (response) {
+                        if (response) {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: "O número de nota fiscal que você inseriu já está em uso no nosso sistema. Por favor, escolha outro número, podendo ser relacionado ao pedido correspondente",
+                            });
+                            resolve(false);
+                        } else {
+                            resolve(true);
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "Ocorreu um erro ao tentar processar esse pedido, se isso persistir, entre em contato com alguém de nossa gerência.",
+                        });
+                        resolve(false); // Erro na requisição AJAX, retorna false
+                    }
+                });
+            });
+        }
+
+        var id = '@Model.Id'
+        function submitForm() {
+            var fileInput = $('#file').val();
+
+            if (!fileInput) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "É necessário anexar uma etiqueta antes de subir o pedido!",
+                });
+                return;
+            }
+
+            var allInputsValid = true;
+            var errorMessage = "";
+
+            $('.required').each(function () {
+                var inputValue = $(this).val();
+                if (!inputValue || inputValue === '') {
+                    var fieldName = $(this).prev('label').text().trim();
+                    errorMessage += fieldName + " é obrigatório.\n";
+                    allInputsValid = false;
+                }
+            });
+
+            if (!allInputsValid) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: errorMessage,
+                });
+                return;
+            }
+
+            if (id === null || id === '') {
+                if (products.length === 0) {
+                    Swal.fire({
+                        icon: "warning",
+                        title: "Oops...",
+                        text: "Você precisa adicionar pelo menos um produto ao pedido antes de enviar!",
+                    });
+                    return;
+                }
+                var productsJson = JSON.stringify(products);
+                $('#productToAdd').val(productsJson);
+            }
+
+            ValidateIfNoteAlreadyExists()
+                .then(function (isValid) {
+                    if (!isValid) {
+                        return;
+                    } else {
+                        $('#submitButton').click();
+                    }
+                });
+        }
+
+        //steps configure
+        $("#example-basic").steps({
+            headerTag: "h3",
+            bodyTag: "section",
+            transitionEffect: "slideLeft",
+            autoFocus: true
+        });
+
+    </script>
+}

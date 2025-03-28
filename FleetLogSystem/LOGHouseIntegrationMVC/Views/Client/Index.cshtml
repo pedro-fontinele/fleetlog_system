@@ -1,0 +1,178 @@
+﻿@model IEnumerable<LOGHouseSystem.Models.Client>
+
+@{
+    ViewBag.Title = "Lista de Clientes";
+}
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/site.css">
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Clientes</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="d-grid gap-2 d-flex justify-content-md-start mx-3 mb-4 mt-2">
+    <a class="btn btn-primary font-size-md" href="@Url.Action("Create", "Client")" role="button"><span class="fa fa-plus font-weight-bold font-size-lg mr-2"></span>Novo Cliente</a>
+</div>
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Cnpj)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.SocialReason)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Email)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Phone)
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+
+                        <th class="">#</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Cnpj)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SocialReason)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Email)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Phone)
+                                </td>
+
+                                <td>
+                                    @if (item.IsActive == 0)
+                                    {
+                                        <span onclick="changeStatus(@item.Id)" style="cursor: pointer" class="badge badge-danger" title="Usuário inativo">
+                                            <i class="fas fa-solid fa-toggle-off" style="color:white;"></i>
+                                            Inativo
+                                        </span>
+
+                                    }
+                                    else
+                                    {
+                                        <span onclick="changeStatus(@item.Id)" style="cursor: pointer" class="badge badge-success" title="Usuário ativo">
+                                            <i class="fas fa-solid fa-toggle-on" style="color:white;"></i>
+                                            Ativo
+                                        </span>
+                                    }
+                                </td>
+
+                                <td class="d-flex justify-content-center ">
+                                    <a class="mr-1" title="Ver mais" asp-route-id="@item.Id" asp-controller="Client" asp-action="ViewMore"><i class=" fa fa-fw fa-eye"></i></a>
+                                    <a class="ml-2" title="Ver Emails Recebidos" asp-route-id="@item.Id" asp-controller="SentEmail" asp-action="EmailsReceivedByClient"><i class=" fa fa-fw fa-envelope"></i></a>
+                                </td>
+                                 
+                                <td>
+                                    <a class="btn btn-warning d-flex justify-content-center" role="button" title="Editar" asp-route-id="@item.Id" asp-controller="Client" asp-action="Update">Editar</a>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<form asp-controller="Client" asp-action="UpdateStatus" id="changeStatusForm" class="hidden">
+    <input name="id" id="idClient"/>
+    <button type="submit" id="buttonSub"></button>
+</form>
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+
+        });
+
+        function changeStatus(id) {
+            Swal.fire({
+                title: "Confirmação",
+                text: "Tem certeza de que deseja alterar o status?",
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonText: "Sim",
+                cancelButtonText: "Cancelar",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#idClient').val(id);
+                    $('#buttonSub').click();
+                }
+            });
+        }
+    </script>
+}

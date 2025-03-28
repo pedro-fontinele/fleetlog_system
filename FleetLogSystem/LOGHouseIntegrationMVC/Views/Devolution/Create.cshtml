@@ -1,0 +1,402 @@
+﻿@model LOGHouseSystem.ViewModels.DevolutionCreateAndUpdateViewModel
+@using LOGHouseSystem.Infra.Enums
+
+@{
+    ViewBag.Title = "Cadastrar Devolução";
+}
+
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="~/lib/jquery.steps-1.1.0/jquery.steps.css">
+
+
+
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="manual" role="tabpanel" aria-labelledby="manual-tab">
+        <br>
+
+        <form asp-controller="Devolution" asp-action="Create" method="post" id="CreateForm">
+            <div id="example-basic">
+                <h3>Dados do Pedido</h3>
+                <section>
+                    <div class="form-row">
+                        <legend class="text-center mb-3">Informações da Devolução</legend>
+                        <div class="form-group col-md-6">
+                            <label for="SocialReason">Cliente</label>
+                            <input asp-for="ClientName" type="text" class="form-control" name="clientName" id="searchInput" placeholder="Digite o nome do Cliente" required>
+                            <input type="hidden" asp-for="ClientId" id="hfClient" name="ClientId" />
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="SocialReason">@Html.DisplayNameFor(model => model.SenderName)</label>
+                            <input asp-for="SenderName" type="text" class="form-control" id="senderName" placeholder="Digite o nome do Remetente">
+                            @Html.ValidationMessageFor(x => x.SenderName)
+                        </div>
+
+                        <br />
+
+
+                    </div>
+                    <br />
+
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="PostNumber">@Html.DisplayNameFor(model => model.PostNumber)</label>
+                            <input asp-for="PostNumber" type="text" class="form-control" id="postNumber" placeholder="Digite o código do rastreio ou autorizado de postagem">
+                            @Html.ValidationMessageFor(x => x.PostNumber)
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="SocialReason">@Html.DisplayNameFor(model => model.InvoiceNumber)</label>
+                            <input asp-for="InvoiceNumber" type="text" class="form-control" id="invoiceNumber" placeholder="Digite o número da nota de devolução">
+                            @Html.ValidationMessageFor(x => x.InvoiceNumber)
+                        </div>
+
+                    </div>
+                    <br />
+
+                    <div class="form-row">
+
+                        <div class="form-group col-md-6">
+                            <label for="permission">@Html.DisplayNameFor(model => model.Status)</label>
+                            <br />
+                            <select asp-for="Status" name="Status" class="form-control" id="permission" required>
+                                <option value="">Selecione</option>
+
+                                @foreach (var item in Enum.GetValues(typeof(DevolutionStatus)).Cast<DevolutionStatus>())
+                                {
+                                    <option value="@item">@item.GetDescription()</option>
+                                }
+
+                            </select>
+                        </div>
+
+                        <div class="form-group col-md-6">
+                            <label for="observation">@Html.DisplayNameFor(model => model.Observation)</label>
+                            <textarea id="textAreaValue" type="text" class="form-control" rows="3"></textarea>
+                            <input asp-for="Observation" type="hidden" id="inputObs" />
+                            @Html.ValidationMessageFor(x => x.Observation)
+                            
+                        </div>
+                       
+                    </div>
+                </section>
+
+                <h3>Produtos Devolvidos</h3>
+
+                <section>
+                    <div class="row d-flex justify-content-end ml-5">
+                        <div class="col-md-3">
+                            <a class="btn btn-primary" onclick="addNewProduct()">Adicionar Produto</a>
+                        </div>
+                    </div>
+
+                    <div class="form-row d-flex">
+                        <legend class="text-center mb-3">Informações da Devolução</legend>
+                        <div class="form-group col-md-6">
+                            <label for="SocialReason">Produto</label>
+                            <div class="input-group ">
+                                
+                                <input type="text" class="form-control" name="clientName" id="searchInputToProduct" placeholder="Digite o nome do produto">
+                                <input type="hidden" id="productId" />
+                                <div class="input-group-append">
+                                    <button class="btn btn-success" type="button" onclick="AddProduct()">Adicionar</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4 mx-1" id="divProducts">
+                            <label for="SocialReason"></label>
+                            <div class="card mt-1">
+                                <div class="card-body" id="productsAdeedList">
+                                    <h6 class="text-center texto"><strong>Produto (s) Selecionado (s):</strong></h6>
+                                    @if(Model != null)
+                                    {
+                                        <input type="hidden" asp-for="IsCreation"/>
+                                        foreach(var item in Model.Products)
+                                        {
+                                            <li class="">@item</li>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <br />
+
+
+                    </div>
+                    <br />
+                </section>
+                <input type="hidden" name="productsId" id="productsId" />
+            <button class="hidden" type="submit" id="submitButton">Adicionar</button>
+        </form>
+
+    </div>
+</div>
+ 
+@section Scripts {
+
+
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="~/lib/jquery.steps-1.1.0/jquery.steps.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('#submitButton').hide();
+            $('a[href="#previous"]').text("Voltar");
+            $('a[href="#next"]').text("Próximo");
+            $('a[href="#finish"]').text("Enviar");
+            $('a[href="#finish"]').attr('onclick', 'submitForm()');
+
+            var wizard = $("#example-basic").steps({
+                headerTag: "h3",
+                bodyTag: "section",
+                transitionEffect: "slideLeft",
+                autoFocus: true
+            });
+
+            $('#submitButton').hide();
+            $('a[href="#previous"]').text("Voltar");
+            $('a[href="#next"]').text("Próximo");
+            $('a[href="#finish"]').text("Enviar");
+            $('a[href="#finish"]').attr('onclick', 'submitForm()');
+
+            var observationVal = $("#inputObs").val();
+            $("#textAreaValue").val(observationVal);
+
+        });
+
+        function addNewProduct() {
+
+            var clientId = $("#hfClient").val();
+            console.log(clientId)
+            if (clientId === "") { 
+                Swal.fire(
+                    'Ops!',
+                    'É necessário selecionar um Cliente na primeira página dessa sessão',
+                    'warning'
+                );
+                return;
+            }
+
+            Swal.fire({
+                title: 'Informe os detalhes',
+                html:
+                    '<textarea id="descricao" class="swal2-input" placeholder="Descrição" required></textarea> ' +
+                    '<input id="codigo" class="swal2-input" placeholder="Código do Produto" required>' +
+                    '<input id="ean" class="swal2-input" placeholder="EAN" required>',
+                showCancelButton: true,
+                confirmButtonText: 'Salvar',
+                cancelButtonText: 'Cancelar',
+                preConfirm: () => {
+                    const codigo = document.getElementById('codigo').value;
+                    const descricao = document.getElementById('descricao').value;
+                    const ean = document.getElementById('ean').value;
+                    const clientId = $("#hfClient").val();
+
+                    if (codigo === "") { 
+                        Swal.fire(
+                            'Ops!',
+                            'É necessário preencher o código do produto',
+                            'warning'
+                        );
+                        return;
+                    }
+
+                    if (descricao === "") {
+                        Swal.fire(
+                            'Ops!',
+                            'É necessário preencher a descrição do produto',
+                            'warning'
+                        );
+                        return;
+                    }
+
+                    if (ean === "") { 
+                        Swal.fire(
+                            'Ops!',
+                            'É necessário preencher o EAN do produto',
+                            'warning'
+                        );
+                        return;
+                    }
+
+                    $.ajax({
+                        url: '/Product/CreateProductToDevolutio',
+                        method: 'POST',
+                        data: {
+                            codigo: codigo,
+                            descricao: descricao,
+                            ean: ean,
+                            clientId : clientId
+                        },
+                        success: function (response) {
+                            if (response.success) {
+                                
+                                Swal.fire('Sucesso', response.message, 'success');
+                               
+                            } else {
+                                
+                                Swal.fire('Erro', response.message, 'error');
+                                
+                            }
+                        },
+                        error: function (error) {
+                            
+                        }
+                    });
+                }
+            });
+        }
+
+        function verifyFields(){
+            var clientId = $("#hfClient").val()
+            if (clientId <= 0) {
+                Swal.fire(
+                    'Ops!',
+                    'É necessário selecionar um Cliente',
+                    'warning'
+                );
+                return;
+            }
+
+            var senderName = $("#senderName").val()
+            if (senderName === null || senderName === "") {
+                Swal.fire(
+                    'Ops!',
+                    'É necessário informar o nome do remetente',
+                    'warning'
+                );
+                return;
+            }
+
+            var postNumber = $("#postNumber").val()
+            if (postNumber === null || postNumber === "") {
+                Swal.fire(
+                    'Ops!',
+                    'É necessário informar o número de postagem',
+                    'warning'
+                );
+                return;
+            }
+
+            var invoiceNumber = $("#invoiceNumber").val()
+            if (invoiceNumber === null || invoiceNumber === "") {
+                Swal.fire(
+                    'Ops!',
+                    'É necessário informar o número da nota',
+                    'warning'
+                );
+                return;
+            }
+        }
+
+
+
+        function submitForm() {
+           verifyFields();
+
+            var obs = $("#textAreaValue").val();
+            $("#inputObs").val(obs);
+            
+
+            $("#productsId").val(JSON.stringify(products))
+            $('#submitButton').click();
+        }
+
+
+        //autocomplete function
+        $(function () {
+            $("#searchInput").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Client/AutoComplete/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText)
+                        }
+                    });
+                },
+                select: function (e, i, v) {
+                    $("#hfClient").val(i.item.val);
+                    //$("#cnpj").prop('disabled', true);
+                },
+                minLength: 1
+            });
+        });
+
+        //autocomplete to product when admin already selected a client
+        $(function () {
+            $("#searchInputToProduct").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Product/AutoCompleteById/',
+                        data: { "prefix": request.term, "id": $('#hfClient').val() },
+                        type: "POST",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText)
+                        }
+                    });
+                },
+                select: function (e, i,) {
+                    $("#productId").val(i.item.val);
+                    $("#eans").val(i.item.valx);
+                    $("#descriptions").val(i.item.valy);
+                },
+                minLength: 1
+            });
+        });
+
+        var products = [];
+        function AddProduct() {
+            var text = $("#searchInputToProduct").val();
+            console.log(text)
+            if (text === null || text === "") {
+                Swal.fire(
+                    'Ops!',
+                    'É necessário escolher um produto antes de adicionar',
+                    'warning'
+                );
+                return;
+            }
+
+            var produtoId = $('#productId').val();
+            var produtoNome = $('#searchInputToProduct').val();
+
+            products.push(produtoId)
+
+            UpdateProductsAdded(produtoNome);
+
+            $("#divProducts").show();
+
+            $('#searchInputToProduct').val(null).trigger('change');
+        }
+
+        function UpdateProductsAdded(produto) {
+            var $lista = $("#productsAdeedList");
+
+            var $item = $("<li>").text(produto);
+            $lista.append($item);
+        }
+    </script>
+}

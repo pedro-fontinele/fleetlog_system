@@ -1,0 +1,52 @@
+﻿@model LOGHouseSystem.ViewModels.FilterPackingWhithoutPackingListTrasportationViewModel
+
+<link rel="stylesheet" href="~/css/site.css">
+
+<form asp-action="IndexPackingWhithoutPackingListTrasportation" id="searchForm">
+    <div class="form-row d-flex justify-content-center">
+        <input type="hidden" id="hiddenInputToPagination" name="Page" value="@Model.Page" />
+
+        <div class="form-group col-md-4">
+            <label for="issueDate">@Html.DisplayNameFor(model => model.CreatedAtStart)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite o nome do usuário" } })*@
+            <input type="date" class="form-control" asp-for="CreatedAtStart" id="issueDate" placeholder="Digite a data de">
+        </div>
+
+        <div class="form-group col-md-4">
+            <label for="issueDateEnd">@Html.DisplayNameFor(model => model.CreatedAtEnd)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite o nome do usuário" } })*@
+            <input type="date" class="form-control" asp-for="CreatedAtEnd" id="issueDateEnd" placeholder="Digite a data de">
+
+        </div>
+        <div class="">
+            <label></label>
+            <button class="btn btn-light ml-3 mt-md-2 mb-sm-3 col-md-12" id="loadingSpinner" type="button">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </button>
+            <button class="btn btn-primary ml-3 mt-md-2 mb-sm-3 col-md-12" type="submit" id="submitButton"><i class="fa fa-magnifying-glass mr-2"></i>Filtrar</button>
+        </div>
+    </div>
+</form>
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $("#loadingSpinner").hide();
+    })
+
+    $("#searchForm").submit(() => {
+        $("#submitButton").hide();
+        $("#loadingSpinner").show();
+    })
+        
+</script>
+    
+
+
+
+
+
+

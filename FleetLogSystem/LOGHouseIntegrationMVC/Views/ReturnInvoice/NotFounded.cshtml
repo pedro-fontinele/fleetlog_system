@@ -1,0 +1,224 @@
+﻿@using LOGHouseSystem.Models
+@using LOGHouseSystem.ViewModels.Components;
+@using LOGHouseSystem.Infra.Enums
+@model LOGHouseSystem.Infra.Pagination.PaginationBase<ExpeditionOrdersLotNotFounded>
+
+@{ 
+    ViewBag.Title = "Notas de Retorno";
+}
+
+<link rel="stylesheet" href="~/css/site.css">
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Produtos não encontrados</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+<form asp-controller="ReturnInvoice" asp-action="NotFoundedSearched" id="searchForm" method="post">
+    <input type="hidden" id="hiddenInputToPagination" name="PageNumber" value="@Model.PageNumber" />
+        <div class="row">
+             <div class="col-md-3">
+                <label for="permission">@Html.DisplayNameFor(model => model.Data[0].Status)</label>
+                <br />
+                <select name="Status" class="form-control" id="Status">
+                    <option value="">Selecione</option>
+                    @foreach (var item in Enum.GetValues(typeof(ExpeditionOrdersLotNotFoundedStatusEnum)).Cast<ExpeditionOrdersLotNotFoundedStatusEnum>())
+                    {
+                            <option value="@item">@Html.DisplayFor(modelItem => item)</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-2">
+                <br />
+                <button class="btn btn-primary btn-block" type="submit" style="margin-top: 7px;">Filtrar</button>
+            </div>
+        </div>
+
+<br />
+
+    @if (Model?.TotalPages > 1 || Model?.TotalPages > 1)
+    {
+        @Html.Partial("_PaginationListPager",new PaginationPagerModel{
+    Page = Model.PageNumber,
+    PageCount = Model.TotalPages,
+    InputIdForPage = "hiddenInputToPagination",
+    FormToSubmit = "searchForm"
+    })
+    }
+</form>
+<div class="row">
+    <div class="col-md-2">
+        <br />
+        <a class="btn btn-primary btn-block" href="@Url.Action("Index", "ReturnInvoice")" style="margin-top: 7px;">Voltar</a>
+    </div>
+</div>
+<br />
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].Id)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].ExpeditionOrder.InvoiceNumber)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].Product.Description)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].Quantity)
+                        </th>
+
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].EntryDate)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].Status)
+                        </th>
+
+                        <th>#</th>
+
+                        @*
+                        <th class="">#</th>
+                        <th></th>*@
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Data != null && Model.Data.Any())
+                    {
+                         foreach (var item in Model.Data)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Id)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ExpeditionOrder.InvoiceNumber)
+                                </td>
+
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Product.Description)
+                                </td>
+
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.EntryDate)
+                                </td>
+
+                                <td>
+                                    @switch (item.Status)
+                                    {
+                                        case ExpeditionOrdersLotNotFoundedStatusEnum.Created:
+                                            <span class="badge badge-primary">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                        case ExpeditionOrdersLotNotFoundedStatusEnum.Pendenting:
+                                                            <span class="badge badge-warning">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                        case ExpeditionOrdersLotNotFoundedStatusEnum.Sended:
+                                            <span  class="badge badge-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;                                        
+                                        default:
+                                            <span class="badge badge-warning">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                    }
+                                </td>
+                                <td class="text-center">
+                                            <a class="d-flex justify-content-center" title="Anexar" asp-route-id="@item.Id" asp-controller="ReturnInvoice" asp-action="SendNotFounded"><i class="fa-solid fa-arrow-right"></i></a>
+                                </td>
+
+                                @*<td class="text-center">
+                        <a class="d-flex justify-content-center" title="Ver mais" asp-route-id="@item.Id" asp-controller="Client" asp-action="ViewMore"><i class=" fa fa-fw fa-eye"></i></a>
+                        </td>
+
+                        <td>
+                        <a class="btn btn-warning d-flex justify-content-center" role="button" title="Editar" asp-route-id="@item.Id" asp-controller="Client" asp-action="Update">Editar</a>
+                        </td>*@
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": "",
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+                'columnDefs': [
+                    {
+                        'targets': 0,
+                        'checkboxes': {
+                            'selectRow': true
+                        }
+                    },
+                ],
+                'select': {
+                    'style': 'multi'
+                },
+                "iDisplayLength": 100,
+                paging: false,
+                info: false
+            })
+        });
+
+    </script>
+}

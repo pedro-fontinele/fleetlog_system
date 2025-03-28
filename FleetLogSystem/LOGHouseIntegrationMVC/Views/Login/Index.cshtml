@@ -1,0 +1,54 @@
+﻿@using LOGHouseSystem.Infra.Helpers
+@model LOGHouseSystem.Models.Login
+
+@{
+    ViewBag.Title = "Login";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+
+@using (Html.BeginForm("Login", "Login", FormMethod.Post, new { id = "LoginForm", @class = "login-form" }))
+{
+
+    <div class="user">
+        <div class="form-group">
+            <input asp-for="LoginName" type="text" class="form-control form-control-user"
+               id="User" placeholder="Usuario" />
+               @Html.ValidationMessageFor(x => x.LoginName)
+        </div>
+        <div class="form-group">
+            <input asp-for="Password" type="password" class="form-control form-control-user"
+               id="Password" placeholder="Senha" />
+            @Html.ValidationMessageFor(x => x.Password)
+        </div>
+
+        @if (ViewBag != null)
+        {
+        <div class="text-center">
+            <p style="background: rgba(255, 255, 255, 0.52);padding: 0px 5px;border-radius: 20px;text-transform: uppercase;font-size: 11px;color: red;font-weight: bold">@ViewBag.LoginError@Html.Raw(@TempData["ThanksMessage"])</p>
+        </div>
+        }
+        
+        <div class="loading-spinner" id="loading-spinner">
+            <button class="btn btn-light btn-user btn-block" type="button">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </button>
+        </div>
+        <button style="background-color: #475e75; color: white" class="btn btn-user btn-block" type="submit" id="submit-button"> Entrar </button><br>
+    </div>
+}
+<hr>
+<div class="text-center d-flex justify-content-center">
+    <a asp-action="Register" style="color: #475e75" class="small mx-2">Quero me cadastrar</a>
+    <a asp-action="ForgotPassword" style="color: #475e75" asp-controller="Login" class="small mx-2">Esqueci minha senha</a>
+</div>
+
+@section Scripts {
+    <script>
+        $("#loading-spinner").hide();
+
+        $("#LoginForm").submit(() => {
+            $("#submit-button").hide();
+            $("#loading-spinner").show();
+        })
+    </script>
+}

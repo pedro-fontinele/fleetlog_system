@@ -1,0 +1,196 @@
+﻿@using LOGHouseSystem.Models
+@using LOGHouseSystem.ViewModels.Components;
+@using LOGHouseSystem.Infra.Enums
+@using Newtonsoft.Json.Linq;
+@*@model LOGHouseSystem.Infra.Pagination.PaginationBase<ReturnInvoice>*@
+@model List<LOGHouseSystem.ViewModels.ExpeditionOrderGroup>
+
+@{
+    ViewBag.Title = "Criar Notas de Retorno";
+}
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/site.css">
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Criar Notas de Retorno</h3>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-2">
+        <br />
+        <a class="btn btn-primary btn-block" href="@Url.Action("Index", "ReturnInvoice")" style="margin-top: 7px;">Voltar</a>
+    </div>
+</div>
+<br />
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model[0].Cnpj)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model[0].ClientName)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model[0].OrdersQuantity)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model[0].TotalValue)
+                        </th>
+
+                        <td class="text-center" style="30px"></td>
+                        <td class="text-center" style="30px"></td>
+                        
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach(var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Cnpj)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ClientName)
+                                </td>
+
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OrdersQuantity)
+                                </td>
+
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TotalValue)
+                                </td>
+
+                                <td class="text-center">
+                                    <form asp-action="ListExpeditionOrdersInGroup" asp-controller="ExpeditionOrder" method="get">
+                                         <input type="hidden" name="clientId" value="@item.ClientId">
+                                         <button type="submit" class="btn btn-primary btn-block" href="#"  title="Ver mais">Visualizar pedidos </button>
+                                    </form>
+
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-primary btn-block" role="button" onclick="gerarNotaCliente(@item.ClientId)" title="Gerar Nota de Retorno">Gerar Nota de Retorno</button>                                   
+                                    
+                                </td>
+
+
+                                @*<td class="text-center">
+                        <a class="d-flex justify-content-center" title="Ver mais" asp-route-id="@item.Id" asp-controller="Client" asp-action="ViewMore"><i class=" fa fa-fw fa-eye"></i></a>
+                        </td>
+
+                        <td>
+                        <a class="btn btn-warning d-flex justify-content-center" role="button" title="Editar" asp-route-id="@item.Id" asp-controller="Client" asp-action="Update">Editar</a>
+                        </td>*@
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<form asp-action="CreateReturnInvoiceMethod" asp-controller="ReturnInvoice" method="get" id="generateInvoices">
+    <input type="hidden" name="clientId" id="generateInvoiceClientId" value="">
+
+</form>
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+    <script>
+
+        function gerarNotaCliente(idCliente){
+                Swal.fire({ 
+                    title: 'Tem certeza que você deseja gerar as notas de retorno do cliente?',
+                    text: "Você não poderá desfazer essa ação!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    //confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonText: 'Continuar'
+
+                }).then((result) => {
+                    if (result.isConfirmed) {
+
+                        $("#generateInvoiceClientId").val(idCliente);
+                        $("#generateInvoices").submit();
+                    }
+                })
+        }
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+                "iDisplayLength": 100
+            });
+
+        });
+
+        let url = `@Url.Action("ListExpeditionOrdersInGroupReceiving", "ExpeditionOrder")`;
+       
+        function verMais(data) {
+            $.ajax({
+                method: "POST",
+                url: url,
+                data: JSON.stringify(data),
+                contentType: 'application/json'
+
+            });
+        };
+
+    </script>
+}
+

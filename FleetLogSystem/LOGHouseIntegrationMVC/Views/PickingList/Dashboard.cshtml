@@ -1,0 +1,260 @@
+﻿@model IEnumerable<LOGHouseSystem.Models.PickingList>
+@using LOGHouseSystem.Infra.Enums
+
+@{
+    ViewData["Title"] = "Painel de Controle";
+}
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Painel de Controle de Expedição</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4" style="border: 1px solid #CCC;">
+        <div class="row">
+            <div class="text-center mb-2" style="border: 1px solid #CCC; border-bottom: 2px solid #000; z-index: 999; ">
+                <h4>Gerado</h4>
+            </div>
+
+            <div class="row" style="overflow-y: scroll; height: 75vh;">
+                @foreach (var item in Model)
+                {
+                    @if (item.Status == PickingListStatus.Gerado)
+                    {
+                        <div class="col-xl-12 col-md-12 mb-12 w-100">
+                            @if(item.Priority == PriorityEnum.Alta)
+                            {
+                            <div class="card bg-danger text-white shadow">
+                                <div class="card-body w-100 col-md-12">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <a title="Apagar" onclick="deleteConfirmation(@item.Id)"><span style="color: white; float: right; cursor: pointer" class="fa fa-fw fa-trash-can"></span></a>
+                                            <div class="font-weight-bold text-white text-uppercase mb-1 d-flex">
+                                                Lista de Escolha
+                                            </div>
+                                            
+                                            <div class="h5 mb-0 font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Id)</div>
+                                            <div class="font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Priority)</div>
+                                            <div name="date" class="font-weight-bold text-white">@item.CreatedAt.ToString("dd/MM/yyyy")</div>
+                                            <div name="marketplace" class="font-weight-bold text-white">@item.MarketPlace</div>
+                                            <div name="description" class="font-weight-bold text-white">Obs: @item.Description</div>
+                                            <br />
+                                            <div class="text-gray-800">
+                                                <a class="float-left text-white-50" title="Ver mais" href="@Url.Action("ViewMore", "PickingList", new{id = item.Id, routeUrl = $"{Url.Action("Dashboard","PickingList")}"})"><i class=" fa fa-fw fa-eye"></i> Ver mais</a>
+                                            </div>
+                                            <br />
+                                            <br />
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            }else if (item.Priority == PriorityEnum.Media)
+                            {
+                                <div class="ard bg-warning text-white shadow">
+                                    <div class="card-body w-100 col-md-12">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <a title="Apagar" onclick="deleteConfirmation(@item.Id)"><span style="color: white; float: right; cursor: pointer" class="fa fa-fw fa-trash-can"></span></a>
+                                                <div class="font-weight-bold text-white text-uppercase mb-1 d-flex">
+                                                    Lista de Escolha
+                                                </div>
+                                                
+                                                <div class="h5 mb-0 font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Id)</div>
+                                                <div class="font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Priority)</div>
+                                                <div name="date" class="font-weight-bold text-white">@item.CreatedAt.ToString("dd/MM/yyyy")</div>
+                                                <div name="marketplace" class="font-weight-bold text-white">@item.MarketPlace</div>
+                                                <div name="description" class="font-weight-bold text-white">Obs: @item.Description</div>
+                                                <br />
+                                                <div class="text-gray-800">
+                                                    <a class="float-left text-white-50" title="Ver mais" href="@Url.Action("ViewMore", "PickingList", new{id = item.Id, routeUrl = $"{Url.Action("Dashboard","PickingList")}"})"><i class=" fa fa-fw fa-eye"></i> Ver mais</a>
+                                                </div>
+                                                <br />
+                                                <br />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="ard bg-success text-white shadow">
+                                    <div class="card-body w-100 col-md-12">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <a title="Apagar" onclick="deleteConfirmation(@item.Id)"><span style="color: white; float: right; cursor: pointer" class="fa fa-fw fa-trash-can"></span></a>
+                                                <div class="font-weight-bold text-white text-uppercase mb-1 d-flex">
+                                                    Lista de Escolha
+                                                </div>
+                                                
+                                                <div class="h5 mb-0 font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Id)</div>
+                                                <div class="font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Priority)</div>
+                                                <div name="date" class="font-weight-bold text-white">@item.CreatedAt.ToString("dd/MM/yyyy")</div>
+                                                <div name="date" class="font-weight-bold text-white">@item.MarketPlace</div>
+                                                <div name="description" class="font-weight-bold text-white">Obs: @item.Description</div>
+                                                <br />
+                                                <div class="text-gray-800">
+                                                    <a class="float-left text-white-50" title="Ver mais" href="@Url.Action("ViewMore", "PickingList", new{id = item.Id, routeUrl = $"{Url.Action("Dashboard","PickingList")}"})"><i class=" fa fa-fw fa-eye"></i> Ver mais</a>
+                                                </div>
+                                                <br />
+                                                <br />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                    }
+                }
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-md-8" style="border: 1px solid #CCC; ">
+        <div class="row">
+            <div class="text-center mb-2" style="border: 1px solid #CCC; border-bottom: 2px solid #000; z-index: 999;">
+                <h4>Em Atendimento</h4>
+            </div>
+            <div class="row" style="overflow-y: scroll; height: 75vh;">
+                @foreach (var item in Model)
+                {
+                    @if (item.Status == PickingListStatus.EmAtendimento)
+                    {
+                        <div class="col-xl-6 col-md-6 mb-6">
+                            @if (item.Priority == PriorityEnum.Alta)
+                            {
+                                <div class="ard bg-danger text-white shadow">
+                                    <div class="card-body w-100 col-md-12">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <a title="Apagar" onclick="deleteConfirmation(@item.Id)"><span style="color: white; float: right; cursor: pointer" class="fa fa-fw fa-trash-can"></span></a>
+                                                <div class="font-weight-bold text-white text-uppercase mb-1 d-flex">
+                                                    Lista de Escolha
+                                                </div>
+                                                
+                                                <div class="h5 mb-0 font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Id)</div>
+                                                <div class="font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Priority)</div>
+                                                <div name="date" class="font-weight-bold text-white">@item.CreatedAt.ToString("dd/MM/yyyy")</div>
+                                                <div name="date" class="font-weight-bold text-white">@item.MarketPlace</div>
+                                                <div name="description" class="font-weight-bold text-white">Obs: @item.Description</div>
+                                                <br />
+                                                <div class="text-gray-800">
+                                                    <a class="float-left text-white-50" title="Ver mais" href="@Url.Action("ViewMore", "PickingList", new{id = item.Id, routeUrl = $"{Url.Action("Dashboard","PickingList")}"})"><i class=" fa fa-fw fa-eye"></i> Ver mais</a>
+                                                </div>
+                                                <br />
+                                                <br />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else if (item.Priority == PriorityEnum.Media)
+                            {
+                                <div class="ard bg-warning text-white shadow">
+                                    <div class="card-body w-100 col-md-12">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <a title="Apagar" onclick="deleteConfirmation(@item.Id)"><span style="color: white; float: right; cursor: pointer" class="fa fa-fw fa-trash-can"></span></a>
+                                                <div class="font-weight-bold text-white text-uppercase mb-1 d-flex">
+                                                    Lista de Escolha
+                                                </div>
+                                                
+                                                <div class="h5 mb-0 font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Id)</div>
+                                                <div class="font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Priority)</div>
+                                                <div name="date" class="font-weight-bold text-white">@item.CreatedAt.ToString("dd/MM/yyyy")</div>
+                                                <div name="date" class="font-weight-bold text-white">@item.MarketPlace</div>
+                                                <div name="description" class="font-weight-bold text-white">Obs: @item.Description</div>
+                                                <br />
+                                                <div class="text-gray-800">
+                                                    <a class="float-left text-white-50" title="Ver mais" href="@Url.Action("ViewMore", "PickingList", new{id = item.Id, routeUrl = $"{Url.Action("Dashboard","PickingList")}"})"><i class=" fa fa-fw fa-eye"></i> Ver mais</a>
+                                                </div>
+                                                <br />
+                                                <br />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="ard bg-success text-white shadow">
+                                    <div class="card-body w-100 col-md-12">
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col mr-2">
+                                                <a title="Apagar" onclick="deleteConfirmation(@item.Id)"><span style="color: white; float: right; cursor: pointer" class="fa fa-fw fa-trash-can"></span></a>
+                                                <div class="font-weight-bold text-white text-uppercase mb-1 d-flex">
+                                                    Lista de Escolha
+                                                </div>
+                                                
+                                                <div class="h5 mb-0 font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Id)</div>
+                                                <div class="font-weight-bold text-white">@Html.DisplayFor(modelItem => item.Priority)</div>
+                                                <div name="date" class="font-weight-bold text-white">@item.CreatedAt.ToString("dd/MM/yyyy")</div>
+                                                <div name="marketPlace" class="font-weight-bold text-white">@item.MarketPlace</div>
+                                                <div name="description" class="font-weight-bold text-white">Obs: @item.Description</div>
+                                                <br />
+                                                <div class="text-gray-800">
+                                                    <a class="float-left text-white-50" title="Ver mais" href="@Url.Action("ViewMore", "PickingList", new{id = item.Id, routeUrl = $"{Url.Action("Dashboard","PickingList")}"})"><i class=" fa fa-fw fa-eye"></i> Ver mais</a>
+                                                </div>
+                                                <br />
+                                                <br />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                    }
+                }
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+    <script>
+
+        function deleteConfirmation(id) {
+            Swal.fire({
+                title: 'Tem certeza que quer apagar esse item?',
+                text: "Você não poderá desfazer essa ação!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Apagar'
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let url = `@Url.Action("Cancel", "PickingList")?id=${id}`;
+                    window.location.href = url;
+                }
+            })
+        }
+
+
+        $(document).ready(function () {
+            //$('[name=date]').mask('00/00/0000');
+        });
+
+       
+    </script>
+
+
+}

@@ -1,0 +1,183 @@
+﻿@using LOGHouseSystem.Infra.Enums;
+@using LOGHouseSystem.ViewModels.Components;
+@model PagedList.PagedList<LOGHouseSystem.Models.PackingListTransportation>
+
+@{
+    ViewData["Title"] = "Romaneios";
+}
+
+<link rel="stylesheet" href="/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Romaneios</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    @await Component.InvokeAsync("FilterPackingListTransportation")
+</div>
+
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <div class="row">
+
+                <div class="col-md-6">
+                    <form asp-action="Index" id="filterForm">
+                        <div class="row">
+                            <input type="hidden" id="hiddenInputToPagination" name="Page" value="@Model.PageNumber" />
+
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+            <br />
+
+            @if (Model.Count > 0)
+            {
+                <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>
+                                Data
+                            </th>
+                            <th>
+                                Responsável
+                            </th>
+                            <th>
+                                Transportadora
+                            </th>
+                            <th>
+                                Qtd NF
+                            </th>
+                            <th>
+                                Status
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CreatedAt)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TransportationPerson.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ShippingCompany.Name)
+                                </td>
+                                <td>
+                                    @item.ExpeditionOrders.Count()
+                                </td>
+                                <td>
+                                    
+
+                                    @switch (item.Status)
+                                    {
+                                        case PackingListTransportationStatus.Finalizado:
+                                            <span class="badge badge-secondary">@item.Status.GetDescription()</span>
+                                            break;
+
+                                        case PackingListTransportationStatus.Gerado:
+                                            <span class="badge badge-primary">@item.Status.GetDescription()</span>
+                                            break;
+                                    }
+                                </td>
+                                <td>
+                                    <a class="d-flex justify-content-center" title="Ver mais" href="@Url.Action("Details", new{id = item.Id})"><i class=" fa fa-fw fa-eye"></i></a>
+                                </td>
+                           
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+                <!--Pagination nav-->
+                @if (Model.PageCount > 1)
+                {
+                    @Html.Partial("_PaginationListPager",new PaginationPagerModel{
+                        Page = Model.PageNumber,
+                        PageCount = Model.PageCount,
+                        InputIdForPage = "hiddenInputToPagination",
+                        FormToSubmit = "searchForm"
+                    })
+
+                }
+
+            }
+
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery-ui.js"></script>
+    <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.js"></script>
+    <script src="~/js/moment.min.js"></script>
+
+
+    <link type="text/css" href="~/vendor/datatables/dataTables.checkboxes.css" rel="stylesheet" />
+    <script type="text/javascript" src="~/vendor/datatables/dataTables.checkboxes.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            var table = $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+               
+                'select': {
+                    'style': 'multi'
+                },
+                paging: false,
+                info: false
+            });
+
+
+        });
+
+    </script>
+}

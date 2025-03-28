@@ -1,0 +1,649 @@
+﻿@model LOGHouseSystem.ViewModels.PackingAreaViewModel
+@using LOGHouseSystem.Infra.Enums;
+@using LOGHouseSystem.Infra.Helpers;
+
+@{
+    ViewBag.Title = "Lista de Empacotamentos";
+}
+
+<style>
+    #previewContainer {
+        width: 640px;
+        height: 480px;
+        object-fit: fill;
+    }
+
+    #cart-modal-dialog {
+        max-width: 1000px;
+    }
+
+    .modalContent {
+        text-align: center;
+    }
+
+    .inputDnD {
+        .form-control-file
+
+    {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 6em;
+        outline: none;
+        visibility: hidden;
+        cursor: pointer;
+        background-color: #c61c23;
+        box-shadow: 0 0 5px solid currentColor;
+        &:before
+
+    {
+        content: attr(data-title);
+        position: absolute;
+        top: 0.5em;
+        left: 0;
+        width: 100%;
+        min-height: 6em;
+        line-height: 2em;
+        padding-top: 1.5em;
+        opacity: 1;
+        visibility: visible;
+        text-align: center;
+        border: 0.25em dashed currentColor;
+        transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+        overflow: hidden;
+    }
+
+    &:hover {
+        &:before
+
+    {
+        border-style: solid;
+        box-shadow: inset 0px 0px 0px 0.25em currentColor;
+    }
+
+    }
+    }
+    }
+
+    // PRESENTATIONAL CSS
+    body {
+        background-color: #f7f7f9;
+    }
+</style>
+
+<div id="errorAlert" class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Área de Empacotamento</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-action="Index">Empacotamentos</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Área de Empacotamento</li>
+        </ol>
+    </nav>
+
+    @if (Model.Cart)
+    {
+        <form onsubmit="event.preventDefault(); searchCart();" id="cart-search">
+            <div class="row">
+                <div class="col-md-4">
+                    <input @(Model.Packing != null ? "disabled" : "") id="cartInput" type="tel" class="form-control" placeholder="Código do carrinho" autofocus />
+
+                </div>
+                <div class="col-md-4">
+                    <button @(Model.Packing != null ? "disabled" : "") id="search-cart-btn" type="submit" class="btn btn-primary">
+                        <i class="fa fa-search"></i>
+                        Pesquisar
+                    </button>
+                </div>
+
+
+            </div>
+        </form>
+
+        <div class="card" style="display:none;" id="CartDetailsModal">
+
+            <div class="card-title" style="margin:20px 0px 0px 20px;">
+                <h5 style="display:inline;">Detalhes do Carrinho</h5>
+
+                <button style="display:none;" type="submit" class="btn btn-sm btn-default" id="reset-cart-btn" onclick="resetCart()">
+                    <i class="fa fa-refresh"></i>
+                    Trocar Carrinho
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-8">
+                        <p>Última lista de separação associada: <span style="color: red" id="pl-id"></span>  /  MarketPlace: <span style="color: red" id="pl-mkt"></span>  /  Obs: <span style="color: red" id="pl-obs"></span></p> <br />
+                    </div>
+                    <div class="col-md-4" style="text-align:right;">
+                        <button onclick="GenerateSimplifiedDanfe()" class="btn btn-warning">Imprimir Danfe Simplificada</button>
+                    </div>
+                </div>
+
+
+                <table class="table table-striped">
+                    <thead>
+                    <th>Cliente</th>
+                    <th>NF</th>
+                    <th>Chave da Nota</th>
+                    </thead>
+                    <tbody id="nfs-table-body">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+
+
+    <div class="main-card mb-3 card" style="@(Model.Cart ? "display:none;" : "")" id="search-invoice-area">
+        <div class="card-title" style="margin:20px 0px 0px 20px;">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Buscar Pedido pela chave da nota</h5>
+                </div>
+            </div>
+
+        </div>
+        <div class="card-body">
+
+            <form asp-action="PackingArea" asp-controller="Packing" disabled>
+                <div class="row">
+                    <div class="col-md-6">
+                        <input @(Model.Packing != null ? "disabled" : "") id="InvoiceAccessKeyInput" type="tel" class="form-control" placeholder="Insira a chave da nota para procurar" value="@Model.InvoiceAccessKey" name="InvoiceAccessKey" autofocus />
+                    </div>
+                    <div class="col-md-6">
+                        <div style=" text-align:left;">
+                            @if (Model.Packing != null)
+                            {
+                                <button type="submit" class="btn btn-default">
+                                    <i class="fa fa-refresh"></i>
+                                    Trocar Nota
+                                </button>
+                            }
+                            <button @(Model.Packing != null ? "disabled" : "") type="submit" class="btn btn-primary">
+                                <i class="fa fa-search"></i>
+                                Pesquisar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+
+    @if (Model.Packing != null)
+    {
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <a class="nav-item nav-link  @(Model.Packing.Status != LOGHouseSystem.Infra.Enums.PackingStatus.Finalizado ? "active" : "" ) " id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="@(Model.Packing.Status != LOGHouseSystem.Infra.Enums.PackingStatus.Finalizado ? "true" : "false")">Passo 1</a>
+                <a class="nav-item nav-link  @(Model.Packing.Status == LOGHouseSystem.Infra.Enums.PackingStatus.Finalizado ? (Model.Packing?.ImagePath != null ? "" : "active") : "disabled" ) " id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="@(Model.Packing.Status == LOGHouseSystem.Infra.Enums.PackingStatus.Finalizado ? "true" : "false")">Passo 2</a>
+                <a class="nav-item nav-link  @(Model.Packing?.ImagePath != null ? "active" : "disabled") " id="nav-volume-tab" data-toggle="tab" href="#nav-volume" role="tab" aria-controls="nav-volume" aria-selected="@(Model.Packing?.ImagePath != null ? "true" : "false")">Passo 3</a>
+            </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade @(Model.Packing.Status != LOGHouseSystem.Infra.Enums.PackingStatus.Finalizado ? "show active" : "" )" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                <br>
+                <div class="main-card mb-3 card">
+                    <div class="card-title" style="margin:10px;">
+                        <div class="col-md-12">
+                            <h5>Detalhes do Pedido - Número da Nota: @Model.Packing.ExpeditionOrder.InvoiceNumber</h5>
+
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @{
+                            int packingPercentage = (int)ProgressBarHelper.GetPercentage(Model.Packing.Items.Sum(i => i.ValidatedQuantity ?? 0), Model.Packing.Items.Sum(i => i.Quantity ?? 0));
+                        }
+                        <div class="progress">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: @(packingPercentage)%" aria-valuenow="@(packingPercentage)" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+
+                        <div class="row" style="margin-top:30px;">
+                            <div class="col-md-5">
+                                <form asp-action="ValidateItem">
+                                    <div class="row">
+                                        <input type="hidden" value="@Model.Packing.Id" name="packing">
+                                        <input type="hidden" value="@Model.InvoiceAccessKey" name="invoiceAccessKey">
+                                        <div class="col-md-8"><input id="EanItem" type="tel" class="form-control" placeholder="Digite o Ean do Produto" name="eanItem" autofocus /></div>
+                                        <div class="col-md-4">
+                                            <button type="submit" class="btn btn-success">
+                                                <i class="fa fa-check"></i>
+                                                Validar
+                                            </button>
+                                        </div>
+
+                                    </div>
+                                </form>
+
+                            </div>
+                            <div class="col-md-7">
+                                <div class="main-card mb-3 card">
+                                    <div class="card-body" style="background:#f8f8f8;">
+                                        <table class="table ">
+                                            <thead>
+                                            <th>Produto</th>
+                                            <th style="text-align:center;">Quantidade</th>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in Model.Packing.Items)
+                                                {
+                                                    <tr class="@(item.Quantity == item.ValidatedQuantity ? "table-success" : "")">
+                                                        <td>@item.Product.Description</td>
+                                                        <td style="text-align:center;"><span class="badge @(item.Quantity == item.ValidatedQuantity ? "badge-success" : "badge-primary")">@((int)item.ValidatedQuantity) / @((int)item.Quantity)</span></td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade @(Model.Packing.Status == LOGHouseSystem.Infra.Enums.PackingStatus.Finalizado && Model.Packing?.ImagePath == null ? "show active" : "" )" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+                <div class="main-card mb-3 card">
+                    <div class="card-title" style="margin:10px;">
+                        <div class="col-md-12">
+                            <h5>Upload de imagem</h5>
+
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+
+                            <div class="col-md-2">
+                                <button type="button" class="btn btn-primary btn-block" onclick="document.getElementById('inputFile').click()">Adicionar Imagem</button>
+                                <button class="btn btn-primary btn-block" onclick="openCamera()">Capturar nova foto</button>
+                                @using (Html.BeginForm("ImageArea", "Packing", FormMethod.Post, new { enctype = "multipart/form-data", id = "sendImageForm" }))
+                                {
+                                    <input type="hidden" value="@Model.Packing.Id" name="packing">
+                                    <input type="hidden" value="@Model.InvoiceAccessKey" name="invoiceAccessKey">
+                                    <input type="hidden" value="" name="imageBase64" id="imageBase64">
+                                    <div class="form-group inputDnD">
+                                        <label class="sr-only" for="inputFile">Imagem</label>
+                                        <input type="file" class="form-control-file text-primary font-weight-bold" id="inputFile" name="image" accept="image/*" onchange="readUrl(this)" data-title="Arrasta e solta da imagem">
+                                    </div>
+                                }
+
+                            </div>
+                            <div class="col-md-10">
+                                @if (Model.Packing?.ImagePath != null)
+                                {
+                                    <img src="@Url.Content(@Model.Packing.ImagePath)" class="img-fluid">
+                                }
+                                else
+                                {
+                                    <h5>Nenhuma imagem selecionada</h5>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade  @(Model.Packing?.ImagePath != null ? "show active" : "" )" id="nav-volume" role="tabpanel" aria-labelledby="nav-volume-tab">
+                <br>
+                <form asp-action="SetVolumeQuantity">
+                    <div class="row">
+                        <input type="hidden" value="@Model.Packing.Id" name="packing">
+                        <input type="hidden" value="@Model.InvoiceAccessKey" name="invoiceAccessKey">
+                        <div class="col-md-3">
+                            <label for="volumeQuantities">Quantidade de Volumes</label>
+                            <input id="volumeQuantities" type="text" value="@(Model.Packing.ExpeditionOrder.VolumeQuantity > 0 ? $"{Model.Packing.ExpeditionOrder.VolumeQuantity}" : "")" class="form-control" placeholder="Quantidade de Volumes" name="volumeQuantities" />
+                        </div>
+                        <div class="col-md-2">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn btn-success form-control">
+                                <i class="fa fa-check"></i>
+                                Finalizar Empacotamento
+                            </button>
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="modal fade" id="captureModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Capturar imagem</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body modalContent">
+                        <div id="videoContainer"></div>
+                        <img src="" id="previewContainer">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        <button type="button" class="btn btn-warning" id="capturButton">Capturar</button>
+                        <button type="button" class="btn btn-primary" id="tryAgainButton" onclick="openCamera()">Tirar nova foto</button>
+                        <button type="button" class="btn btn-primary" id="sendButton" onclick="readUrl()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    }
+</div>
+
+<div class="modal fade" id="exampleModalCenterr" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="false">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Ações</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <h5>Imprimir DANFE Simplificada</h5>
+                    <a id="generateDanfe" class="btn btn-primary">Imprimir</a>
+                </div>
+                <br />
+                <br />
+                <h5 class="text-center">Visualizar Etiquetas</h5>
+                <div id="buttonsContainer" class="text-center">
+                    <h5>Visualizar Etiquetas</h5>
+                    @*<a id="generateMEUrl" class="btn btn-primary">Visualizar Etiquetas</a>*@
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section Scripts {
+    @if (Model.Packing != null && (Model.Packing.ExpeditionOrder.Status == LOGHouseSystem.Infra.Enums.ExpeditionOrderStatus.Packed || Model.Packing.ExpeditionOrder.Status == LOGHouseSystem.Infra.Enums.ExpeditionOrderStatus.Dispatched))
+    {
+        <script>
+            Swal.fire('', 'O empacotamento foi finalizado', 'success').then(() => {
+                let url = `@(Url.Action("PackingArea", "Packing"))`;
+                window.location.href = url;
+            });
+        </script>
+    }
+   @*  <script src="~/Scripts/webcam.min.js"></script> *@
+    <script>
+        var cartModal = $("#CartDetailsModal");
+        var cartSearchArea = $("#cart-search");
+        var searchInvoiceArea = $("#search-invoice-area");
+        var modalTargets = {
+            pickingListId: $("#pl-id"),
+            nfsTableBody: $("#nfs-table-body"),
+            marketPlace: $("#pl-mkt"),
+            observation: $("#pl-obs"),
+        }
+
+        var buttons = {
+            searchCart: $("#search-cart-btn"),
+            resetCart: $("#reset-cart-btn"),
+            //openCart: $("#open-cart-btn")
+        }
+
+        var cartSearchInput = $('#cartInput');
+
+        var pickingListSelected = 0;
+
+        function readUrl(input) {
+            $("#sendImageForm").submit();
+
+        }
+
+        $(document).ready(function () {
+            if ($('#volumeQuantities').is(":visible")) {
+                $('#volumeQuantities').focus();
+            }
+
+            if ($('#cartInput').is(":visible")) {
+                $('#cartInput').focus();
+            }
+
+            if ($('#InvoiceAccessKeyInput').is(":visible")) {
+                $('#InvoiceAccessKeyInput').focus();
+            }
+
+            if ($('#EanItem').is(":visible")) {
+                $('#EanItem').focus();
+            }
+
+
+            $('#errorAlert').hide();
+        })
+
+        function openCamera() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function (stream) {
+                        var video = document.createElement('video');
+                        video.srcObject = stream;
+                        video.play();
+
+                        var videoContainer = document.getElementById('videoContainer');
+                        videoContainer.innerHTML = '';
+                        videoContainer.appendChild(video);
+
+                        var canvas = document.createElement('canvas');
+                        canvas.width = 600;
+                        canvas.height = 600;
+                        canvas.style = "display: none";
+                        var context = canvas.getContext('2d');
+
+                        //var captureButton = document.createElement('button');
+                        //captureButton.textContent = "Capturar";
+
+                        $("#capturButton").on('click', function () {
+                            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                            $("#imageBase64").val(canvas.toDataURL('image/png'));
+
+                            $("#previewContainer").prop('src', canvas.toDataURL('image/png'));
+
+                            $("#previewContainer").show();
+                            video.pause();
+
+                            video.srcObject = null;
+                            stream.getTracks().forEach(function (track) {
+                                track.stop();
+                            });
+                            videoContainer.innerHTML = '';
+
+                            $("#capturButton").hide();
+                            $("#sendButton").show();
+                            $("#tryAgainButton").show();
+                        });
+
+                        videoContainer.appendChild(canvas);
+                        $("#capturButton").show();
+                        $("#sendButton").hide();
+                        $("#tryAgainButton").hide();
+                        $("#captureModal").modal('show');
+                        $("#previewContainer").hide();
+                    })
+                    .catch(function (error) {
+                        console.error('Error accessing webcam:', error);
+                    });
+
+            } else {
+                console.error('Webcam not supported');
+            }
+        }
+
+        function resetCart() {
+            buttons.searchCart.show();
+            cartSearchArea.show();
+            searchInvoiceArea.hide();
+            buttons.resetCart.hide();
+
+            cartSearchInput.attr('disabled', false);
+            cartSearchInput.val('');
+
+            cartModal.hide();
+        }
+
+        $('#generateDanfe').on('click', function (e) {
+            let url = '@Url.Action("GenerateSimplifiedDanfeList", "PickingList")?selecteds=' + pickingListSelected;
+            window.open(url, '_blank').focus();
+        })
+
+        function GenerateSimplifiedDanfe() {
+
+            $.ajax({
+                url: '/PickingList/CheckIfOrderIsMelhorEnvio',
+                type: 'GET',
+                data: { selecteds: pickingListSelected },
+                traditional: true,
+                dataType: 'json',
+                success: function (result) {
+                    if (result.length > 0) {
+
+                        $('#buttonsContainer').empty();
+
+
+                        result.forEach(function (clientArray, index) {
+                            if (clientArray.length > 0) {
+                                var button = $('<a>').addClass('btn btn-primary').text('Visualizar Etiquetas');
+                                button.click(function () {
+
+                                    handleButtonClick(clientArray);
+                                });
+                                $('#buttonsContainer').append(button);
+                            }
+                        });
+
+
+                        $('#exampleModalCenterr').modal('show');
+                    } else {
+                        let url = '@Url.Action("GenerateSimplifiedDanfeList", "PickingList")?selecteds=' + pickingListSelected;
+                        window.open(url, '_blank').focus();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $('#exampleModalCenterr').modal('hide');
+                    $('#errorAlert').show();
+                    $('#errorAlert').html('<strong>Erro:</strong> Não foi possível processar os pedidos selecionados! Erro: ' + error);
+                }
+            });
+
+
+
+        }
+
+        function handleButtonClick(ids) {
+            $.ajax({
+                url: '/PickingList/GenerateMelhorEnvioUrl',
+                type: 'GET',
+                data: { selecteds: ids },
+                traditional: true,
+                success: function (url) {
+                        if (url && url.length > 0) {
+
+                                window.open(url, '_blank');
+                            } else if(url && url.length == 0){
+                                    $('#exampleModalCenterr').modal('hide');
+                                    $('#errorAlert').show();
+                                    $('#errorAlert').html('<strong>Erro:</strong> A etiqueta está cancelada ');
+                            }else{
+
+                                $('#exampleModalCenterr').modal('hide');
+                                $('#errorAlert').show();
+                                $('#errorAlert').html('<strong>Erro:</strong> Não foi possível gerar a URL dos pedidos selecionados. Confira se o Acess Token do Melhor Envio desse cliente ainda é valido! ');
+                            }
+                },
+                error: function (xhr, status, error) {
+
+                    $('#exampleModalCenterr').modal('hide');
+                    $('#errorAlert').show();
+                    $('#errorAlert').html('<strong>Erro:</strong> Não foi possível gerar a URL dos pedidos selecionados!');
+                }
+            });
+        };
+
+        function prepareModalInformations(data) {
+            
+            modalTargets.pickingListId.html(`LS${data.id}`);
+            modalTargets.marketPlace.html(data.marketplace);
+            modalTargets.observation.html(data.obs);
+            modalTargets.nfsTableBody.html('');
+
+            for (let i = 0; i < data.expeditionOrder.length; i++) {
+                let eo = data.expeditionOrder[i];
+
+                modalTargets.nfsTableBody.append('<tr>');
+
+                modalTargets.nfsTableBody.append(`<td>${eo.clientName}</td>`);
+                modalTargets.nfsTableBody.append(`<td>${eo.invoiceNumber}</td>`);
+                modalTargets.nfsTableBody.append(`<td>${eo.invoiceAccessKey}</td>`);
+
+                modalTargets.nfsTableBody.append('</tr>');
+            }
+
+        }
+
+        function openModal() { cartModal.show(); }
+
+        function searchCart() {
+            let cartInputVal = cartSearchInput.val();
+            console.log('Searching cart ' + cartInputVal);
+
+            $.ajax({
+                url: `@Url.Action("SearchCart", "Packing")?cartId=${cartInputVal}`,
+                method: 'GET',
+                success: (data) => {
+                    console.log(data);
+                    buttons.searchCart.hide();
+                    cartSearchArea.hide();
+                    searchInvoiceArea.show();
+                    buttons.resetCart.show();
+                    cartSearchInput.val(cartSearchInput.val() + `  ( LS${data.id} )`);
+                    cartSearchInput.attr('disabled', true);
+
+                    pickingListSelected = data.id;
+                    prepareModalInformations(data);
+
+                    cartModal.show();
+                },
+                error: (err) => {
+                    console.error(err)
+                    resetCart();
+
+                    if (err.status == 404)
+                        Swal.fire({ title: 'Ops! A operação falhou', text: 'O Carrinho informado não foi encontrado', icon: 'error', confirmButtonText: 'Continuar' });
+
+                }
+            })
+        }
+    </script>
+}

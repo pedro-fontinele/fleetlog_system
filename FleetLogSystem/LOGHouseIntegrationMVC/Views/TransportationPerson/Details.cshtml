@@ -1,0 +1,82 @@
+﻿@model LOGHouseSystem.Models.TransportationPerson
+
+@{
+    ViewData["Title"] = "Responsavel";
+}
+<link href="~/vendor/lity/lity.min.css" rel="stylesheet" />
+<style>
+    .document-img {
+        width: 250px;
+        height: 250px;
+        object-fit: cover;
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Lista de Responsáveis</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Detalhes</li>
+    </ol>
+</nav>
+
+<div class="card">
+    <div class="card-body">
+        <div class="form-row">
+            <legend class="text-center">Dados do Responsável de Transporte</legend>
+            <div class="form-group col-md-4">
+                <label for="Name">@Html.DisplayNameFor(model => model.Name)</label>
+                <input asp-for="Name" type="text" class="form-control" id="Name" readonly>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Cpf">@Html.DisplayNameFor(model => model.Cpf)</label>
+                <input asp-for="Cpf" type="text" class="form-control" id="Cpf" readonly>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="Rg">@Html.DisplayNameFor(model => model.Rg)</label>
+                <input asp-for="Rg" type="text" class="form-control" id="Rg" readonly>
+            </div>
+        </div>
+        <br />
+       
+    </div>
+</div>
+
+<br />
+
+<div class="card">
+    <div class="card-body">
+        <div class="form-row">
+            <legend class="text-center">Documento</legend>
+            <div class="col-md-4 offset-2">
+                <label for="PathDocumentFront">@Html.DisplayNameFor(model => model.PathDocumentFront)</label> <br />
+                <a href="@Url.Content(Model.PathDocumentFront)" data-lity data-lity-desc="Frente Documento">
+                    <img class="document-img" id="PathDocumentFront" src="@Url.Content(Model.PathDocumentFront)" />
+                </a>
+            </div>
+            <div class="col-md-4">
+                <label for="PathDocumentBack">@Html.DisplayNameFor(model => model.PathDocumentBack)</label> <br />
+                <a href="@Url.Content(Model.PathDocumentBack)" data-lity data-lity-desc="Verso Documento">
+                    <img class="document-img" id="PathDocumentBack" src="@Url.Content(Model.PathDocumentBack)" />
+                </a>
+                
+            </div>
+        </div>
+        <br />
+
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="~/vendor/lity/lity.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+            $('#Cpf').mask('000.000.000-00', { reverse: true });
+        });
+
+
+    </script>
+}

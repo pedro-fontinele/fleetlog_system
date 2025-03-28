@@ -1,0 +1,160 @@
+﻿@model IEnumerable<LOGHouseSystem.Models.PackingItem>
+@using LOGHouseSystem.Infra.Enums;
+
+@{
+    ViewBag.Title = "Lista de Clientes";
+}
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Itens da Lista de Escolha</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Product.Ean)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Product.Description)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Quantity)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.ValidatedQuantity)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Address)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Status)
+                        </th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Product.Ean)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Product.Description)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ValidatedQuantity)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Address)
+                                </td>
+
+                                <td>
+                                    @switch (item.Status)
+                                    {
+                                        case PackingItemStatus.Gerado:
+                                            <span class="badge badge-secondary">@(item.Status.GetDescription())</span>
+                                            break;
+
+                                        case PackingItemStatus.EmAndamento:
+                                            <span class="badge badge-warning">@(item.Status.GetDescription())</span>
+                                            break;
+
+                                        case PackingItemStatus.Finalizado:
+                                            <span class="badge badge-primary">@(item.Status.GetDescription())</span>
+                                            break;
+                                    }
+                                </td>
+
+                                @*                                <td class="text-center">
+                        <a class="d-flex justify-content-center" title="Ver mais" asp-route-id="@item.Id" asp-controller="Client" asp-action="ViewMore"><i class=" fa fa-fw fa-eye"></i></a>
+                        </td>
+
+                        <td>
+                        <a class="btn btn-warning d-flex justify-content-center" role="button" title="Editar" asp-route-id="@item.Id" asp-controller="Client" asp-action="Update">Editar</a>
+                        </td>*@
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row d-flex  justify-content-end">
+        <br />
+        <a class="btn btn-secondary mb-5 col-md-2 mr-2 " asp-controller="Packing" asp-action="Index" role="button">Voltar</a>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+        });
+    </script>
+}

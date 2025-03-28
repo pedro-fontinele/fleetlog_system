@@ -1,0 +1,238 @@
+﻿@using LOGHouseSystem.Models
+@using LOGHouseSystem.ViewModels.Components;
+@using LOGHouseSystem.Infra.Enums
+@model LOGHouseSystem.Infra.Pagination.PaginationBase<ReceiptNoteLots>
+
+@{ 
+    ViewBag.Title = "Conteudo dos lotes";
+}
+
+<link rel="stylesheet" href="~/css/site.css">
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Lotes de Recebimento</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-controller="ReceiptNoteLots" asp-action="Index" id="searchForm" method="post">
+    <div class="row">
+        <div class="col-md-10">
+
+            <label for="name">Nome do Produto:</label>
+            <input name="Name" class="form-control" type="text" id="searchInput" required />
+
+
+        </div>
+        <div class="col-md-2">
+            <br />
+            <button class="btn btn-primary btn-block" type="submit" style="margin-top: 7px;">Filtrar</button>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-2">
+            <br />
+            <a class="btn btn-primary btn-block" href="@Url.Action("Index", "ReturnInvoice")" style="margin-top: 7px;">Voltar</a>
+        </div>
+    </div>
+
+    <input type="hidden" id="clientIds" name="ClientId" />
+    <input type="hidden" id="hfClient" name="ProductId" />
+    <input type="hidden" id="hiddenInputToPagination" name="PageNumber" value="@Model.PageNumber" />
+    <br />
+    @if (Model?.TotalPages > 1 || Model?.TotalPages > 1)
+    {
+        @Html.Partial("_PaginationListPager",new PaginationPagerModel{
+    Page = Model.PageNumber,
+    PageCount = Model.TotalPages,
+    InputIdForPage = "hiddenInputToPagination",
+    FormToSubmit = "searchForm"
+    })
+    }
+</form>
+
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].Id)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].Product.Description)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].InputQuantity)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].OutputQuantity)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].Status)
+                        </th>
+
+                        <th> # </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Data != null && Model.Data.Any())
+                    {
+                        foreach (var item in Model.Data)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Id)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Product.Description)
+                                </td>
+
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.InputQuantity)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OutputQuantity)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Status)
+                                </td>
+
+                                <td class="text-center">
+
+                                    @if (@item.Status == LotStatus.Finalizado && (item.OutputQuantity < item.InputQuantity))
+                                    {
+                                        <form asp-action="Active" asp-controller="ReceiptNoteLots" asp-route-id="@item.Id" method="get">                                        
+                                                <button type="submit" class="btn btn-primary btn-block" role="button" title="Ativar">Ativar</button>
+                                        </form>
+                                    }
+                                    else if (@item.Status == LotStatus.Gerado || @item.Status == LotStatus.EmAndamento)
+                                    {
+                                        <form asp-action="Inactive" asp-controller="ReceiptNoteLots" asp-route-id="@item.Id" method="get">                                        
+                                                <button type="submit" class="btn btn-primary btn-block" role="button" title="Inativar">Finalizar</button>
+                                        </form>
+                                        
+                                    }
+                                    else
+                                    {
+                                        <span>Finalizado</span>
+                                    }
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+            <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+        <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+        <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                $('#datatable').DataTable({
+                    "language": {
+                        "sEmptyTable": "Nenhum registro encontrado",
+                        "sInfo": "",
+                        "sInfoEmpty": "Mostrando 0 registros",
+                        "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                        "sInfoPostFix": "",
+                        "sInfoThousands": ".",
+                        "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                        "sLoadingRecords": "Carregando...",
+                        "sProcessing": "Processando...",
+                        "sZeroRecords": "Nenhum registro encontrado",
+                        "sSearch": "Pesquisar",
+                        "oPaginate": "",
+                        "oAria": {
+                            "sSortAscending": ": Ordenar colunas de forma ascendente",
+                            "sSortDescending": ": Ordenar colunas de forma descendente"
+                        }
+                    },
+                    'columnDefs': [
+                        {
+                            'targets': 0,
+                            'checkboxes': {
+                                'selectRow': true
+                            }
+                        },
+                    ],
+                    'select': {
+                        'style': 'multi'
+                    },
+                    paging: false,
+                    info: false,
+                   'iDisplayLength': 100
+                    });
+                });
+
+                //autocomplete function (searchin product by loged client)
+                $(function () {
+                
+                $("#searchInput").autocomplete({
+                        source: function (request, response) {
+                            $.ajax({
+                                    url: '/Product/AutoComplete/',
+                                data: { "prefix": request.term },
+                                type: "POST",
+                                success: function (data) {
+                                    response($.map(data, function (item) {
+                                        return item;
+                                    }))
+                                },
+                                error: function (response) {
+                                    alert(response.responseText);
+                                },
+                                failure: function (response) {
+                                    alert(response.responseText)
+                                }
+                            });
+                        },
+                        select: function (e, i, x, c) {
+                            $("#hfClient").val(i.item.val);
+                            $("#ean").val(i.item.valx);
+                            $("#description").val(i.item.valy);
+                            $("#clientIds").val(i.item.valId);
+                        },
+                        minLength: 1
+
+                    });
+            });
+
+                
+            
+
+        </script>
+}

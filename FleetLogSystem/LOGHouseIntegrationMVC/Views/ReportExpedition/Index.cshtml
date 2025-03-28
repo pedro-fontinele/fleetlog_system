@@ -1,0 +1,121 @@
+﻿@using LOGHouseSystem.Infra.Enums;
+@model LOGHouseSystem.ViewModels.ExpeditionOrderReportViewModel
+
+@{
+    ViewBag.Title = "Relatório de Expedição";
+}
+
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="~/css/site.css">
+
+<form asp-action="GenerateReport" target="_blank">
+    <div class="form-row d-flex justify-content-center">
+
+
+        @if(Model.UserLoged.PermissionLevel != PermissionLevel.Client)
+        {
+            <div class="form-group col-md-3">
+                <label for="entryDate">Nome do Cliente</label>
+                @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite o nome do cliente" } })*@
+                <input type="text" class="form-control" id="searchInput" placeholder="Nome do Cliente">
+                <input type="hidden" class="form-control" asp-for="ClientId" id="hfClient" placeholder="Nome do cliente">
+            </div>
+        }
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model => model.FinalizeStartDate)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite a data de finalização inicial" } })*@
+            <input type="date" class="form-control" asp-for="FinalizeStartDate" id="FinalizeStartDate" placeholder="Data inicial">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model => model.FinalizeEndDate)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite a data de finalização final" } })*@
+            <input type="date" class="form-control" asp-for="FinalizeEndDate" id="FinalizeEndDate" placeholder="Data final">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model => model.CreationStartDate)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite a data de movimentação inicial" } })*@
+            <input type="date" class="form-control" asp-for="CreationStartDate" id="CreationStartDate" placeholder="Data inicial">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model => model.CreationEndDate)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite a data de movimentação final" } })*@
+            <input type="date" class="form-control" asp-for="CreationEndDate" id="CreationEndDate" placeholder="Data final">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="permission">@Html.DisplayNameFor(model => model.Status)</label>
+            <br />
+            <select name="Status" class="form-control" id="Status">
+                <option value="">Selecione</option>
+                @foreach (var item in Enum.GetValues(typeof(ExpeditionOrderStatus)).Cast<ExpeditionOrderStatus>())
+                {
+                    if(Model != null){
+                        if (Model.Status != null && Model.Status == item)
+                        {
+                                    <option selected value="@item">@Html.DisplayFor(modelItem => item)</option>
+                        }
+                        else
+                        {
+                            <option value="@item">@Html.DisplayFor(modelItem => item)</option>
+                        }
+                    }
+                    else
+                    {
+                                <option value="@item">@Html.DisplayFor(modelItem => item)</option>
+                    }
+
+
+                    
+                }
+            </select>
+        </div>
+
+        <div class="">            
+            <button class="btn btn-primary ml-3 mt-md-4 mb-sm-3 col-md-12" type="submit" id="submitButton"><i class="fa  fa-magnifying-glass mr-2"></i>Gerar Excel</button>
+        </div>
+
+    </div>
+</form>
+
+@section Scripts {
+
+    <script src="~/lib/jquery.steps-1.1.0/jquery.steps.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+            
+
+    <script>
+        //autocomplete function
+        $(function () {
+            $("#searchInput").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Client/AutoComplete/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText)
+                        }
+                    });
+                },
+                select: function (e, i, v) {
+                    $("#hfClient").val(i.item.val);
+                    //$("#cnpj").prop('disabled', true);
+                },
+                minLength: 1
+            });
+        });
+    </script>
+    
+}

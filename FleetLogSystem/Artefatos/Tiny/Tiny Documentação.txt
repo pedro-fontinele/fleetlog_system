@@ -1,0 +1,14 @@
+Gerar Token Tiny:
+https://tiny.com.br/api-docs/api2-gerar-token-api
+
+Configurar Webhok:
+https://www.tiny.com.br/api-docs/api2-webhooks-envio-nota-fiscal
+
+Rota do Webhook:
+http://localhost:5212/api/TinyHook
+
+Postman Link para testes:
+https://api.postman.com/collections/1837034-65316f4d-2cb3-4ff4-b1e2-5d1b38e2832d?access_key=PMAT-01GZRR0BR78D9W2XVFFRR2GPER
+
+Nome da Integração: TINY
+Nome do parâmetro: APIKEY

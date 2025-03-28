@@ -1,0 +1,60 @@
+﻿@using LOGHouseSystem.Infra.Enums
+@model LOGHouseSystem.Models.User
+
+
+@{
+    ViewBag.Title = "Upload - NFe Recebimento";
+}
+
+<link href="~/Content/DataTables/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/site.css">
+<link href="~/Content/User.css" rel="stylesheet" />
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Selecione os arquivos XML para Upload:</h6>
+            </div>
+            <div class="card-body">
+                <form asp-controller="Upload" asp-action="UploadFiles" id="form" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <div class="col-md-10">
+                            <p>Enviar um ou mais arquivos :</p>
+                            <input type="file" name="files" multiple />
+                        </div>
+                    </div>
+
+                    <div class="d-grid d-flex gap-2 justify-content-md-end mt-2">
+                        <button onclick="checkInputs" type="submit" class="btn btn-primary mr-2">Enviar</button>
+                        <a class="btn btn-secondary" href="@Url.Action("Index", "Home")" role="button">Voltar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    <script type="text/javascript" language="javascript" src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+
+}
+
+
+

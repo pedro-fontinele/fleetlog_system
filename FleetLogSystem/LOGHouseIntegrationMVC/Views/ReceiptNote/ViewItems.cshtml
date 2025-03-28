@@ -1,0 +1,346 @@
+﻿@model LOGHouseSystem.ViewModels.ViewItensViewModel
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/site.css">
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Itens do Pedido</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@if(Model.UserLoged.PermissionLevel != LOGHouseSystem.Infra.Enums.PermissionLevel.Client)
+{
+    <div class="row d-flex justify-content-md-end">
+        <div class="d-flex justify-content-end d-grid gap-2 mx-3 mb-4 mt-2 col-md-6">
+            <a class="btn btn-primary  font-size-md" onclick="impressLabels()" role="button"><span class="fa-plus font-weight-bold font-size-lg mr-2"></span>Imprimir Etiquetas</a>
+            <a class="btn btn-primary  font-size-md" onclick="impressCaixaMasterLabels()" role="button"><span class="fa-plus font-weight-bold font-size-lg mr-2"></span>Imprimir Etiquetas (Caixa Master)</a>
+            <a class="btn btn-primary  font-size-md" onclick="impressSkuItemLabels()" role="button"><span class="fa-plus font-weight-bold font-size-lg "></span> Gerar Etiqueta de Identificação</a>
+        </div>
+    </div>
+}
+
+
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            <input type="checkbox" id="selectAllCheckbox" />
+                        </th>
+
+                        <th>
+                            Código Produto
+                        </th>
+
+                        <th>
+                            Descrição do Produto
+                        </th>
+
+                        <th>
+                            Código EAN
+                        </th>
+
+                        <th>
+                            Código Caixa Master
+                        </th>
+
+                        <th>
+                            Quantidade
+                        </th>
+
+                        <th>
+                            Quantidade Recebida
+                        </th>
+
+                        <th>
+                            Status Item
+                        </th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                   
+                        @foreach (var item in Model.Itens)
+                        {
+                            <tr>
+                            <td data-note="@item.ReceiptNoteId">
+                                <input type="checkbox" class="itemCheckbox" data-id="@item.Id" />
+                            </td>
+
+                            <td data-code="@item.Code">
+                                    @Html.DisplayFor(modelItem => item.Code)
+                                </td>
+
+                            <td data-description="@item.Description">
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+
+                            <td data-ean="@item.Ean">
+                                    @Html.DisplayFor(modelItem => item.Ean)
+                            </td>
+
+                            <td data-cm="@item.CaixaMasterCode">
+                                @Html.DisplayFor(modelItem => item.CaixaMasterCode)
+                            </td>
+
+                            <td data-quantidade="@item.Quantity">
+                                
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.QuantityInspection)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ItemStatus)
+                                </td>
+
+                            </tr>
+                        
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row d-flex  justify-content-end">
+        <br />
+        <a class="btn btn-secondary mb-5 col-md-2 mr-2 " href="@Model.Url" role="button">Voltar</a>
+    </div>
+</div>
+
+<div>
+    <form id="frm-label" action="/ReceiptNote/GenerateBarcodeInLabels" target="_blank" method="post" style="visibility: hidden;">
+        <input type="hidden" name="itens" id="content-labels" />
+        <button id="submit-labels" type="submit"></button>
+    </form>
+</div>
+
+<div>
+    <form id="frm-label-toSave" action="/LabelBilling/Add" target="_blank" method="post" style="visibility: hidden;">
+        <input type="hidden" name="itens" id="content-labels" />
+        <button id="submit-labels-toSave" type="submit"></button>
+    </form>
+</div>
+
+<div>
+    <form id="frm-label-toSave" action="/ReceiptNote/GenerateBarcodeToCaixaMasterInLabels" target="_blank" method="post" style="visibility: hidden;">
+        <input type="hidden" name="itens" id="content-labelsCM" />
+        <button id="submit-labelsCM" type="submit"></button>
+    </form>
+</div>
+
+
+<div>
+    <form id="frm-label-toSave" action="/ReceiptNote/GenerateIdentityBarcodeInLabels" target="_blank" method="post" style="visibility: hidden;">
+        <input type="hidden" name="itens" id="content-labels-identity" />
+        <button id="submit-labels-identity" type="submit"></button>
+    </form>
+</div>
+
+
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+                'columnDefs': [
+                    {
+                        'targets': 0,
+                        'checkboxes': {
+                            'selectRow': true
+                        }
+                    },
+                ],
+                'select': {
+                    'style': 'multi'
+                }
+            });
+
+        });
+
+        document.getElementById('selectAllCheckbox').addEventListener('change', function () {
+            var checkboxes = document.querySelectorAll('.itemCheckbox');
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = this.checked;
+            }.bind(this));
+        });
+
+
+        function impressLabels(){
+            var selecteds = [];
+            var checkboxes = document.querySelectorAll('.itemCheckbox:checked');
+
+            checkboxes.forEach(function (checkbox) {
+                var row = checkbox.closest('tr');
+                var quantity = row.querySelector('td[data-quantidade]').getAttribute('data-quantidade');
+                var code = row.querySelector('td[data-code]').getAttribute('data-code');
+                var ean = row.querySelector('td[data-ean]').getAttribute('data-ean');
+                var noteId = row.querySelector('td[data-note]').getAttribute('data-note');
+
+                selecteds.push({ id: code, quantidade: quantity, ean: ean, noteId: noteId });
+            });
+
+            if (selecteds.length <= 0) {
+                Swal.fire(
+                    'Opss.',
+                    'É necessário selecionar ao menos um item',
+                    'warning'
+                );
+                return;
+            }
+
+            Swal.fire({
+                title: 'Você deseja cobrar as etiquetas impressas?',
+                showDenyButton: true,
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Cobrar',
+                denyButtonText: `Não Cobrar`,
+            }).then((result) => {
+                
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/LabelBilling/Add', 
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(selecteds),
+                        traditional: true,
+                        success: function (data) {
+
+                            var jsonArray = JSON.stringify(selecteds);
+                            $("#content-labels").val(jsonArray);
+
+                            $("#submit-labels").click();
+                        },
+                        error: function (error) {
+
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Oops...',
+                                text: 'Algo deu errado ao tenatr cobrar esse cliente, por favor, tente novamente!',
+                            })
+                        }
+                    });
+
+
+                } else if (result.isDenied) {
+                    var jsonArray = JSON.stringify(selecteds);
+                    $("#content-labels").val(jsonArray);
+
+                    $("#submit-labels").click();
+                }
+            })
+
+
+        }
+
+        function impressCaixaMasterLabels() {
+            var selecteds = [];
+            var checkboxes = document.querySelectorAll('.itemCheckbox:checked');
+
+            checkboxes.forEach(function (checkbox) {
+                var row = checkbox.closest('tr');
+                var cmCode = row.querySelector('td[data-cm]').getAttribute('data-cm');
+                var sku = row.querySelector('td[data-code]').getAttribute('data-code');
+                var description = row.querySelector('td[data-description]').getAttribute('data-description');
+
+                selecteds.push({ caixaMasterCode: cmCode, sku: sku, description: description });
+            });
+
+            if (selecteds.length <= 0) {
+                Swal.fire(
+                    'Opss.',
+                    'É necessário selecionar ao menos um item',
+                    'warning'
+                );
+                return;
+            }
+            var jsonArray = JSON.stringify(selecteds);
+            $("#content-labelsCM").val(jsonArray);
+
+            $("#submit-labelsCM").click();
+
+        }
+
+        function impressSkuItemLabels() {
+            var selecteds = [];
+            var checkboxes = document.querySelectorAll('.itemCheckbox:checked');
+
+            checkboxes.forEach(function (checkbox) {
+                var row = checkbox.closest('tr');
+                var sku = row.querySelector('td[data-code]').getAttribute('data-code');
+                var description = row.querySelector('td[data-description]').getAttribute('data-description');
+
+                selecteds.push({ sku: sku, description: description });
+            });
+
+            if (selecteds.length <= 0) {
+                Swal.fire(
+                    'Opss.',
+                    'É necessário selecionar ao menos um item',
+                    'warning'
+                );
+                return;
+            }
+
+            if (selecteds.length > 5) {
+                Swal.fire(
+                    'Opss.',
+                    'Só é possível imprimir etiqueta de identificação para no máximo 5 intens por vez.',
+                    'warning'
+                );
+                return;
+            }
+            var jsonArray = JSON.stringify(selecteds);
+            $("#content-labels-identity").val(jsonArray);
+
+            $("#submit-labels-identity").click();
+
+        }
+
+    </script>
+}
+

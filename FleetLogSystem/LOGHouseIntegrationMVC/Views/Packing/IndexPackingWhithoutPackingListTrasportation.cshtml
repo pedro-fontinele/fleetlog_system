@@ -1,0 +1,247 @@
+﻿@model PagedList.PagedList<LOGHouseSystem.Models.Packing>
+@using LOGHouseSystem.Infra.Enums;
+@using LOGHouseSystem.ViewModels.Components;
+
+@{
+    ViewBag.Title = "Lista de Empacotamentos";
+}
+
+<link rel="stylesheet" href="/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+
+<style>
+    #actionsSelection {
+        visibility: hidden;
+    }
+
+    .tl-date {
+        display: none;
+    }
+
+    .tl-wrap {
+        display: block;
+        margin-left: 0em;
+        padding: 15px 0 15px 20px;
+        border-style: solid;
+        border-color: #dee5e7;
+        border-width: 0 0 0 4px;
+    }
+</style>
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Lista de Empacotamentos sem Romaneio</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    @await Component.InvokeAsync("FilterPackingWhithoutPackingListTransportation")
+</div>
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <form asp-action="Index" id="filterForm">
+        <input type="hidden" id="hiddenInputToPagination" name="Page" value="@Model.PageNumber" />
+
+    </form>
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            @if (Model.Count > 0)
+            {
+                <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].Id)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].Client.SocialReason)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].Description)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].Quantity)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].ExpeditionOrder.InvoiceNumber)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].ExpeditionOrder.ShippingMethod)
+                            </th>
+
+
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].CreatedAt)
+                            </th>
+
+
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].Status)
+                            </th>
+
+                            <th>#</th>
+
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>
+                                        P@(item.Id)
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Client.SocialReason)
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Quantity)
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ExpeditionOrder.InvoiceNumber)
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ExpeditionOrder.ShippingMethod)
+                                    </td>
+
+                                    <td>
+                                        @item.CreatedAt.ToString("dd/MM/yyyy")
+                                    </td>
+
+                                    <td onclick="viewHistory(@item.Id)" data-toggle="modal" data-target="#exampleModalCenter">
+                                        @switch (item.Status)
+                                        {
+                                            case PackingStatus.Gerado:
+                                                <span class="badge badge-secondary">@(item.Status.GetDescription())</span>
+                                                break;
+
+                                            case PackingStatus.EmAtendimento:
+                                                <span class="badge badge-warning">@(item.Status.GetDescription())</span>
+                                                break;
+
+                                            case PackingStatus.Finalizado:
+                                                <span class="badge badge-primary">@(item.Status.GetDescription())</span>
+                                                break;
+
+                                        }
+                                    </td>
+
+                                    <td class="text-center">
+                                        <a class="d-flex justify-content-center" title="Ver mais" asp-route-id="@item.Id" asp-controller="PackingItem" asp-action="ViewPackingItems"><i class=" fa fa-fw fa-eye"></i></a>
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                <!--Pagination nav-->
+                @if (Model.PageCount > 1)
+                {
+                    @Html.Partial("_PaginationListPager",new PaginationPagerModel{
+            Page = Model.PageNumber,
+            PageCount = Model.PageCount,
+            InputIdForPage = "hiddenInputToPagination",
+            FormToSubmit = "searchForm",
+            ShowSearch = false
+            })
+
+                }
+            }
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Histórico do Pedido</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="noContentHistory">Esse pedido não possui histórico!</div>
+                <div id="contentHistory"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery-ui.js"></script>
+    <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.js"></script>
+    <script src="~/js/moment.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ até _END_ de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros no total)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+                "paging": false,
+                "info": false,
+                "search": true
+            });
+        });
+    </script>
+}

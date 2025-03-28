@@ -1,0 +1,69 @@
+﻿
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 text-center ">
+            <img src="~/img/logo.svg" style="height: 50%; opacity: 50%; margin-top: 12%; border-radius: 5px;"  />
+        </div>
+    </div>
+</div>
+
+@*<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Lojas Cadastradas
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">Pedidos</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-store fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total de Pedidos
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">Clientes</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="	fa fa-shopping-cart fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+*@
+
+@section Scripts{
+    @*<script src="~/vendor/jquery/jquery-websocket.js"></script>*@
+
+    <script>
+        let socket = new WebSocket("ws://intelprog-002-site3.btempurl.com");
+
+        $(document).ready(function () {
+            console.log('pronto');
+
+
+            socket.onmessage = function (message) {
+                console.log(message.data)
+            }
+        })
+    </script>
+    
+}

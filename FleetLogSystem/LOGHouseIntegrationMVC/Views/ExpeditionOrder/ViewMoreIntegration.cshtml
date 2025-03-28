@@ -1,0 +1,105 @@
+﻿@model LOGHouseSystem.Models.ExpeditionOrder
+
+
+<div class="col-lg-12 col-md-12 col-xs-12 mt-5">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            EAN
+                        </th>
+
+                        <th>
+                            Nome do Produto
+                        </th>
+
+                        <th>
+                            Quantidade
+                        </th>
+
+                        <th>
+                            Descrição
+                        </th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.ExpeditionOrderItems != null && Model.ExpeditionOrderItems.Any())
+                    {
+                        foreach (var item in Model.ExpeditionOrderItems)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Ean)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+    <div class="row d-flex  justify-content-end">
+           <a class="btn btn-secondary mb-5 col-md-2 mr-3" asp-controller="ExpeditionOrder" asp-action="Index" role="button">Voltar</a>
+    </div>
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando START de END de um total de TOTAL registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de MAX registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar MENU resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+            $("#searchInputToClient").val($('#clientName').val())
+            $('#clientIds').val($('#clientIdCheck').val())
+            $('#clientId').val($('#clientIdCheck').val())
+        });
+    </script>
+}
+

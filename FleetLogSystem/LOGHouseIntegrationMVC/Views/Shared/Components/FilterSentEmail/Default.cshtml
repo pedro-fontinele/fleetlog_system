@@ -1,0 +1,90 @@
+﻿@model LOGHouseSystem.ViewModels.FilterSentEmailViewModel
+
+<link rel="stylesheet" href="~/css/site.css">
+
+<form asp-action="Index" id="searchForm">
+    <div class="form-row d-flex justify-content-center">
+        <input type="hidden" id="hiddenInputToPagination" name="Page" value="@Model.Page" />
+        
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model =>  model.ClientId)</label>
+            <input type="text" class="form-control" asp-for="ClientName" id="searchInput" placeholder="Digite a razão social">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model =>  model.Title)</label>
+            <input type="text" class="form-control" asp-for="Title" id="title" placeholder="Digite o título">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model =>  model.ToEmail)</label>
+            <input type="text" class="form-control" asp-for="ToEmail" id="toEmail" placeholder="Digite o Email">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="issueDate">@Html.DisplayNameFor(model => model.SendData)</label>
+            <input type="date" class="form-control" asp-for="SendData" id="sendData" placeholder="">
+        </div>
+
+        <div class="">
+            <label></label>
+            <button class="btn btn-light ml-3 mt-md-2 mb-sm-3 col-md-12" id="loadingSpinner" type="button">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </button>
+            <button class="btn btn-primary ml-3 mt-md-2 mb-sm-3 col-md-12" type="submit" id="submitButton"><i class="fa  fa-magnifying-glass mr-2"></i>Filtrar</button>
+        </div>
+        <input type="hidden" asp-for="ClientId" id="clientId" />
+
+    </div>
+</form>
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#cnpj').mask('00.000.000/0000-00', { reverse: true });
+
+        $("#loadingSpinner").hide();
+    })
+
+    $("#searchForm").submit(() => {
+        $("#submitButton").hide();
+        $("#loadingSpinner").show();
+    })
+
+
+         $("#searchInput").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Client/AutoComplete/',
+                    data: { "prefix": request.term },
+                    type: "POST",
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return item;
+                        }))
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    },
+                    failure: function (response) {
+                        alert(response.responseText)
+                    }
+                });
+            },
+            select: function (e, i, v) {
+            $("#clientId").val(i.item.val);
+            },
+            minLength: 1
+        });
+</script>
+    
+
+
+
+
+
+

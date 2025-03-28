@@ -1,0 +1,184 @@
+﻿@model LOGHouseSystem.ViewModels.ExpeditionOrderIndexViewModel
+@using LOGHouseSystem.Infra.Enums
+@using LOGHouseSystem.ViewModels.Components;
+@{
+    ViewBag.Title = "Lista de Pedidos";
+}
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Orders.Data[0].InvoiceNumber)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Orders.Data[0].ClientName)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Orders.Data[0].ExternalNumber)
+                        </th>
+
+                        @*<th style="max-width: 300px">
+                        @Html.DisplayNameFor(model => Model.Orders[0].Obs)
+                        </th>*@
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Orders.Data[0].IssueDate)
+                        </th>
+
+                        <th>
+                            Origem
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Orders.Data[0].ShippingMethod)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Orders.Data[0].Status)
+                        </th>
+
+                        <th class="text-center">
+                            #
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Orders.Data.Any())
+                    {
+                        foreach (var item in Model.Orders.Data)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Id
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.InvoiceNumber)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ClientName)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ExternalNumber)
+                                </td>
+
+                                <td name="issueDate">
+                                    @item.IssueDate?.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OrderOrigin)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ShippingMethod)
+                                </td>
+
+                                <td onclick="viewHistory(@item.Id)" data-toggle="modal" data-target="#exampleModalCenter">                        
+                                        @switch (item.Status)
+                                        {
+                                            case ExpeditionOrderStatus.Processed:
+                                                <span class="badge badge-secondary">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                break;
+
+                                            case ExpeditionOrderStatus.Separated:
+                                                <span class="badge badge-primary">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                break;
+
+                                            case ExpeditionOrderStatus.InPacking:
+                                                <span class="badge badge-info">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                break;
+
+                                            case ExpeditionOrderStatus.ProcessingPendenting:
+                                                <span class="badge badge-warning">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                break;
+
+                                            case ExpeditionOrderStatus.ProcessingRefused:
+                                                <span class="badge badge-danger">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                break;
+
+                                            case ExpeditionOrderStatus.ErrorProcessing:
+                                                <span class="badge badge-dark">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                break;
+
+                                            case ExpeditionOrderStatus.ErrorIntegration:
+                                                <span class="badge badge-info">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                break;
+
+                                            case ExpeditionOrderStatus.ErrorPickingList:
+                                                <span class="badge badge-light">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                break;
+
+                                            case ExpeditionOrderStatus.InPickingList:
+                                                <span class="badge badge-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                break;
+                                            case ExpeditionOrderStatus.Packed:
+                                                <span class="badge badge-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                break;
+
+                                            case ExpeditionOrderStatus.Dispatched:
+                                                <span class="badge badge-light">@Html.DisplayFor(modelItem => item.Status)</span>
+                                                break;
+                                        }
+
+                                    
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+
+        });
+
+       
+    </script>
+}

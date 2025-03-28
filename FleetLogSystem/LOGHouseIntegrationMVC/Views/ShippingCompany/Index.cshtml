@@ -1,0 +1,127 @@
+﻿@model List<LOGHouseSystem.Models.ShippingCompany>
+@using LOGHouseSystem.Infra.Enums
+
+@{
+    ViewBag.Title = "Lista de Transportadoras";
+}
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/site.css">
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Transportadoras</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-grid gap-2 d-flex justify-content-md-start mx-3 mb-4 mt-2">
+    <a class="btn btn-primary font-size-md" href="@Url.Action("Create", "ShippingCompany")" role="button"><span class="fa-plus font-weight-bold font-size-lg mr-2"></span>Cadastrar Transportadora</a>
+</div>
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+
+
+                        <th>
+                            @Html.DisplayNameFor(model => model[0].Name)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model[0].Active)
+                        </th>
+
+
+
+                        <th class="d-flex justify-content-center">#</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+
+                                <td>
+                                    @switch (item.Active)
+                                    {
+                                        case Status.Ativo:
+                                            <span class="badge badge-success">@(item.Active)</span>
+                                            break;
+
+                                        case Status.Inativo:
+                                            <span class="badge badge-danger">@(item.Active)</span>
+                                            break;
+
+                                    }
+                                </td>
+
+                                <td>
+                                    <a class="btn btn-primary d-flex justify-content-center" role="button" title="Editar" asp-route-id="@item.Id" asp-controller="ShippingCompany" asp-action="Edit">Editar</a>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+
+        });
+    </script>
+}

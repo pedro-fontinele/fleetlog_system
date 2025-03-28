@@ -1,0 +1,246 @@
+﻿@model IEnumerable<LOGHouseSystem.Models.AddressingStreet>
+
+@{
+    ViewBag.Title = "Configuração de Endereçamento";
+}
+
+<link rel="stylesheet" href="~/css/site.css">
+
+<style>
+    .collapse-header {
+        cursor: pointer;
+    }
+</style>
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Configuração de Endereçamento</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div id="accordion">
+
+            <div class="card">
+
+                @if (Model != null)
+                {
+                    @foreach (var item in Model)
+                    {
+                        <div class="card-header collapse-header collapsed " data-toggle="collapse" data-target="#street-details-@item.AddressingStreetID" aria-expanded="true">
+                            <h5 class="mb-0 ">
+                                <a > Rua: @item.Name</a>
+                                @if(item.Positions.Count != 0)
+                                {
+                                    <a title="Selecionar" onclick="selectToDelete()" class="float-right"><i style="color: red; cursor: pointer" class="fa fa-fw fa-square-check"></i></a>
+
+                                }
+                                else if (item.Positions.Count == 0)
+                                {
+                                    <a title="Apagar" onclick="deleteStreet(@item.AddressingStreetID)" class="float-right"><i style="color: red; cursor: pointer" class="fa fa-fw fa-trash-can"></i></a>
+                                }
+
+                                <a title="Copiar" onclick="copyStreet(@item.AddressingStreetID)" class="float-right"><i style="color: grey; cursor: pointer" class="fa fa-fw fa-copy"></i></a>
+                                
+                            </h5>
+                        </div>
+
+                        <div id="street-details-@item.AddressingStreetID" class="collapse">
+                            <div class="card-body">
+                                @if (item.Positions != null)
+                                {
+                                    foreach (var position in item.Positions)
+                                    {
+
+                                        <p class="ml-2">
+                                            <input  id="CheckInput" name="delets" type="checkbox" value="@position.AddressingPositionID">
+                                            <a style="text-decoration: none; padding-right: 40px" onclick="deletePosition(@position.AddressingPositionID)" class="ml-5 float-right">
+                                                <i style="color: red; cursor: pointer" class="fa fa-fw fa-trash-can"></i>
+                                            </a>
+                                            <span>Posição: @position.Name</span>
+                                        </p>
+
+                                        <hr style="width: 97%">
+
+                                    }
+                                    @using (Html.BeginForm("DeletePositions", "Address"))
+                                    {
+                                        <div class="row" style="margin-top:10px;">
+                                            <div class="removeButton">
+                                                <div class="col-md-3">
+                                                    <a class="btn btn-danger deleteBtn" >Apagar itens selecionados</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    @using (Html.BeginForm("AddPosition", "Address"))
+                                    {
+
+                                        <div class="row addStreet" style="margin-top:10px;">
+                                            <input type="hidden" value="@item.AddressingStreetID" name="AddressingStreetID" />
+
+                                            <div class="col-md-8">
+                                                <input type="text" name="Name" class="form-control" placeholder="Nome da Posição" />
+                                            </div>
+                                            <div class="col-md-4">
+                                                <button class="btn btn-primary" type="submit">
+                                                    Adicionar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <div class="card-header">
+
+                        @using (Html.BeginForm("AddStreet", "Address"))
+                        {
+                            
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input type="text" name="Name" class="form-control" placeholder="Nome da Rua" />
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-primary" type="submit">
+                                        Adicionar
+                                    </button>
+                                </div>
+
+                            </div>
+                        }
+
+                    </div>
+
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('input[type="checkbox"]').hide();
+            $('.removeButton').hide();
+            
+        });
+
+        //Botão de selecionar checkbox das positions
+        function selectToDelete() {
+            $('input[type="checkbox"]').toggle();
+            $('.removeButton').toggle();
+            $('.addStreet').toggle();
+
+        }
+
+        //let deleteBtn = document.getElementById("#deleteBtn");
+        let AddressingPositions = [];
+
+        //Deletar positions selecionadas
+        $(".deleteBtn").click(function(){
+            var dataArray = ''
+            $('input[name="delets"]:checked').each(function(){
+                AddressingPositions.push(this.value);
+            })
+            var variavelX = AddressingPositions.join(",")
+            Swal.fire({
+                title: 'Tem certeza que quer apagar essa posição?',
+                text: "Você não poderá desfazer essa ação!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Apagar'
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    let url = `@Url.Action("DeletePositions", "Address")?x=` + variavelX;
+                    window.location.href = url;
+                }
+            })
+        })
+
+        $(".cardClick").click(function () {
+            $('input[type="checkbox"]').hide();
+            $('.removeButton').hide();
+            $('.addStreet').show();
+        })
+        
+
+        //OnClick - delete position
+        function deletePosition(idItem) {
+            Swal.fire({
+                title: 'Tem certeza que quer apagar essa posição?',
+                text: "Você não poderá desfazer essa ação!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Apagar'
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    let url = `@Url.Action("DeletePosition", "Address")?AddressingPositionId=${idItem}`;
+                    window.location.href = url;
+                }
+            })
+        }
+
+        //OnClick - delete Street
+        function deleteStreet(idItem) {
+            Swal.fire({
+                title: 'Tem certeza que quer apagar essa rua?',
+                text: "Você não poderá desfazer essa ação!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                cancelButtonText: 'Cancelar',
+                confirmButtonText: 'Apagar!'
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let url = `@Url.Action("DeleteStreet", "Address")?AddressingStreetID=${idItem}`;
+                    window.location.href = url;
+                }
+            })
+        }
+
+        //Copiar street
+        async function copyStreet(id) {
+            const { value: message } = await Swal.fire({
+                title: 'Copiar Rua',
+                input: 'text',
+                inputLabel: 'Será criada uma nova rua com a mesma estrutura de posições',
+                inputPlaceholder: 'Digite o nome da Rua'
+            })
+
+            if (message) {
+                let url = `@Url.Action("CopyAdress", "Address")?AddressingStreetID=${id}&message=${message}`;
+                window.location.href = url;
+            }
+        }
+
+    </script>
+}

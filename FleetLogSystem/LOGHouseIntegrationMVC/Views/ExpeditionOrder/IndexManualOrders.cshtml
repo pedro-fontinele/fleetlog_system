@@ -1,0 +1,675 @@
+﻿@model LOGHouseSystem.ViewModels.ExpeditionOrderIndexViewModel
+@using LOGHouseSystem.Infra.Enums
+@using LOGHouseSystem.ViewModels.Components;
+@{
+    ViewBag.Title = "Lista de Pedidos Manuais";
+}
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<style>
+    #actionsSelection {
+        visibility: hidden;
+    }
+
+    .tl-date {
+        display: none;
+    }
+
+    .tl-wrap {
+        display: block;
+        margin-left: 0em;
+        padding: 15px 0 15px 20px;
+        border-style: solid;
+        border-color: #dee5e7;
+        border-width: 0 0 0 4px;
+    }
+
+
+</style>
+
+
+
+    <div class="app-page-title">
+        <div class="page-title-wrapper">
+            <div class="page-title-heading">
+                <div class="page-title-icon">
+                    <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                    </i>
+                </div>
+                <div>
+                    <h3 class="text-center mb-3">Pedidos Manuais</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+<form asp-controller="ExpeditionOrder" asp-action="IndexManualOrders" id="searchForm" method="post">
+    <div class="form-row d-flex justify-content-center">
+
+        <input type="hidden" name="UserLoged" id="user" value="@Model.Orders">
+
+        <input type="hidden" name="pageFilter" id="pageFilter" value="@Model.Page">
+
+        <div class="form-group col-md-3">
+            <label for="cnpj">@Html.DisplayNameFor(model => model.Orders.Data[0].InvoiceNumber)</label>
+            <input type="number" value="@Model.Filter.InvoiceNumber" class="form-control" name="InvoiceNumber" placeholder="Digite o número da NF" id="invoiceNumber">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model => model.Orders.Data[0].ClientName)</label>
+            <input type="text" value="@Model.Filter.ClientName" class="form-control" name="ClientName" id="searchInput" placeholder="Digite o nome do Cliente">
+        </div>
+
+
+        <div class="form-group col-md-3">
+            <label for="issueDate">@Html.DisplayNameFor(model => model.Orders.Data[0].ShippingCompany)</label>
+            <input type="text" value="@Model.Filter.ShippingCompany" class="form-control" name="ShippingCompany" id="OrderOrigin" placeholder="Digite o nome da Transportadora">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="issueDateStart">Data Inicio</label>
+            <input type="date" value="@Model.Filter.IssueDateStart" class="form-control" name="IssueDateStart" id="IssueDateStart">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="issueDateEnd">Data Final</label>
+            <input type="date" value="@Model.Filter.IssueDateEnd" class="form-control" name="IssueDateEnd" id="IssueDateEnd">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="permission">@Html.DisplayNameFor(model => model.Orders.Data[0].ShippingMethod)</label>
+            <br />
+            <select name="ShippingMethod" class="form-control" id="ShippingMethod">
+                <option value="">Selecione</option>
+
+                @foreach (var item in Enum.GetValues(typeof(ShippingMethodEnum)).Cast<ShippingMethodEnum>())
+                {
+                    if (Model.Filter.ShippingMethod != null && Model.Filter.ShippingMethod == item)
+                    {
+                        <option value="@item" selected>@Html.DisplayFor(modelItem => item)</option>
+                    }
+                    else
+                    {
+                        <option value="@item">@Html.DisplayFor(modelItem => item)</option>
+                    }
+                }
+
+            </select>
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="permission">@Html.DisplayNameFor(model => model.Orders.Data[0].OrderOrigin)</label>
+            <br />
+            <select name="OrderOrigin" class="form-control" id="OrderOrigin">
+                <option value="">Selecione</option>
+
+                @foreach (var item in Enum.GetValues(typeof(OrderOrigin)).Cast<OrderOrigin>())
+                {
+                    if (Model.Filter.OrderOrigin != null && Model.Filter.OrderOrigin == item)
+                    {
+                        <option value="@item" selected>@Html.DisplayFor(modelItem => item)</option>
+                    }
+                    else
+                    {
+                        <option value="@item">@Html.DisplayFor(modelItem => item)</option>
+                    }
+                }
+
+            </select>
+        </div>
+
+
+        <input type="hidden" id="hiddenInputToPagination" name="pageNumber" value="@Model.Orders.PageNumber" />
+
+        <div class="">
+            <button class="btn btn-light ml-3 mt-md-4 mb-sm-3 col-md-12" id="loadingSpinner" type="button">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </button>
+            <label for="issueDate"> </label>
+            <button class="btn btn-primary ml-3 mt-2 mb-sm-3 col-md-12" type="submit" id="submitButton"><i class="fa fa-fw fa-magnifying-glass mr-2"></i>Filtrar</button>
+        </div>
+    </div>
+
+    <!--Pagination nav-->
+    @if (Model?.TotalPages > 1 || Model?.Orders?.TotalPages > 1)
+    {
+        @Html.Partial("_PaginationListPager",new PaginationPagerModel{
+    Page = Model.PageNumber,
+    PageCount = Model.TotalPages,
+    InputIdForPage = "hiddenInputToPagination",
+    FormToSubmit = "searchForm"
+    })
+
+    }
+
+</form>
+
+<form id="content-approve-recuse"></form>
+
+<br /> <br />
+
+
+    <div class="col-lg-12 col-md-12 col-xs-12">
+        <div class="main-card mb-3 card">
+            <div class="card-body">
+
+            <div class="row d-flex justify-content-end">
+                <div class="col-md-6 ">
+                    <span id="quantidadeSelecionada" class="d-inline">0</span> pedido(s) selecionado(s)
+                </div>
+                <div class="col-md-3 "></div>
+                <div class="col-md-3 actionsSelection mb-1">
+                    <a class="btn btn-success btn-block btn-action" id="btn-accept" role="button" title="Aceitar">
+                        <i class="fa-solid fa-check"></i>
+                        Integrar Integrações
+                    </a>
+                </div>
+                <div class="col-md-3 actionsSelection">
+                    <a class="btn btn-danger btn-block btn-action" id="btn-reject" role="button" title="Recusar">
+                        <i class="fa-solid fa-xmark"></i>
+                        Excluir Integrações
+                    </a>
+                </div>
+            </div>
+            <br />
+
+                <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Orders.Data[0].InvoiceNumber)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Orders.Data[0].ClientName)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.Orders.Data[0].ExternalNumber)
+                            </th>
+
+                            @*<th style="max-width: 300px">
+                            @Html.DisplayNameFor(model => Model.Orders[0].Obs)
+                            </th>*@
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.Orders.Data[0].IssueDate)
+                            </th>
+
+                            <th>
+                                Origem
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model.Orders.Data[0].ShippingMethod)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Orders.Data[0].Status)
+                            </th>
+
+                            <th class="text-center">
+                                #
+                            </th>
+
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model.Orders != null && Model.Orders.Data.Any())
+                        {
+                            foreach (var item in Model.Orders.Data)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.Id
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.InvoiceNumber)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ClientName)
+                                    </td>
+
+                                    <td>
+                                    @if (item.OrderOrigin == OrderOrigin.ClientPanel)
+                                    {
+                                            @Html.DisplayFor(modelItem => item.Obs)
+                                    }
+                                    else
+                                    {
+                                        @Html.DisplayFor(modelItem => item.ExternalNumber)
+                                    }
+                                </td>
+
+                                    @*<td>
+                            @Html.DisplayFor(modelItem => item.Obs)
+                            </td>*@
+
+                                    <td name="issueDate">
+                                        @item.IssueDate?.ToString("dd/MM/yyyy")
+                                    </td>
+                                    <td>
+                                        @{
+                                            string description = item.OrderOrigin.HasValue ? item.OrderOrigin.Value.GetDescription() : "-";
+                                        }
+                                        @description
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ShippingMethod)
+                                    </td>
+
+                                        <td>
+                                    <a class="btn btn-success btn-action" id="btn-accept-single" itemId="@item.Id" role="button" title="Aceitar" onclick="acceptSingle(this)">
+                                                <i class="fa-solid fa-check"></i>
+                                            </a>
+                                            <a class="btn btn-danger btn-action" id="btn-reject-single" itemId="@item.Id" role="button" title="Recusar" onclick="rejectSingle(this)">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </a>
+                                        </td>
+
+                                   <td class="d-flex justify-content-center">
+                                    <a title="Ver mais" href="@Url.Action("ViewMoreOrders", "ExpeditionOrder", new{id = item.Id, routeUrl = $"{Url.Action("Orders","ExpeditionOrder")}"})"><i class=" fa fa-fw fa-eye mr-2"></i></a>
+                                    <a asp-action="ShowTag" asp-route-id="@item.Id" target="_blank" data-toggle="tooltip" title="Visualizar etiqueta de envio" target="_blank">
+                                        <i class="fa-solid fa-file"></i>
+                                    </a>
+                                  </td>
+                                   
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery-ui.js"></script>
+    <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.js"></script>
+    <link type="text/css" href="~/vendor/datatables/dataTables.checkboxes.css" rel="stylesheet" />
+    <script type="text/javascript" src="~/vendor/datatables/dataTables.checkboxes.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="~/js/moment.min.js"></script>
+
+    <script>
+
+        function acceptSingle(p) {
+            
+            if (!!$(p).attr('disabled')) {
+                return;
+            }
+
+            var itemId = $(p).attr("itemId");
+            clearInputParams();
+            addInputParams(itemId);
+            actionApproveOrRecuse("approve");
+        }
+
+        function rejectSingle(p) {
+            console.log("bateu")
+            if (!!$(p).attr('disabled')) {
+                return;
+            }
+
+            var itemId = $(p).attr("itemId");
+            clearInputParams();
+            addInputParams(itemId);
+            actionApproveOrRecuse("recuse");
+        }
+
+
+        function addInputParams(rowId) {
+            var form = $("#content-approve-recuse");
+            form.append($('<input>').attr('type', 'hidden').attr('name', 'selecteds').val(rowId));
+        }
+
+        function clearInputParams() {
+            var form = $("#content-approve-recuse");
+            form.html("");
+        }
+
+        function actionApproveOrRecuse(action) {
+            disableButtons();
+            var form = $("#content-approve-recuse");
+
+            form.append($('<input>').attr('type', 'hidden').attr('name', 'action').val(action));
+
+
+            $.ajax({
+                url: '/ExpeditionOrder/ActionApproveOrRecuseForManualOrders?' + form.serialize(),
+                type: 'GET',
+                dataType: 'json',
+                beforeSend: function () {
+                    swal.fire({
+                        html: '<h5>Processando Pedidos...</h5>',
+                        showConfirmButton: false,
+                        onRender: function () {
+                            // there will only ever be one sweet alert open.
+                            $('.swal2-content').prepend(sweet_loader);
+                        }
+                    });
+                },
+                success: function (data) {
+                    enableButtons();
+                    location.reload();
+                },
+                error: function (xhr) {
+                    var arrayErrors = xhr.responseJSON;
+                    let errorMessages = arrayErrors.map(err => err.message).join('<br>');
+                    console.log(errorMessages);
+
+                    Swal.fire({
+                        title: 'Ops, Ocorreu um erro com alguns pedidos!',
+                        html: errorMessages + "<br><h5>Deseja notificar o cliente ? " + "<br>" + "(Uma notificação será disparada para o endereço de Email cadastrado)</h5>",
+                        icon: 'error',
+                        customClass: 'format-pre',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        cancelButtonText: 'Cancelar',
+                        confirmButtonText: 'Enviar'
+
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            var subject = "Erro no Pedido"
+                            // let url = `@Url.Action("SendEmailWithMessage", "Email")?subject=${subject}&message=${object.message}&orderId=${object.orderId}`;
+                            // window.location.href = url;
+
+                            $.ajax({
+                                url: '@Url.Action("SendEmailWithMessage", "Email")',
+                                method: 'POST',
+                                data: {
+                                    subject: subject,
+                                    message: object.message,
+                                    orderId: object.orderId
+                                },
+                                success: function (res) {
+                                    let title = 'Ops!';
+                                    if (res.status == "success") {
+                                        title = "Email enviado"
+                                    }
+
+                                    Swal.fire({
+                                        icon: res.status,
+                                        title: title,
+                                        text: res.message
+                                    });
+                                },
+                                error: function (err) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Ops!',
+                                        text: 'Não foi possível enviar o email houve uma falha na comunicação com o backend.'
+                                    });
+                                }
+                            })
+                        } else {
+                            window.location.reload();
+                            //Swal.fire({
+                            //    icon: 'error',
+                            //    title: 'Ops!',
+                            //    text: 'Não foi possível cancelar o pedido no momento, por favor,tente novamente mais tarde.'
+                            //});
+                        }
+                    });
+                    enableButtons();
+                }
+            });
+        }
+
+
+        function disableButtons() {
+            $(".btn-action").attr('disabled', 'disabled');
+            $(".btn-action").css('background', '#d3d3d3');
+            $(".btn-action").css('border-color', '#d3d3d3');
+        }
+
+        function enableButtons() {
+            $(".btn-action").removeAttr('disabled');
+
+            $(".btn-success").css('background', '#1cc88a');
+            $(".btn-success").css('border-color', '#1cc88a');
+
+            $(".btn-danger").css('background', '#e74a3b');
+            $(".btn-danger").css('border-color', '#e74a3b');
+        }
+
+        function addCheckBoxIds(action) {
+            var rows_selected = table.column(0).checkboxes.selected();
+
+
+            clearInputParams();
+
+            $.each(rows_selected, function (index, rowId) {
+                addInputParams(rowId);
+            });
+
+            if (rows_selected.length <= 0) {
+                Swal.fire(
+                    'Opss.',
+                    'É necessário selecionar ao menos um pedido',
+                    'warning'
+                );
+                return;
+            }
+
+            actionApproveOrRecuse(action);
+        }
+
+
+        $("#searchForm").submit(() => {
+            $("#submitButton").hide();
+            $("#loadingSpinner").show();
+        })
+
+        function checkInputCheckBox(checked) {
+            if (checked) {
+                $(".actionsSelection").css("visibility", "visible");
+            } else {
+                $(".actionsSelection").css("visibility", "hidden");
+            }
+        }
+
+        var checkboxInput = $('.dt-checkboxes-cell :input');
+
+
+        var isChecked = checkboxInput.prop('checked');
+
+
+        if (isChecked) {
+            $(".actionsSelection").css("visibility", "visible");
+        } else {
+            $(".actionsSelection").css("visibility", "hidden");
+        }
+
+
+
+        function disableButtons() {
+            $(".btn-action").attr('disabled', 'disabled');
+            $(".btn-action").css('background', '#d3d3d3');
+            $(".btn-action").css('border-color', '#d3d3d3');
+        }
+
+        function enableButtons() {
+            $(".btn-action").removeAttr('disabled');
+
+            $(".btn-success").css('background', '#1cc88a');
+            $(".btn-success").css('border-color', '#1cc88a');
+
+            $(".btn-danger").css('background', '#e74a3b');
+            $(".btn-danger").css('border-color', '#e74a3b');
+        }
+
+        function actionToRecuse(id) {
+            disableButtons();
+            var form = $("#content-approve-recuse");
+
+            //*orm.append($('<input>').attr('type', 'hidden').attr('name', 'action').val(action));*/
+            Swal.fire({
+                title: "Tem certeza que deseja cancelar esse pedido?",
+                input: 'textarea',
+                html: '<p>Será enviado um Email ao cliente, por favor, digite o motivo da recusa abaixo:</p>',
+                inputPlaceholder: 'Escreva o motivo da recusa aqui...',
+                inputAttributes: {
+                    'aria-label': 'Escreva sua mensagem aqui.'
+                },
+                showCancelButton: true,
+                cancelButtonText: 'Voltar',
+                confirmButtonText: 'Enviar'
+            }).then((result) => {
+                if (result.value) {
+                    const text = result.value; // Obtenha o valor do campo de texto
+                    var subject = "Cancelamento de pedido"
+                    let url = `@Url.Action("Cancel", "ExpeditionOrder")?id=${id}&subject=${subject}&subject=${text}&message=${text}`;
+                    window.location.href = url;
+                }
+                enableButtons();
+            });
+        }
+
+
+        $('#btn-accept').on('click', function (e) {
+            if (!!$('#btn-accept').attr('disabled')) {
+                return;
+            }
+            addCheckBoxIds("approve");
+        });
+
+        $('#btn-reject').on('click', function (e) {
+            if (!!$('#btn-reject').attr('disabled')) {
+                return;
+            }
+            addCheckBoxIds("recuse");
+        });
+
+        $("#loadingSpinner").hide();
+        $('#cnpj').mask('00.000.000/0000-00', { reverse: true });
+
+        $('#datatable tbody').on('click', 'td input', function () {
+            var checked = $("#datatable tbody input[type='checkbox']:checked").length > 0;
+            checkInputCheckBox(checked);
+        });
+
+        $('#datatable thead').on('click', 'tr th input', function () {
+            var checked = $("#datatable thead input[type='checkbox']:checked").length > 0;
+            checkInputCheckBox(checked);
+        });
+
+        $(".dt-checkboxes").change(() => {
+            var rows_selected = table.column(0).checkboxes.selected();
+
+            $("#quantidadeSelecionada").html(rows_selected.length);
+        });
+
+        var selectedsArray = []
+
+        $('#generateDanfe').on('click', function () {
+            $("#submit-simplified-list").click();
+
+        })
+
+        var table;
+        $(document).ready(function () {
+
+
+            var tableConfiguration = {
+                "scrollY": "800px", // Altura do scroll, você pode ajustar conforme necessário
+                "scrollCollapse": true,
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    },
+                },
+                'columnDefs': [
+                    {
+                        'targets': 0,
+                        'checkboxes': {
+                            'selectRow': true
+                        }
+                    },
+                ],
+                'select': {
+                    'style': 'multi'
+                },
+                paging: false,
+                info: false,
+                search: false
+            }
+
+                table = $('#datatable').DataTable
+                    (tableConfiguration);
+
+            $('.paginate_button').hide();
+
+
+            //autocomplete function
+            $(function () {
+                $("#searchInput").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: '/Client/AutoComplete/',
+                            data: { "prefix": request.term },
+                            type: "POST",
+                            success: function (data) {
+                                response($.map(data, function (item) {
+                                    return item;
+                                }))
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            },
+                            failure: function (response) {
+                                alert(response.responseText)
+                            }
+                        });
+                    },
+                    select: function (e, i, v) {
+                        $("#hfClient").val(i.item.val);
+                        $("#cnpj").val(i.item.vald);
+                        //$("#cnpj").prop('disabled', true);
+                    },
+                    minLength: 1
+                });
+            });
+
+
+
+
+
+        })
+
+
+
+        
+    </script>
+} 

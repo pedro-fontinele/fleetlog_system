@@ -1,0 +1,65 @@
+﻿@model LOGHouseSystem.Models.Cart
+
+@{
+    ViewBag.Title = "Cadastrar Carrinho";
+}
+
+
+<form asp-controller="Cart" asp-action="Create" method="post" id="CreateForm">
+   <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <div class="form-row">
+                    <legend class="text-center">Criar Carrinho</legend>
+                    <div class="form-group col-md-12">
+                        <label for="SocialReason">@Html.DisplayNameFor(model => model.Description)</label>
+                        <input asp-for="Description" type="text" class="form-control" minlength="8" id="SocialReason" placeholder="Escreva uma descrição para o carrinho...">
+                        @Html.ValidationMessageFor(x => x.Description)
+                    </div>
+                </div>
+                <br />
+            </div>
+        </div>
+   </div>
+
+    <br />
+
+    <br />
+
+    <div class=" d-flex justify-content-center">
+        <button class="btn btn-light mb-5 col-md-2 mr-3" id="loadingSpinner" type="button">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+        </button>
+
+        <button class=" btn btn-success mb-5 col-md-2 mr-3" type="submit" id="submitButton">Adicionar</button>
+        <a class="btn btn-secondary mb-5 col-md-2 mr-2" asp-controller="Cart" asp-action="Index" role="button">Voltar</a>
+    </div>
+
+
+</form>
+
+ 
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+    <script>
+        $(document).ready(function () {
+
+
+            $("#loadingSpinner").hide();
+        });
+
+
+
+        $("#CreateForm").submit(() => {
+            $("#submitButton").hide();
+            $("#loadingSpinner").show();
+        })
+
+    </script>
+}

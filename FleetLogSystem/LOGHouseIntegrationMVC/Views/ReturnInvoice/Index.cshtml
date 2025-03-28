@@ -1,0 +1,671 @@
+﻿@using LOGHouseSystem.Models
+@using LOGHouseSystem.ViewModels.Components;
+@using LOGHouseSystem.Infra.Enums
+@model LOGHouseSystem.Infra.Pagination.PaginationBase<ReturnInvoice>
+
+@{ 
+    ViewBag.Title = "Notas de Retorno";
+}
+
+<link rel="stylesheet" href="~/css/site.css">
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Notas de Retorno</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-controller="ReturnInvoice" asp-action="Index" id="searchForm" method="post">
+   
+    <input type="hidden" id="hiddenInputToPagination" name="PageNumber" value="@Model.PageNumber" />
+
+    @if (Model?.TotalPages > 1 || Model?.TotalPages > 1)
+    {
+        @Html.Partial("_PaginationListPager",new PaginationPagerModel{
+    Page = Model.PageNumber,
+    PageCount = Model.TotalPages,
+    InputIdForPage = "hiddenInputToPagination",
+    FormToSubmit = "searchForm"
+    })
+    }
+</form>
+
+<div class="row">
+        <div class="col-md-2">
+            @*<div class="d-grid gap-2 d-flex justify-content-md-start mx-3 mb-4 mt-2">
+            
+            </div>*@
+            <a class="btn btn-primary font-size-md btn-block" href="@Url.Action("CreateReturnInvoice", "ReturnInvoice")" role="button"><span class="fa-plus font-weight-bold font-size-lg mr-2"></span>Nova Nota de Retorno</a>
+        </div>
+        <div class="col-md-2">
+            <a class="btn btn-primary font-size-md btn-block" href="@Url.Action("NotFounded", "ReturnInvoice")" role="button"><span class="font-weight-bold font-size-lg mr-2"></span>Produtos não encontrados</a>
+        </div>
+        <div class="col-md-2">
+            <a class="btn btn-primary font-size-md btn-block" href="@Url.Action("Index", "ReceiptNoteLots")" role="button"><span class="font-weight-bold font-size-lg mr-2"></span>Lote de produtos</a>
+        </div>
+    </div>
+
+    <br />
+
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].Id)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].CreatedAt)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].Client.SocialReason)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].Status)
+                        </th>
+
+
+                        <th>
+                            Quantidade de produtos
+                        </th>
+
+                        <th>
+                            Valor da Nota
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].Rejection)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Data[0].LinkPdf)
+                        </th>
+
+                        <th style="width=30px"></th>
+                        <th style="width=30px"></th>
+                        <th style="width=30px"></th>
+                        @*
+                        <th class="">#</th>
+                        <th></th>*@
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Data != null && Model.Data.Any())
+                    {
+                        foreach (var item in Model.Data)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Id)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.CreatedAt)
+                                </td>
+
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Client.SocialReason)
+                                </td>
+
+
+                                <td id="status@(item.Id)">
+                                    @switch (item.Status)
+                                    {
+                                        case ReturnInvoiceStatus.Criada:
+                                            <span class="badge badge-secondary">@(item.Status)</span>
+                                            break;
+
+                                        case ReturnInvoiceStatus.Emitida:
+                                            @*<span class="badge badge-warning">@(item.Status)</span>*@
+                                            <span class="badge badge-warning"><i class="fa-regular fa-clock"></i></span>
+                                            break;
+
+                                        case ReturnInvoiceStatus.Cancelada:
+                                            <span class="badge badge-danger">@(item.Status)</span>
+                                            break;
+
+                                        case ReturnInvoiceStatus.Aprovada:
+                                            <span class="badge badge-success">@(item.Status)</span>
+                                            break;
+
+                                        case ReturnInvoiceStatus.Rejeitada:
+                                            <span class="badge badge-info">@(item.Status)</span>
+                                            break;
+                                    }
+                                </td>
+
+
+                                <td>
+                                    @item.ReturnInvoiceItems.Sum(e => e.Quantity)
+                                </td>
+
+                                        <td>
+                                    @item.ReturnInvoiceItems.Sum(e => (e.Quantity * e.Value))
+                                        </td>
+
+                                <td id="rejection@(item.Id)">
+                                    @if (item.Status == ReturnInvoiceStatus.Aprovada){
+                                        <div>Nota fiscal autorizada</div>                                        
+                                    }
+
+                                    @if (item.Status != ReturnInvoiceStatus.Aprovada){                                       
+                                        @Html.DisplayFor(modelItem => item.Rejection)
+                                    }
+                                    
+                                </td>
+
+                                <td id="linkPdf@(item.Id)">
+                                    @if (!string.IsNullOrEmpty(@item.LinkPdf))
+                                    {
+                                        <a href="@item.LinkPdf"><span class="fa fa-file"></span></a>
+                                    }
+                                    
+                                </td>
+
+                                <td class="text-center">
+                                    <i class='fa fa-eye' style='color: #4E73DF; cursor: pointer' title="Visualizar nota" onclick="showInvoice(@(item.Id))"></i>
+                                </td>
+
+                                <td class="text-center">                                            
+                                    <i class='fa fa-paperclip' style='color: #4E73DF; cursor: pointer' title="Adicionar XML de produto" onclick="addXML(@(item.Id))"></i>
+                                </td>
+
+                                        <td class="text-center"  id="sendNota@(item.Id)">
+                                    @if (item.Status != ReturnInvoiceStatus.Aprovada)
+                                    {
+                                        <i class='fa-solid fa-file-import' style='color: #4E73DF; cursor: pointer' class="d-flex justify-content-center btn btn-primary" title="Enviar nota" onclick="sendInvoice(@(item.Id))"></i>
+                                    }                                            
+                                </td>
+
+                                @*<td class="text-center">
+                        <a class="d-flex justify-content-center" title="Ver mais" asp-route-id="@item.Id" asp-controller="Client" asp-action="ViewMore"><i class=" fa fa-fw fa-eye"></i></a>
+                        </td>
+
+                        <td>
+                        <a class="btn btn-warning d-flex justify-content-center" role="button" title="Editar" asp-route-id="@item.Id" asp-controller="Client" asp-action="Update">Editar</a>
+                        </td>*@
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="notaModal" tabindex="-1" role="dialog" aria-labelledby="notaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="notaModalLabel">Nota de Retorno</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="showInvoice">
+                     <div class="row">
+                        <div class="col-md-12"> @Html.DisplayNameFor(model => model.Data[0].Client.SocialReason) <div id="visClint"></div></div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-4"> @Html.DisplayNameFor(model => model.Data[0].Status) <div id="visStatus"></div></div>
+                        <div class="col-md-4"> @Html.DisplayNameFor(model => model.Data[0].Rejection) <div id="visRejection"></div></div>
+                        <div class="col-md-4"> @Html.DisplayNameFor(model => model.Data[0].CreatedAt) <div id="visDate"></div></div>                    
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12"> @Html.DisplayNameFor(model => model.Data[0].InvoiceAccessKey) <div id="visKey"></div></div>                
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12 text-center fw-bold fs-5">Produtos no retorno</div>
+                    </div>
+                    <br />
+                    <div class="row">                        
+                        <div class="col-md-12">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>                                    
+                                        <th>Descrição do produto</th>
+                                        <th>Ean</th>
+                                        <th>Quntidade</th>
+                                        <th>#</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="visProducts">
+
+                                </tbody>
+                            </table>
+                        </div>                    
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12 text-center fw-bold fs-5"> XMLs Anexados</div>
+                    </div>
+                    <br />
+                    <div class="row">                        
+                        <div class="col-md-12">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Chave de acesso</th>                                        
+                                        <th>#</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="visXmlsAnexados">
+
+                                </tbody>
+                            </table>
+                        </div>                    
+                    </div>
+                    <br />
+                </div>
+                <br />
+                <div id="showOrders">                    
+                    <div class="row">
+                        <div class="col-md-12 text-center fw-bold fs-5"> Pedidos vinculados</div>
+                    </div>
+                    <br />
+                    <div class="row">                        
+                        <div class="col-md-12">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Numero da nota</th>
+                                        <th>Quantidade</th>
+                                        <th>#</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="visOrders">
+
+                                </tbody>
+                            </table>
+                        </div>                    
+                    </div>
+                    <br />                    
+                    <div class="row">
+                        <div class="col-md-3"> <button class="btn btn-clock btn-primary" onclick="comeBackToInvoice()">Voltar</button></div>                
+                    </div>
+                </div>
+                <br />
+                <div id="showReturnInvoices">
+                    <div class="row">
+                        <div class="col-md-12 text-center fw-bold fs-5"> Notas de retorno vinculadas ao pedido <span id="visPedido"></span></div>
+                    </div>
+                    <br />
+                    <div class="row">                        
+                        <div class="col-md-12">
+                            <table class="table table-bordered" width="100%" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Chave da Nota</th>
+                                        <th>Produto</th>
+                                        <th>Quantidade</th>                                        
+                                    </tr>
+                                </thead>
+                                <tbody id="visReturnInvoices">
+
+                                </tbody>
+                            </table>
+                        </div>                    
+                    </div>
+
+                    <br />
+                    <div class="row">
+                        <div class="col-md-3"> <button class="btn btn-clock btn-primary" onclick="comeBackToOrders()">Voltar</button></div>                
+                    </div>
+                </div>
+               
+            </div>
+            <div class="modal-footer d-flex just">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-controller="ReturnInvoice" asp-action="UploadXml" id="uploadXml" method="post" enctype="multipart/form-data" style="display: none;">
+
+    <input type="file" name="file" id="fileXml" onchange="sendXml()" multiple/>
+
+    <input type="hidden" name="returnInvoiceId" id="returnInvoiceId"/>
+
+</form>
+
+<div class="modal fade" id="loadModel" tabindex="-1" role="dialog" aria-labelledby="loadModelLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">            
+            <div class="modal-body text-center">
+                <h1>Enviando...</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<style>
+    .swal-wide{
+        width:850px !important;
+    }
+</style>
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": "",
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+                'columnDefs': [
+                    {
+                        'targets': 0,
+                        'checkboxes': {
+                            'selectRow': true
+                        }
+                    },
+                ],
+                'select': {
+                    'style': 'multi'
+                },
+                    'iDisplayLength': 100,
+                paging: false,
+                info: false
+            })
+        });        
+
+        var notasVerifica = [];
+
+        function sendInvoice(id){
+                  Swal.fire({
+                    title: "Tem certeza que deseja enviar essa nota para emissão?",
+                    html: '<p>Para reverter essa ação, é necessário entrar na plataforma do Bling</p>',
+                    showCancelButton: true,
+                    cancelButtonText: 'Voltar',
+                    confirmButtonText: 'Enviar',
+                }).then((result) => {
+                    var url = `@Url.Action("SendInvoice", "ReturnInvoice")?returnInvoiceId=${id}`;
+
+                        Swal.fire('Sucesso', "A nota está sendo enviada para o servidor.", 'success');
+                        $("#loadModel").modal('show');
+
+                    $.get(url, (response) => {
+                            $("#loadModel").modal('hide');
+                        if(response.error != ""){
+                              Swal.fire({
+                                       title: 'Ops!',                                       
+                                       html: "Não foi possível realizar o envio: " + response.error,
+                                   type: "error",
+                                   customClass: 'swal-wide',                                   
+                                   showConfirmButton:true
+                               });
+                        }else{
+                                Swal.fire('Sucesso', "Nota fiscal emitida com sucesso.", 'success');
+                        }
+                            
+
+                            var url = `@Url.Action("VerifyInvoice", "ReturnInvoice")?returnInvoiceId=${id}`;
+
+                        $.get(url, (retorno) => {
+
+                            var html = getStatusHtml(retorno.status);
+
+                            $("#status" + id).html(html);
+                                
+                            if(retorno.status != 2){
+                                    $("#rejection" + id).html(retorno.rejection);
+                            }else{
+                                    $("#rejection" + id).html("Nota fiscal autorizada");
+                                        $("#sendNota" + id).html("")
+                            }                                
+
+                            if(retorno.linkPdf && retorno.linkPdf != ""){
+                                $("#linkPdf"  + id).html("<a href=" + retorno.linkPdf + "><span class='fa fa-file'></span></a>");
+                            }
+                        });
+                         
+                    });
+            });
+        }
+
+        var idInvoiceShowed = null;
+
+        function showInvoice(id){
+                hideAll();
+
+                var url = `@Url.Action("GetReturnInvoice", "ReturnInvoice")?returnInvoiceId=${id}`;                
+
+                $.get(url, (notasVerifica) => {
+                        idInvoiceShowed = id;
+                            processInvoice(notasVerifica, id);
+                        $("#showInvoice").show();
+                            $("#notaModal").modal('show');
+                });
+        }
+
+        function showOrders(productId){
+            hideAll();
+                var products = invoice.orders.filter(e => e.productId == productId);
+
+                var html = "";
+                $("#visOrders").html("");
+
+                for(var i = 0; i < products.length; i++){
+                        html += "<tr>\
+                                <td>" + products[i].invoiceNumber+ "</td>\
+                                <td>" + products[i].quantity+ "</td>\
+                                    <td><i class='fa fa-eye' style='color: #4E73DF; cursor: pointer' onclick='showAllReturns(" + products[i].expeditionId + ")'></i></td>\
+                            </tr>";
+                }
+                $("#visOrders").html(html);
+
+                $("#showOrders").show();
+        }
+
+        function showAllReturns(expeditionOrderId){           
+                
+
+            var url = `@Url.Action("GetInvoicesFromOrder", "ReturnInvoice")?expeditionOrderId=${expeditionOrderId}`;                
+
+            $.get(url, (returnInvoices) => {
+                        processReturnedInvoice(returnInvoices, expeditionOrderId);
+                            hideAll();
+                        $("#showReturnInvoices").show();
+            });
+        }
+
+        function processReturnedInvoice(returnInvoices, id){
+            $("#visReturnInvoices").html("");
+
+            var html = "";
+
+                        for(var i = 0; i < returnInvoices.length; i++){
+                html += "<tr>\
+                                <td>" + returnInvoices[i].returnInvoiceId+ "</td>\
+                                <td>" + returnInvoices[i].invoiceAccessKey+ "</td>\
+                                <td>" + returnInvoices[i].product + "</td>\
+                                <td>" + returnInvoices[i].quantity + "</td>\
+                        </tr>";
+            }                
+                $("#visReturnInvoices").html(html);
+        }
+
+        function hideAll(){
+                $("#showInvoice").hide();
+                $("#showOrders").hide();
+                $("#showReturnInvoices").hide();
+        }
+
+        function comeBackToInvoice(){
+                hideAll();
+                $("#showInvoice").show();
+        }
+
+        function comeBackToOrders(){
+                hideAll();
+                $("#showOrders").show();
+        }
+
+        var invoice = {};
+
+        function processInvoice(notasVerifica, id){                
+            invoice = notasVerifica;
+            $("#visClint").html(notasVerifica.invoice.client.socialReason);
+            $("#visStatus" ).html(getStatusHtml(notasVerifica.invoice.status));
+            $("#visRejection").html(notasVerifica.invoice.rejection);
+            $("#visDate").html(notasVerifica.invoice.issueDate);
+            $("#visKey").html(notasVerifica.invoice.invoiceAccessKey);
+
+                $("#visProducts").html("");
+
+            var html = "";
+
+                    for(var i = 0; i < notasVerifica.invoice.returnInvoiceItems.length; i++){
+                html += "<tr>\
+                                    <td>" + notasVerifica.invoice.returnInvoiceItems[i].description+ "</td>\
+                                    <td>" + notasVerifica.invoice.returnInvoiceItems[i].ean + "</td>\
+                                    <td>" + notasVerifica.invoice.returnInvoiceItems[i].quantity + "</td>\
+                                    <td><i class='fa fa-eye' style='color: #4E73DF; cursor: pointer' onclick='showOrders(" + notasVerifica.invoice.returnInvoiceItems[i].productId + ")'></i></td>\
+                        </tr>";
+            }
+
+                $("#visProducts").html(html);
+
+                    $("#visXmlsAnexados").html("");
+
+                html = "";
+
+               for(var i = 0; i < notasVerifica.returnInvoiceProductInvoices.length; i++){
+                html += "<tr>\
+                                    <td>" + notasVerifica.returnInvoiceProductInvoices[i].invoiceAccessKey+ "</td>\
+                                    <td><i class='fa fa-close' style='color: #4E73DF; cursor: pointer' onclick='deleteXml(" + notasVerifica.returnInvoiceProductInvoices[i].id + ")'></i></td>\
+                        </tr>";
+            }
+
+                    $("#visXmlsAnexados").html(html);
+        }
+
+        function deleteXml(id){
+            Swal.fire({
+                    title: "Tem certeza que deseja deletar esse XML anexado?",
+                    html: '<p>Essa ação não pode ser desfeita</p>',
+                    showCancelButton: true,
+                    cancelButtonText: 'Voltar',
+                    confirmButtonText: 'Deletar',
+                }).then((result) => {
+                    var url = `@Url.Action("DeleteXmlAttach", "ReturnInvoice")?id=${id}`;
+
+                    $.get(url, (retorno) => {
+                         showInvoice(idInvoiceShowed);
+                    });
+            });
+        }
+
+
+        var statusArray = {
+            0: {
+                text: 'Criada',
+                    class: 'badge-secondary'
+            },
+            1: {
+                text: '<i class="fa-regular fa-clock"></i>',
+                class: 'badge-warning'
+            },
+            3: {
+                text: 'Cancelada',
+                class: 'badge-danger'
+            },
+            2: {
+                text: 'Aprovada',
+                class: 'badge-success'
+            },
+            4: {
+                text: 'Rejeitada',
+                class: 'badge-info'
+            },
+        };
+
+        function getStatusHtml(status){
+                if(status != null){
+                        return `<span class="badge ${statusArray[status].class}">${statusArray[status].text}</span>`;
+            }else{
+                "Não definido";
+            }
+            
+        }
+
+        function addXML(id){
+            $("#returnInvoiceId").val(id);
+            $("#fileXml").click();                
+        }
+
+        function sendXml(){            
+            $("#uploadXml").submit();
+        }
+
+        /*setInterval(() => {
+             for(var i = 0; i < notasVerifica.length; i++){
+                var url = `@Url.Action("VerifyInvoice", "ReturnInvoice")?returnInvoiceId=${notasVerifica[i]}`;
+
+                $.get(url, (retorno) => {
+                
+
+                            var html = getStatusHtml(retorno[i].status);
+
+                            $("#status" + retorno[i].id).html(html);                    
+
+                                $("#rejection" + retorno[i].id).html(retorno[i].rejection);
+
+                                if(retorno[i].linkPdf && retorno[i].linkPdf != ""){
+                                        $("#linkPdf" + retorno[i].id).html("<a href=" + retorno[i].linkPdf + "><span class='fa fa-file'></span></a>");
+                    
+                    
+                    }
+                });
+            }
+        }, 5000);*/
+
+    </script>
+}

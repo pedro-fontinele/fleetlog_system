@@ -1,0 +1,103 @@
+﻿@model LOGHouseSystem.Models.Integration
+@using LOGHouseSystem.Infra.Enums
+
+@{
+    ViewBag.Title = "Cadastrar Cliente";
+}
+
+<link rel="stylesheet" href="~/css/site.css">
+
+<form asp-controller="Integration" asp-action="Create" method="post" id="CreateForm">
+    <div class="row d-flex justify-content-center">
+        <div class="card col-md-8">
+            <div class="card-body">
+                <legend class="text-center">Criar Integração</legend>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="type">@Html.DisplayNameFor(model => model.Type)</label>
+                        <br />
+                        <select name="type" class="form-control" id="type" required>
+                            <option value="">Selecione</option>
+                            <option value="@Convert.ToInt32(IntegrationType.Marketplace)">Marketplace</option>
+                            <option value="@Convert.ToInt32(IntegrationType.ERP)">ERP</option>
+                        </select>
+                        @Html.ValidationMessageFor(x => x.Type)
+                    </div>
+                </div>
+                <br />
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="name">@Html.DisplayNameFor(model => model.Name)</label>
+                        <br />
+                        <select name="name" class="form-control" id="name" required disabled="disabled">
+                            <option value="">Selecione</option>
+                        </select>
+                        @Html.ValidationMessageFor(x => x.Name)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row d-flex  justify-content-center">
+
+        <button class="btn btn-light mb-5 col-md-2 mr-3" id="loadingSpinner" type="button">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+        </button>
+
+        <button class="btn btn-primary mb-5 col-md-2 mr-3" type="submit" id="submitButton">Adicionar</button>
+        <a class="btn btn-secondary mb-5 col-md-2 mr-2" asp-controller="Integration" asp-action="Index" role="button">Voltar</a>
+    </div>
+</form>
+
+@section Scripts {
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#loadingSpinner").hide();
+
+            $("#type").change(() => {
+                var typeEnum = parseInt($("#type").val());
+                var inputName = $("#name");
+                var typeEnumValids = [@Convert.ToInt32(IntegrationType.Marketplace), @Convert.ToInt32(IntegrationType.ERP)];
+
+                resetNames();
+
+                if (typeEnumValids.includes(typeEnum)) {
+                    inputName.removeAttr("disabled");
+                } else {
+                    inputName.attr("disabled", "disabled");
+                    return;
+                }
+
+                switch (typeEnum) {
+                    case @Convert.ToInt32(IntegrationType.Marketplace):
+                        inputName.append(new Option("Mercado Livre", "MERCADO LIVRE"));
+                        inputName.append(new Option("Shopee", "SHOPEE"));                        
+                        inputName.append(new Option("Melhor Envio", "MELHOR ENVIO"));
+                        inputName.append(new Option("Kangu", "KANGU"));
+                        break;
+                    case @Convert.ToInt32(IntegrationType.ERP):
+                        inputName.append(new Option("Bling", "BLING"));
+                        inputName.append(new Option("Bling V3", "BLING V3"));
+                        inputName.append(new Option("Tiny", "TINY"));
+                        break;
+                }
+            });
+        });
+
+        function resetNames() {
+            $('#name')
+                .find('option')
+                .remove()
+                .end()
+                .append('<option value="">Selecione</option>')
+        }
+
+        $("#CreateForm").submit(() => {
+            $("#submitButton").hide();
+            $("#loadingSpinner").show();
+        })
+    </script>
+}

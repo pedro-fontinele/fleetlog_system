@@ -1,0 +1,13 @@
+﻿@model List<LOGHouseSystem.Models.AddressingPosition>
+
+    <td>
+
+        <select name="positions[]" class="form-control" id="positions" required>
+            <option value="">Selecione</option>
+            @foreach (var item in @Model)
+            {
+                <option class="idpos" value="@item.AddressingPositionID">@item.Name</option>
+            }
+        </select>
+    
+    </td>

@@ -1,0 +1,119 @@
+﻿@model LOGHouseSystem.ViewModels.FilterViewModel
+
+<link rel="stylesheet" href="~/css/site.css">
+
+<form asp-action="IndexAdmin" id="searchForm">
+    <div class="form-row d-flex justify-content-center">
+        <input type="hidden" id="hiddenInputToPagination" name="Page" value="@Model.Page" />
+        
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model =>  model.SocialReason)</label>
+            <input type="text" class="form-control" asp-for="SocialReason" id="searchInput" placeholder="Digite a razão social">
+        </div>      
+
+        <div class="form-group col-md-3">
+            <label for="permission">@Html.DisplayNameFor(model => model.NoteStatus)</label>
+            <br />
+            <select asp-for="NoteStatus" class="form-control" id="NoteStatus">
+                <option value="">Selecione</option>
+
+                @foreach (var item in Enum.GetValues(typeof(LOGHouseSystem.Infra.Enums.NoteStatus)).Cast<LOGHouseSystem.Infra.Enums.NoteStatus>())
+                {
+                    if (Model.NoteStatus != null && Model.NoteStatus == item)
+                    {
+                                <option value="@item" selected>@Html.DisplayFor(modelItem => item)</option>
+                    }
+                    else
+                    {
+                                <option value="@item">@Html.DisplayFor(modelItem => item)</option>
+                    }
+                }
+
+            </select>
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="issueDate">@Html.DisplayNameFor(model => model.IssueDate)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite o nome do usuário" } })*@
+            <input type="date" class="form-control" asp-for="IssueDate" id="issueDate" placeholder="Digite a data de emissão">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="issueDate">@Html.DisplayNameFor(model => model.InvoiceNumber)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite o nome do usuário" } })*@
+            <input type="text" class="form-control" asp-for="InvoiceNumber" id="invoiceNumber" placeholder="Numero da Nota">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model => model.EntryDateStart)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite o nome do usuário" } })*@
+            <input type="date" class="form-control" asp-for="EntryDateStart" id="entryDateStart" placeholder="Data de entrada inicial">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model => model.EntryDateEnd)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite o nome do usuário" } })*@
+            <input type="date" class="form-control" asp-for="EntryDateEnd" id="entryDateEnd" placeholder="Data de entrada final">
+        </div>
+        <div class="">
+            <button class="btn btn-light ml-3 mt-md-4 mb-sm-3 col-md-12" id="loadingSpinner" type="button">
+                <i class="fa-solid fa-spinner fa-spin"></i>
+            </button>
+            <button class="btn btn-primary ml-3 mt-md-4 mb-sm-3 col-md-12" type="submit" id="submitButton"><i class="fa  fa-magnifying-glass mr-2"></i>Filtrar</button>
+        </div>
+
+        <input type="hidden" asp-for="ClientId" id="clientId" />
+
+    </div>
+</form>
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#cnpj').mask('00.000.000/0000-00', { reverse: true });
+
+        $("#loadingSpinner").hide();
+    })
+
+    $("#searchForm").submit(() => {
+        $("#submitButton").hide();
+        $("#loadingSpinner").show();
+    })
+
+
+         $("#searchInput").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '/Client/AutoComplete/',
+                    data: { "prefix": request.term },
+                    type: "POST",
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return item;
+                        }))
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    },
+                    failure: function (response) {
+                        alert(response.responseText)
+                    }
+                });
+            },
+            select: function (e, i, v) {
+                    $("#clientId").val(i.item.val);
+            },
+            minLength: 1
+        });
+</script>
+    
+
+
+
+
+
+

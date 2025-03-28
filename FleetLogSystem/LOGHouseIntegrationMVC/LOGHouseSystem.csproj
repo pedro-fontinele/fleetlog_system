@@ -1,0 +1,118 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <UserSecretsId>ef0335ab-2b99-4ff9-bbcb-1d3c821f5d42</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <AutoGenerateBindingRedirects>false</AutoGenerateBindingRedirects>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
+	<AspNetHostingModel>OutOfProcess</AspNetHostingModel>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\API\BlingCallback\Response\**" />
+    <Compile Remove="Extensions\**" />
+    <Compile Remove="Public\Tags\NovaPasta\**" />
+    <Compile Remove="wwwroot\files\NovaPasta\**" />
+    <Content Remove="Controllers\API\BlingCallback\Response\**" />
+    <Content Remove="Extensions\**" />
+    <Content Remove="Public\Tags\NovaPasta\**" />
+    <Content Remove="wwwroot\files\NovaPasta\**" />
+    <EmbeddedResource Remove="Controllers\API\BlingCallback\Response\**" />
+    <EmbeddedResource Remove="Extensions\**" />
+    <EmbeddedResource Remove="Public\Tags\NovaPasta\**" />
+    <EmbeddedResource Remove="wwwroot\files\NovaPasta\**" />
+    <None Remove="Controllers\API\BlingCallback\Response\**" />
+    <None Remove="Extensions\**" />
+    <None Remove="Public\Tags\NovaPasta\**" />
+    <None Remove="wwwroot\files\NovaPasta\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Migrations\20230711155005_Adding invoice.cs" />
+    <Compile Remove="Migrations\20230711155005_Adding invoice.Designer.cs" />
+    <Compile Remove="Migrations\20230711160751_fixing.cs" />
+    <Compile Remove="Migrations\20230711160751_fixing.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Services\Views\User\Create.cshtml~RF308052.TMP" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.102.1" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.7.22" />
+    <PackageReference Include="Hangfire.Core" Version="1.7.32" />
+    <PackageReference Include="Hangfire.MemoryStorage" Version="1.7.0" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.7.32" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.3" />
+    <PackageReference Include="jquery.mask" Version="1.14.16" />
+    <PackageReference Include="jQuery.Steps" Version="1.1.0" />
+    <PackageReference Include="MailKit" Version="3.6.0" />
+    <PackageReference Include="Microsoft.AspNet.Mvc" Version="5.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.15" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.21" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.21">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.21" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.21" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.21">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+	  <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.0" />
+	  <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.16" />
+	  <PackageReference Include="Neodynamic.SDK.ZPLPrinter" Version="4.0.22.1219" />
+	  <PackageReference Include="NLog" Version="5.0.4" />
+	  <PackageReference Include="PagedList" Version="1.17.0" />
+	  <PackageReference Include="PDFsharp" Version="6.0.0" />
+	  <PackageReference Include="RestSharp" Version="108.0.2" />
+	  <PackageReference Include="Rotativa.AspNetCore" Version="1.2.0" />
+	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
+	  <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
+	  <PackageReference Include="WebSocketSharp" Version="1.0.3-rc11" />
+	  <PackageReference Include="Zen.Barcode.Rendering.Framework" Version="3.1.10729.1" />
+	  <PackageReference Include="ZXing.Net" Version="0.16.9" />
+	  <PackageReference Include="ZXing.Net.Bindings.SkiaSharp" Version="0.16.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Adapters\Websocket\Model\" />
+    <Folder Include="Assets\Pdf\Shopee\Shipping\" />
+    <Folder Include="Migrations\" />
+    <Folder Include="Public\Pdf\Downloaded\" />
+    <Folder Include="Public\Tags\Kangu\" />
+    <Folder Include="Public\Tags\Shopee\" />
+    <Folder Include="Public\Tags\Uploaded\" />
+    <Folder Include="Public\Packing\Photos\" />
+    <Folder Include="Public\Tags\ML\" />
+    <Folder Include="wwwroot\files\done\" />
+    <Folder Include="wwwroot\files\files\Packing\Photos\" />
+    <Folder Include="wwwroot\files\Packing\Photos\" />
+    <Folder Include="wwwroot\files\Tags\Kangu\" />
+    <Folder Include="wwwroot\files\Transportation\Signatures\" />
+    <Folder Include="wwwroot\files\Transportation\Photos\" />
+    <Folder Include="wwwroot\img\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Views\Shared\Components\FilterPackingListTransportation\Default.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
+</Project>

@@ -1,0 +1,153 @@
+﻿@model IEnumerable<LOGHouseSystem.Models.ReceiptNote>
+@using LOGHouseSystem.Infra.Enums
+@{
+    ViewBag.Title = "Pedidos";
+}
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Meus Pedidos</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.EntryDate)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Number)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Status)
+                        </th>
+
+
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.EntryDate)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Number)
+                                </td>
+
+                                <td>
+                                    @switch (item.Status)
+                                    {
+                                        case NoteStatus.Aguardando:
+                                            <span class="badge badge-secondary">@item.Status.GetDescription()</span>
+                                            break;
+
+                                        case NoteStatus.EmAndamento:
+                                            <span class="badge badge-primary">@item.Status.GetDescription()</span>
+                                            break;
+
+                                        case NoteStatus.NotaOk:
+                                            <span class="badge badge-warning">@item.Status.GetDescription()</span>
+                                            break;
+
+                                        case NoteStatus.NotaDivergente:
+                                            <span class="badge badge-danger">@item.Status.GetDescription()</span>
+                                            break;
+
+                                        case NoteStatus.Finalizada:
+                                            <span class="badge badge-dark">@item.Status.GetDescription()</span>
+                                            break;
+
+                                        case NoteStatus.Rejeitada:
+                                            <span class="badge badge-info">@item.Status.GetDescription()</span>
+                                            break;
+
+                                        case NoteStatus.AguardandoEnderecamento:
+                                            <span class="badge badge-light">@item.Status.GetDescription()</span>
+                                            break;
+
+                                    }
+                                </td>
+
+
+                                <td>
+                                    <a class="float-left" title="Ver mais" href="@Url.Action("ViewItems", "ReceiptNote", new{id = item.Id, routeUrl = $"{Url.Action("IndexClient","ReceiptNote")}"})"><i class=" fa fa-fw fa-eye"></i></a>
+
+                                    @if(item.Status == NoteStatus.AguardandoEnderecamento){
+                                        <a class="float-left" title="Ver mais" href="@Url.Action("SetPositionToItems", "ReceiptNote", new{id = item.Id})"><i class=" fa fa-fw fa-location-dot"></i></a>
+                                    }
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+        });
+    </script>
+}

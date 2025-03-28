@@ -1,0 +1,103 @@
+﻿@model LOGHouseSystem.ViewModels.Components.PaginationPagerModel
+
+<nav aria-label="Page navigation example row">
+    <ul class="pagination">
+        @if (Model.Page > 1)
+        {
+            <li onclick="getValue(@Model.Page - 1)" class="page-item"><a class="page-link" href="#">Anterior</a></li>
+        }
+
+
+        @if (Model.Page > 3 && Model.PageCount > 5)
+        {
+            <li onclick="getValue(1)" class="page-item" name="PageNumber" value="1"><a class="page-link" type="submit">1</a></li>
+        }
+
+        @if (Model.Page > 4 && Model.PageCount > 5)
+        {
+            <li class="page-item"><span class="page-link">...</span></li>
+        }
+
+        @for (int i = Model.Page - 2; i <= Model.Page + 2; i++)
+        {
+            if (Model.Page == (i))
+            {
+                <li onclick="getValue(@i)" class="page-item active" name="PageNumber" value="@Model.Page"><a class="page-link active" type="submit">@i</a></li>
+            }
+            else if (i > 0 && i <= Model.PageCount)
+            {
+                <li onclick="getValue(@i)" class="page-item" name="PageNumber" value="@Model.Page"><a class="page-link" type="submit">@i</a></li>
+            }
+        }
+
+        @if (Model.Page < Model.PageCount - 2 && Model.PageCount > 5)
+        {
+            <li class="page-item"><span class="page-link">...</span></li>
+
+            <li onclick="getValue(@Model.PageCount)" class="page-item" name="PageNumber" value="@Model.Page"><a class="page-link" type="submit">@Model.PageCount</a></li>
+        }
+
+
+        @if (Model.PageCount != Model.Page)
+        {
+            <li onclick="getValue(@Model.Page + 1)" class="page-item"><a class="page-link" href="#">Próximo</a></li>
+
+        }
+
+        @if (Model.ShowSearch)
+        {
+            <div class="input-group mb-3">
+                <input type="number" id="inputToSearchPage" class="form-control col-md-2 ml-2" placeholder="Procurar Página">
+                <div class="input-group-append">
+                    <button onclick="searchPage()" style="height: 39px; border-radius: 0rem 1rem 1rem 0rem" class="btn btn-outline-primary" type="button" id="seacrhByPageButton"><i class="fa fa-xs fa-fw fa-magnifying-glass"></i></button>
+                </div>
+                <p class="mt-3 ml-2"> Página @Model.Page de @Model.PageCount</p>
+            </div>
+        }
+
+
+    </ul>
+</nav>
+
+<script>
+    let inputId = '#@(Model.InputIdForPage)';
+    let formFilter = '#@(Model.FormToSubmit)';
+    let totalPages = @Model.PageCount;
+
+    function getValue(id) {
+
+        if (id < 0) {
+            Swal.fire({
+                title: 'Página não encontrada!',
+                text: "Não existe nenhuma página com número negativo, por favor, revise os filtros indicados e tente novamente!",
+                icon: 'error',
+                showCancelButton: false
+            })
+        }
+
+        if (inputId.length > 1) {
+            $(inputId).val(id);
+        }
+
+        if (formFilter.length > 1) {
+            $(formFilter).submit();
+        }
+
+    }
+
+    function searchPage() {
+        var page = $("#inputToSearchPage").val();
+
+        if (page > totalPages || page < 0) {
+            Swal.fire({
+                title: 'Página não encontrada!',
+                text: "Não foi possível encontrar a página indicada, por favor, tente novamente!",
+                icon: 'error',
+                showCancelButton: false
+            })
+        } else {
+            getValue(page);
+        }
+
+    }
+</script>

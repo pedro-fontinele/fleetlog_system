@@ -1,0 +1,41 @@
+Configurar callback:
+https://ajuda.bling.com.br/hc/pt-br/articles/360047064713-Callback-de-altera%C3%A7%C3%A3o-de-situa%C3%A7%C3%A3o
+
+Rota para configração do Callback:
+
+/api/BlingCallback/[CNPJ]
+
+O CNPJ informado aqui será utilizado para fazer o vinculo como Client. 
+
+Por exemplo: http://localhost:5212/api/BlingCallback/19001226000135
+
+Postman:
+
+https://api.postman.com/collections/1837034-c021f2c8-ad54-43ea-b4a8-7e4677e79474?access_key=PMAT-01GZXH36QET9SNRKT9HXWFQK0R
+
+
+Nome da integração:
+
+SHOPEE
+
+Nome das chaves:
+
+MERCHANT ID, SHOP ID, MAIN ACCOUNT ID
+
+Chaves geradas automaticamente:
+
+ACCESS TOKEN, ACCESS CREATED AT, REFRESH TOKEN, EXPIRES IN
+
+
+
+---------------------
+Fluxo de integração: 
+
+- Recebe pedido via hook:
+-- Se nota emitida, faz a integração e remove o hook.
+-- Se não se a nota não estiver emitida, inativa a linha do hook e preenche com o código da nota.
+-- Se não, remove o hook do pedido.
+
+- Recebe nota fiscal via hool:
+-- Se nota estiver emitida. Procura pela linha do hook do pedido pelo numero da nota, se encontrar, reativa o hook do pedido. Remove o hook da nota fiscal.
+-- Se não, apenas remove o hook de nota fiscal.

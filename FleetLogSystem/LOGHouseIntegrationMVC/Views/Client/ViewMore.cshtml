@@ -1,0 +1,180 @@
+﻿@model LOGHouseSystem.ViewModels.ClientAndYourContractViewModel
+
+@{
+    ViewBag.Title = "Ver mais";
+}
+
+<form asp-controller="Client" asp-action="ViewMore" method="get">
+    <div class="card">
+        <div class="card-body">
+            <div class="form-row">
+                <legend class="text-center">Dados do Cliente</legend>
+                <div class="form-group col-md-4">
+                    <label for="socialReason">@Html.DisplayNameFor(model => model.SocialReason)</label>
+                    <input asp-for="SocialReason" type="text" class="form-control" id="socialReason" readonly>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="cnpj">@Html.DisplayNameFor(model => model.Cnpj)</label>
+                    <input asp-for="Cnpj" type="text" class="form-control" id="cnpj" readonly>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="email">@Html.DisplayNameFor(model => model.Email)</label>
+                    <input asp-for="Email" type="email" class="form-control" id="email" readonly>
+                </div>
+            </div>
+            <br />
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="adress">@Html.DisplayNameFor(model => model.Adress)</label>
+                    <input asp-for="Adress" type="text" class="form-control" id="adress" readonly>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="phone">@Html.DisplayNameFor(model => model.Phone)</label>
+                    <input asp-for="Phone" type="tel" class="form-control" id="phone" readonly>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="phone">@Html.DisplayNameFor(model => model.StateRegistration)</label>
+                    <input asp-for="StateRegistration" type="text" class="form-control" id="stateRegistration" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+
+       
+
+        <br />
+
+    <div class="card">
+        <div class="card-body">
+            <div class="form-row">
+                <legend class="text-center">Dados do Contrato</legend>
+                <div class="form-group col-md-4">
+                    <label for="storage">@Html.DisplayNameFor(model => model.Storage)</label>
+                    <input asp-for="Storage" type="tel" class="form-control" id="storage" readonly>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="surplusStorage">@Html.DisplayNameFor(model => model.SurplusStorage)</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">R$</span>
+                        </div>
+                        <input asp-for="SurplusStorage" type="text" class="form-control" id="surplusStorage" readonly>
+                    </div>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="storageValue">@Html.DisplayNameFor(model => model.StorageValue)</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">R$</span>
+                        </div>
+                        <input asp-for="StorageValue" type="text" class="form-control" id="storageValue" readonly>
+                    </div>
+                    <br />
+                </div>
+            </div>
+            <br />
+
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="requests">@Html.DisplayNameFor(model => model.Requests)</label>
+                    <input asp-for="Requests" type="text" class="form-control" id="requests" readonly>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="requestsValue">@Html.DisplayNameFor(model => model.RequestsValue)</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">R$</span>
+                        </div>
+                        <input asp-for="RequestsValue" type="text" class="form-control" id="requestsValue" readonly>
+                    </div>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="shippingUnits">@Html.DisplayNameFor(model => model.ShippingUnits)</label>
+                    <input asp-for="ShippingUnits" type=" text" class="form-control" id="shippingUnits" readonly>
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="contractValue">@Html.DisplayNameFor(model => model.ContractValue)</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">R$</span>
+                        </div>
+                        <input asp-for="ContractValue" type=" text" class="form-control" id="contractValue" readonly>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="contractValue">@Html.DisplayNameFor(model => model.ExcessOrderValue)</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">R$</span>
+                        </div>
+                        <input asp-for="ExcessOrderValue" type=" text" class="form-control" id="contractValue" readonly>
+                    </div>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="contractValue">@Html.DisplayNameFor(model => model.InsurancePercentage)</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">%</span>
+                        </div>
+                        <input asp-for="InsurancePercentage" type=" text" class="form-control" id="contractValue" readonly>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="card">
+        <div class="card-body">
+            <div class="form-row d-flex justify-content-center">
+                <legend class="text-center">Dados de Usuário do Cliente</legend>
+                <div class="form-group col-md-4">
+                    <label for="login">@Html.DisplayNameFor(model => model.Login)</label>
+                    <input asp-for="Login" type="text" class="form-control" id="login" readonly>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="password">@Html.DisplayNameFor(model => model.Password)</label>
+                    <input type="password" class="form-control" id="password" readonly value="**********">
+                </div>
+            </div>
+            <div class="row d-flex  justify-content-center">
+                <br />
+                <button class="btn btn-light col-lg-2 col-4 mt-2" id="loadingSpinner" type="button">
+                    <i class="fa-solid fa-spinner fa-spin"></i>
+                </button>
+                <a class="btn btn-primary col-lg-2 col-4 mt-2" onclick="hide()" id="btnSubmit" role="button" asp-route-id="@Model.ClientId" asp-controller="Client" asp-action="ResetPassword">Resetar Senha</a>
+            </div>
+            <br />
+        </div>
+    </div>
+
+        
+    <br />
+
+    <div class="row d-flex  justify-content-center">
+        <br />
+        <a class="btn btn-secondary mb-5 col-md-6 " asp-controller="Client" asp-action="Index" role="button">Voltar</a>
+    </div>
+
+
+</form>
+
+@section Scripts {
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+
+    <script>
+
+        $(document).ready(function () {
+            $('#cnpj').mask('00.000.000/0000-00', { reverse: true });
+            $("#loadingSpinner").hide();
+        });
+
+        function hide(){
+            $("#btnSubmit").hide();
+            $("#loadingSpinner").show();
+        }
+
+    </script>
+}

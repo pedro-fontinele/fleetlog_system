@@ -1,0 +1,107 @@
+﻿@using LOGHouseSystem.Infra.Enums;
+@model LOGHouseSystem.ViewModels.OrderIntegrationViewModel
+@{
+    ViewBag.Title = "Integrar pedidos";
+}
+
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="~/css/site.css">
+
+<form asp-action="IntegrateOrders">
+    <div class="form-row d-flex justify-content-center">
+
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">Nome do Cliente</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite o nome do cliente" } })*@
+            <input type="text" class="form-control" id="searchInput" placeholder="Nome do Cliente">
+            <input type="hidden" class="form-control" asp-for="ClientId" id="hfClient" placeholder="Data de entrada inicial">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model => model.EntryDateStart)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Data de entrada inicia" } })*@
+            <input type="date" class="form-control" asp-for="EntryDateStart" id="EntryDateStart" placeholder="Data de entrada inicial">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="entryDate">@Html.DisplayNameFor(model => model.EntryDateEnd)</label>
+            @*@Html.EditorFor(model => model., new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Data de entrada final" } })*@
+            <input type="date" class="form-control" asp-for="EntryDateEnd" id="EntryDateEnd" placeholder="Data de entrada final">
+        </div>
+
+        <div class="form-group col-md-3">
+            <label for="permission">@Html.DisplayNameFor(model => model.OrderOrigin)</label>
+            <br />
+            <select name="OrderOrigin" class="form-control" id="OrderOrigin">
+                <option value="">Selecione</option>
+                <option value="1">Bling</option>               
+
+            </select>
+        </div>
+        <div class="">            
+            <button class="btn btn-primary ml-3 mt-md-4 mb-sm-3 col-md-12" type="submit" id="submitButton"><i class="fa  fa-magnifying-glass mr-2"></i>Integrar pedidos</button>
+        </div>
+
+    </div>
+
+    @if (Model.Orders.Count > 0)
+    {
+            <br />
+        <div class="main-card mb-3 card">
+                    <div class="card-body">
+                <h3>Pedidos enviados para a fila de integração</h3>                
+                <br />
+                @foreach (var order in Model.Orders)
+                {
+                        <div class="row">
+                                <div class="col-md-2"> @order.Numero </div>
+                                <div class="col-md-7"> @order.ChaveAcesso </div>
+                                <div class="col-md-3"> @order.DataEmissao.ToString("dd/MM/yyyy") </div>
+                        </div>
+                }
+             </div>
+        </div>
+    }
+
+    
+</form>
+
+@section Scripts {
+
+        <script src="~/lib/jquery.steps-1.1.0/jquery.steps.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+        <script>
+            //autocomplete function
+            $(function () {
+                $("#searchInput").autocomplete({
+                    source: function (request, response) {
+                        $.ajax({
+                            url: '/Client/AutoComplete/',
+                            data: { "prefix": request.term },
+                            type: "POST",
+                            success: function (data) {
+                                response($.map(data, function (item) {
+                                    return item;
+                                }))
+                            },
+                            error: function (response) {
+                                alert(response.responseText);
+                            },
+                            failure: function (response) {
+                                alert(response.responseText)
+                            }
+                        });
+                    },
+                    select: function (e, i, v) {
+                        $("#hfClient").val(i.item.val);
+                        //$("#cnpj").prop('disabled', true);
+                    },
+                    minLength: 1
+                });
+            });
+        </script>
+
+}

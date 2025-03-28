@@ -1,0 +1,223 @@
+﻿@model List<LOGHouseSystem.Models.Cart>
+
+@{
+    ViewBag.Title = "Lista de Carrinhos";
+}
+
+<link rel="stylesheet" href="~/css/site.css">
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Carrinhos</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<p>
+    <a asp-action="Create" asp-controller="Client" class="btn btn-sm btn-success ml-2">
+        <i class="fa fa-fw fa-plus" style="color: white"></i> Cadastrar Novo Cliente
+    </a>
+</p>*@
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <p>
+        <a asp-controller="Cart" asp-action="Create"  class="btn btn-primary"><i class="fa fa-plus"></i> Novo Carrinho</a>
+        <a onclick="impressLabels()"  class="btn btn-primary"><i class="fa fa-print"></i> Imprimir Etiquetas Selecionadas </a>
+    </p>
+    <div class="main-card mb-3 card">
+
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th class="col-md-1">
+                            <input type="checkbox" id="selectAllCheckbox" />
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model[0].Id)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model[0].Description)
+                        </th>
+
+                        <th class="text-center">#</th>
+
+
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td data-id="@item.Id">
+                                    <input type="checkbox" class="itemCheckbox" data-id="@item.Id" />
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Id)
+                                </td>
+
+                                <td data-description="@item.Description">
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+
+                                <th class="d-flex justify-content-center">
+
+                                    <a class="d-flex justify-content-center" title="Imprimir Código de Barras" href="@Url.Action("BarCode", "Cart", new{id = item.Id})"><i class=" fa fa-fw fa-print fa-lg"></i></a>
+                                    <a onclick="actionToDelete(@item.Id)" style="color: red; cursor: pointer" title="Apagar Carrinho"><i class=" fa fa-fw fa-ban mx-2"></i></a>
+                                    <a onclick="actionToUpdate(@item.Id)" style="cursor: pointer; color: #4E73DF" title="Atualizar Carrinho"><i class="fa fa-fw fa-pen "></i></a>
+                                </th>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<form asp-controller="Cart" asp-action="ImpressLabels" method="post" style="visibility: hidden;">
+    <input name="labels" id="idInputLabel" />
+    <button id="submitIdButtonLabel" type="submit"></button>
+</form>
+
+
+
+
+
+<form asp-controller="Cart" asp-action="Delete" method="post" style="visibility: hidden;">
+    <input name="id" id="idInput"/>
+    <button id="submitIdButton" type="submit"></button>
+</form>
+
+
+<form asp-controller="Cart" asp-action="Update" method="post" style="visibility: hidden;">
+    <input name="id" id="idInputUpdate" />
+    <input name="description" id="descriptionUpdate" />
+    <button id="submitUpdate" type="submit"></button>
+</form>
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+        });
+
+
+        document.getElementById('selectAllCheckbox').addEventListener('change', function () {
+            var checkboxes = document.querySelectorAll('.itemCheckbox');
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = this.checked;
+            }.bind(this));
+        });
+
+        function impressLabels() {
+            var selecteds = [];
+            var checkboxes = document.querySelectorAll('.itemCheckbox:checked');
+
+            checkboxes.forEach(function (checkbox) {
+                var row = checkbox.closest('tr');
+                var id = row.querySelector('td[data-id]').getAttribute('data-id');
+                var description = row.querySelector('td[data-description]').getAttribute('data-description');
+
+                selecteds.push({ id: id, description: description });
+            });
+
+            console.log(selecteds)
+
+            if (selecteds.length <= 0) {
+                Swal.fire(
+                    'Opss.',
+                    'É necessário selecionar ao menos um pedido',
+                    'warning'
+                );
+                return;
+            }
+            console.log(JSON.stringify(selecteds))
+            $('#idInputLabel').val(JSON.stringify(selecteds))
+            $('#submitIdButtonLabel').click();
+        }
+      
+        function actionToDelete(id) {
+            Swal.fire({
+                title: "Tem certeza que deseja apagar esse carrinho?",
+                html: '<p>Essa ação não poderá ser revertida posteriormente</p>',
+                showCancelButton: true,
+                cancelButtonText: 'Voltar',
+                confirmButtonText: 'Apagar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $('#idInput').val(id);
+                    $('#submitIdButton').click();
+                }
+
+            });
+        }
+
+        function actionToUpdate(id) {
+            Swal.fire({
+                title: "Deseja editar a descrição desse carrinho?",
+                input: 'textarea',
+                html: '<p>Digite a nova descrição do carrinho a baixo:</p>',
+                inputPlaceholder: 'Escreva a descrição aqui...',
+                inputAttributes: {
+                    'aria-label': 'Escreva a descrição aqui.'
+                },
+                showCancelButton: true,
+                cancelButtonText: 'Voltar',
+                confirmButtonText: 'Editar'
+            }).then((result) => {
+                if (result.value) {
+                    const text = result.value; // Obtenha o valor do campo de texto
+                    $('#idInputUpdate').val(id);
+                    $('#descriptionUpdate').val(text);
+                    $('#submitUpdate').click();
+                }
+            });
+        }
+    </script>
+}

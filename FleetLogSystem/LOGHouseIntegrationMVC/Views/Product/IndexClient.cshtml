@@ -1,0 +1,127 @@
+﻿@model IEnumerable<LOGHouseSystem.Models.Product>
+
+@{
+    ViewBag.Title = "Lista de Produtos";
+}
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/site.css">
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Meus Produtos</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<p>
+    <a asp-action="Create" asp-controller="Client" class="btn btn-sm btn-success ml-2">
+        <i class="fa fa-fw fa-plus" style="color: white"></i> Cadastrar Novo Cliente
+    </a>
+</p>*@
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <p>
+        <a asp-action="Create" class="btn btn-primary"><i class="fa fa-plus"></i> Novo Produto</a>
+    </p>
+    <div class="main-card mb-3 card">
+        
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Code)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Description)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Ean)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.StockQuantity)
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Code)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Ean)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.StockQuantity)
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+        });
+    </script>
+}

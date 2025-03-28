@@ -1,0 +1,117 @@
+﻿
+<hr />
+
+@{
+    ViewBag.Title = "Upload - NFe Recebimento";
+
+    List<string> errors = ViewData["Error"] as List<string>;
+    List<string> results = ViewData["Result"] as List<string>;
+}
+
+<link href="~/Content/DataTables/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/site.css">
+<link href="~/Content/User.css" rel="stylesheet" />
+
+<style>
+    #myProgress {
+        width: 100%;
+        background-color: #ddd;
+    }
+
+    #myBar {
+        width: 1%;
+        height: 30px;
+        background-color: #04AA6D;
+    }
+</style>
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold text-primary">Selecione os arquivos XML para Upload:</h6>
+            </div>
+            <div class="card-body">
+
+                <div>
+
+                    <div class="container">
+                        <div id="myProgress">
+                            <div id="myBar"></div>
+                        </div>
+                    <br />
+
+                    <div class="container" id="loading">
+                        <h4>Enviando arquivos...</h4>
+                    </div>
+
+                    <div id="result">
+                        @foreach (var item in results)
+                        {
+                            <p class="text-success"><i class="fa fa-check-circle"></i> @item</p>
+                        }
+                        @foreach (var item in errors)
+                        {
+                            <p class="text-danger"><i class="fa fa-close"></i> @item</p>
+                        }
+                        <br />
+                            <a class="btn btn-primary" href="@Url.Action("Index", "Upload")" role="button"> <i class="fa fa-upload"></i> Enviar mais arquivos</a>
+                        <a class="btn btn-success" href="@Url.Action("Index", "Home")" role="button"> Concluir </a>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    var i = 0;
+    var loading = document.getElementById("loading");
+    var result = document.getElementById("result");
+
+    loading.hidden = false;
+    result.hidden = true;
+
+    function startLoading() {
+
+        if (i == 0) {
+            i = 1;
+            var elem = document.getElementById("myBar");
+            var width = 1;
+            var id = setInterval(frame, 20);
+            function frame() {
+                if (width >= 100) {
+                    clearInterval(id);
+                    i = 0;
+                    loading.hidden = true;
+                    result.hidden = false;
+                } else {
+                    width++;
+                    elem.style.width = width + "%";
+                }
+            }
+        }
+    }
+
+    startLoading();
+</script>
+
+@section Scripts {
+
+    <script type="text/javascript" language="javascript" src="~/Scripts/jquery-3.4.1.min.js"></script>
+
+
+}

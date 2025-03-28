@@ -1,0 +1,174 @@
+﻿@model LOGHouseSystem.ViewModels.DevolutionCreateAndUpdateViewModel
+@using LOGHouseSystem.Infra.Enums
+@using LOGHouseSystem.ViewModels.Components;
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Devolução</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row d-flex justify-content-center">
+    <div class="card col-md-8 mx-5">
+        <div class="card-header">
+            Dados da Devolução
+        </div>
+        <div class="card-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="SocialReason">@Html.DisplayNameFor(model => model.SenderName)</label>
+                    <input asp-for="SenderName" type="text" class="form-control" id="senderName" readonly>
+                </div>
+                <div class="form-group col-md-6">
+                    <label for="PostNumber">@Html.DisplayNameFor(model => model.PostNumber)</label>
+                    <input asp-for="PostNumber" type="text" class="form-control" id="postNumber"  readonly>
+                </div>
+            </div>
+                <br />
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="SocialReason">@Html.DisplayNameFor(model => model.InvoiceNumber)</label>
+                        <input asp-for="InvoiceNumber" type="text" class="form-control" id="invoiceNumber" readonly>
+                    </div>
+                <div class="form-group col-md-6">
+                    <label for="observation">@Html.DisplayNameFor(model => model.Observation)</label>
+                    <textarea id="textAreaValue" type="text" class="form-control" rows="3" readonly></textarea>
+                    <input asp-for="Observation" type="hidden" id="inputObs" />
+                    @Html.ValidationMessageFor(x => x.Observation)
+
+                </div>
+
+                </div>
+        </div>
+    </div>
+
+</div>
+
+@if (Model.Products.Count > 0)
+{
+    <div class="row d-flex justify-content-center mt-3">
+        <div class="card col-md-4">
+            <div class="card-header">
+                Produtos
+            </div>
+            <div class="card-body">
+                @foreach (var item in Model.Products)
+                {
+                    <ul>
+                        <li>@item</li>
+                    </ul>
+                }
+
+            </div>
+        </div>
+   </div>
+}
+
+@if (Model.Images.Count > 0)
+{
+    <div class="row  d-flex justify-content-center">
+        <div class="card mt-3 col-md-6">
+            <div class="card-header">
+                <h5 class="card-title text-center">Fotos da Devolução</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var item in Model.Images)
+                    {
+                        <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+                            <img src="@Url.Content(item.FilePath)" class="img-fluid img-thumbnail" data-toggle="modal" data-target="#imagemModal" data-src="@Url.Content(item.FilePath)" data-download="@Url.Content(item.FilePath)">
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="modal fade" id="imagemModal" tabindex="-1" role="dialog" aria-labelledby="imagemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center" id="imagemModalLabel">Imagem Ampliada</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img src="" id="imagemMaior" class="img-fluid">
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <a href="#" id="downloadButton" class="btn btn-primary" download>Download</a>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery-ui.js"></script>
+    <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.js"></script>
+    <script src="~/js/moment.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ até _END_ de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 até 0 de 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros no total)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+                "paging": false,
+                "info": false,
+                "search": false
+
+            });
+        });
+
+        $(document).ready(function () {
+            $("img[data-toggle='modal']").on("click", function () {
+                var src = $(this).data("src");
+                var download = $(this).data("download");
+                $("#imagemMaior").attr("src", src);
+                $("#downloadButton").attr("href", download);
+            });
+
+                var observationVal = $("#inputObs").val();
+                $("#textAreaValue").val(observationVal);
+        });
+    </script>
+}

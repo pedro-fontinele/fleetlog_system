@@ -1,0 +1,142 @@
+﻿@model LOGHouseSystem.Models.PackingListTransportation
+
+@{
+    ViewData["Title"] = "Detalhe do Romaneio";
+}
+<link href="~/vendor/lity/lity.min.css" rel="stylesheet" />
+<style>
+    .signature {
+        height: 100px;
+        width: 300px;
+        object-fit: contain;
+    }
+</style>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-action="Index">Romaneios</a></li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.Id</li>
+    </ol>
+</nav>
+
+<div class="card">
+    <div class="card-body">
+        <div class="row">
+            <legend class="text-center">Detalhes do Romaneio</legend>
+            <h4>Romaneio #@Model.Id</h4>
+            <hr />
+
+            <div class="col-md-7">
+                <div class="form-row">
+
+                    <div>
+
+                        <dl class="row">
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => model.CreatedAt)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => model.CreatedAt)
+                            </dd>
+                            <dt class="col-sm-4">
+                                Responsável pelo transporte
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => model.TransportationPerson.Name) (@Model.TransportationPerson.Cpf)
+                            </dd>
+                            <dt class="col-sm-4">
+                                Transportadora
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => model.ShippingCompany.Name)
+                            </dd>
+                            <dt class="col-sm-4">
+                                @Html.DisplayNameFor(model => model.Status)
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => model.Status)
+                            </dd>
+                            <dt class="col-sm-4">
+                                Placa do Veículo
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => model.VehiclePlate)
+                            </dd>
+                            <dt class="col-sm-4">
+                                Observações
+                            </dt>
+                            <dd class="col-sm-8">
+                                @Html.DisplayFor(model => model.Observation)
+                            </dd>
+
+                        </dl>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <h3>Assinatura</h3>
+                <a href="@Url.Content(Model.SignatureImgPath)" data-lity data-lity-desc="Assinatura">
+                    <img class="signature" src="@Url.Content(Model.SignatureImgPath)" onerror="this.src='@Url.Content($"~/files/Packing/Signatures/default.jpg")'" />
+                </a>
+                
+
+                <h3>Placa do Veículo</h3>
+                <a href="@Url.Content($"~/files/Packing/Plates/{Model.Id}.jpg")" data-lity data-lity-desc="Placa do Veículo">
+                    <img class="signature" src="@Url.Content($"~/files/Packing/Plates/{Model.Id}.jpg")" onerror="this.src='@Url.Content($"~/files/Packing/Plates/default.jpg")'" />
+                </a>
+                
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<br />
+
+<div class="card">
+    <div class="card-body">
+        <legend class="text-center">Detalhes do Carregamento</legend><br />
+        <div class="row">
+            <div class="col-md-3 offset-6" style="text-align:right;">Total de notas: @Model.ExpeditionOrders.Count()</div>
+            <div class="col-md-3" style="text-align:right;">Total de Volumes: @Model.ExpeditionOrders.Sum(eo => eo.VolumeQuantity)</div>
+
+
+
+            <div class="col-md-12">
+                <table class="table table-striped">
+                    <thead>
+                    <th>Depositante</th>
+                    <th>NF</th>
+                    <th>Volumes</th>
+                    <th></th>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.ExpeditionOrders)
+                        {
+                            <tr>
+                                <td>@item.ClientName</td>
+                                <td>@item.InvoiceNumber</td>
+                                <td>@item.VolumeQuantity</td>
+                                @if(Model.Status == LOGHouseSystem.Infra.Enums.PackingListTransportationStatus.Gerado)
+                                {
+                                    <td class="d-flex justify-content-center">
+                                        <a href="@Url.Action("DeletePackingListOnOrder","ExpeditionOrder", new{orderId=item.Id, packingListId=Model.Id})" style="color: red; cursor: pointer" title="Remover nota"><i class=" fa fa-fw fa-trash-can "></i></a>
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/vendor/lity/lity.min.js"></script>
+
+
+}

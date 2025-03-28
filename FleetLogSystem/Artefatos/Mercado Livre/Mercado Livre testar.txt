@@ -1,0 +1,1 @@
+Para testar o mercado livre é necessário um pedido do cliente no qual ele esteja Aprovado porém ainda não tenha sido enviado pars o cliente final, pois, após o envio, o mercado livre ele bloqueia o acesso a etiqueta do pedido

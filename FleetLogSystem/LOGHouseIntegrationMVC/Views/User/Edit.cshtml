@@ -1,0 +1,138 @@
+﻿@using LOGHouseSystem.Infra.Enums
+@model LOGHouseSystem.ViewModels.EditUserViewModel
+
+
+@{
+    ViewBag.Title = "Editar Usuário";
+}
+
+<link href="~/Content/DataTables/css/jquery.dataTables.min.css" rel="stylesheet" />
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Editar Usuário</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-controller="User" asp-action="Edit" id="UpdateForm" method="post">
+
+    <div class="form-row">
+        
+        <div class="form-group col-md-6">
+            <label for="name">@Html.DisplayNameFor(model => model.Name)</label>
+            @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control", id = "name", placeholder = "Digite o nome do usuário" } })
+            @*//<input type="text" class="form-control" id="codigo" placeholder="Digite o código do Cupom">*@
+            @Html.ValidationMessageFor(x => x.Name)
+        </div>
+
+        <div class="form-group col-md-6">
+            <label for="username">@Html.DisplayNameFor(model => model.Username)</label>
+            @Html.EditorFor(model => model.Username, new { htmlAttributes = new { @class = "form-control", id = "username", placeholder = "Digite o username do usuário" } })
+            @*//<input type="text" class="form-control" id="codigo" placeholder="Digite o código do Cupom">*@
+            @Html.ValidationMessageFor(x => x.Username)
+            @if (ViewBag != null)
+            {
+                <div>
+                    <p style="padding: 3px;border-radius: 20px;text-transform: uppercase;font-size: 11px;color: red;font-weight: bold">@ViewBag.UsernameError@Html.Raw(@TempData["ThanksMessage"])</p>
+                </div>
+            }
+        </div>
+
+    </div>
+
+    <div class="form-row">
+
+
+        <div class="form-group col-md-6">
+            <label for="email">@Html.DisplayNameFor(model => model.Email)</label>
+            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", id = "email", type="Email" ,placeholder = "Digite o E-mail do usuário" } })
+            @*//<input type="text" class="form-control" id="codigo" placeholder="Digite o código do Cupom">*@
+            @Html.ValidationMessageFor(x => x.Email)
+            @if (ViewBag != null)
+            {
+                <div>
+                    <p style="padding: 3px;border-radius: 20px;text-transform: uppercase;font-size: 11px;color: red;font-weight: bold">@ViewBag.EmailError@Html.Raw(@TempData["ThanksMessage"])</p>
+                </div>
+            }
+        </div>
+
+
+        <div class="form-group col-md-6">
+            <label for="passwordUser">@Html.DisplayNameFor(model => model.Password)</label>
+            @*@Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", type="password" , id = "password"} })*@
+            <input type="password" class="form-control" asp-for="Password" id="passwordUser" placeholder="**********">
+            @Html.ValidationMessageFor(x => x.Password)
+        </div>
+
+    </div>
+
+    <div class="form-row">
+
+        <div class="form-group col-md-6 ">
+            <label for="permission">@Html.DisplayNameFor(model => model.PermissionLevel)</label>
+            <br />
+            <select asp-for="PermissionLevel" class="form-control" asp-items="Html.GetEnumSelectList(typeof (PermissionLevelTest))"></select>
+            @Html.ValidationMessageFor(x => x.PermissionLevel)
+            @*<select name="PermissionLevel" class="form-control" id="permission" required onselect="@Model.PermissionLevel.GetDescription()">
+@*                <option value="@Model.PermissionLevel">@Model.PermissionLevel.GetDescription()</option>
+                <option value="@PermissionLevel.Admin">Administrador</option>
+                <option value="@PermissionLevel.Manager">Gerente</option>
+                <option value="@PermissionLevel.Employee">Funcionário</option>
+                <option value="@PermissionLevel.Client">Cliente</option>
+                @Html.ValidationMessageFor(x => x.PermissionLevel);
+            </select>*@
+        </div>
+
+        <div class="form-group col-md-6 ">
+            <label for="status">@Html.DisplayNameFor(model => model.IsActive)</label>
+            <br />
+            <select asp-for="IsActive" class="form-control" asp-items="Html.GetEnumSelectList(typeof (Status))"></select>
+            @Html.ValidationMessageFor(x => x.IsActive)
+           @* <select name="IsActive" class="form-control" id="status" required>
+                <option value="@Model.IsActive">@Model.IsActive</option>
+                <option value="@Status.Inativo">Inativo</option>
+                <option value="@Status.Ativo">Ativo</option>
+                @Html.ValidationMessageFor(x => x.IsActive)
+            </select>*@
+
+        </div>
+    </div>
+
+
+    <div class="d-grid d-flex gap-2 justify-content-md-end mt-2">
+        <button class="btn btn-light mr-2" id="loadingSpinner" type="button">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+        </button>
+        <button onclick="checkInputs" type="submit" id="submitButton" class="btn btn-primary mr-2 ">Editar</button>
+        <a class="btn btn-secondary" href="@Url.Action("Index", "User")" role="button">Voltar</a>
+    </div>
+
+</form>
+
+
+@section Scripts {
+    
+    
+
+    <script>
+        $(document).ready(function () {
+            $("#loadingSpinner").hide();
+        });
+
+        $("#SearchForm").submit(() => {
+            $("#submitButton").hide();
+            $("#loadingSpinner").show();
+        })
+    </script>
+}
+
+
+

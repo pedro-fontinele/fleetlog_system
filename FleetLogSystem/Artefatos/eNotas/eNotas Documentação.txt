@@ -1,0 +1,10 @@
+API_KEY E-Notas:
+
+https://docs.enotasgw.com.br/docs/como-obter-a-sua-api-key
+
+Cadastrar webhook:
+https://docs.enotasgw.com.br/docs/webhook
+
+WebHook:
+
+POST [DOMINIO]/ENotasWebhook/WebHook

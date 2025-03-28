@@ -1,0 +1,44 @@
+Como configurar o melhor envio com o bling:
+https://www.youtube.com/watch?v=Oy_Lh6QKipU
+
+Como cadastrar o aplicativo no Melhor Envio e pegar o Client Id e Client Secret:
+
+Sandbox:
+Gerenciar > Token 
+
+Produção:
+https://app.melhorenvio.com.br/integracoes/area-dev
+
+https://ajuda.melhorenvio.com.br/pt-BR/articles/4382168-manual-de-integracao-erp-bling
+
++ Cadastrar aplicativo
+
+- Informar todos os dados solicitados, a rota de Redirect deve ser:
+[DOMINIO]/MelhorEnvio/AuthenticationResult
+
+PSC: Caso você tente cadastrar essa rota em produção como "https://localhost:7212/MelhorEnvio/AuthenticationResult" o Melhor Envio irá barrar pela falta do "www", porém,. você pode burlar isso apenas indo no Inspecionar elemento e removendo a class block e o parâmetro readonly do botão de confirmar e salvar novamente.
+
+
+Postman Produção:
+
+https://api.postman.com/collections/1837034-47629d3f-e8ff-4b55-85a3-9a7b24af52bf?access_key=PMAT-01H14S2BAGSJZNEDVAYFWP29DR
+
+Postman homologação:
+
+https://api.postman.com/collections/1837034-47629d3f-e8ff-4b55-85a3-9a7b24af52bf?access_key=PMAT-01H14S2BAGSJZNEDVAYFWP29DR
+
+Nome da integração:
+
+MELHOR ENVIO
+
+Nome das chaves:
+
+CLIENT ID, SECRET
+
+Chaves geradas automaticamente:
+
+ACCESS TOKEN, ACCESS CREATED AT, REFRESH TOKEN, EXPIRES IN
+
+OBSERVAÇÂO:
+
+Em sandbox, uma etiqueta gerada na Tiny fica em 'released' apenas por alguns minutos, depois ela muda para o status de 'delivered' automaticamente.

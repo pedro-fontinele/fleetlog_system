@@ -1,0 +1,354 @@
+﻿@using LOGHouseSystem.Infra.Helpers
+@model LOGHouseSystem.ViewModels.StockImportViewModel
+
+@{
+    ViewBag.Title = "Importar Estoque do Cliente";
+}
+
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/site.css">
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Importar Estoque do Cliente</h3>
+
+                <h5 class="text-center">Utilize essa tela para importar os produtos em estoque de um cliente do Smartgo WMS</h5>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<form asp-controller="ImportSmartGoStock" asp-action="GetStockById" method="post" id="CreateForm" class="mt-5">
+    <div class="row d-flex justify-content-center">
+        <div class="card col-md-6">
+            <div class="card-body">
+
+                <div class="form-row">
+                    <div class="form-group col-md-3 ml-5">
+                        <label for="SocialReason">Id do depositante no Smartgo WMS</label>
+                        <input name="id" type="number" value="@Model.DepositanteId" class="form-control" id="idDepositante" placeholder="Digite o nome do ID do depositante" required>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="SocialReason">Nome do cliente</label>
+                        <input type="text" class="form-control" value="@Model.ClientName" name="clientName" id="SocialReason" placeholder="Digite o nome do Cliente" required>
+                        <input type="hidden" name="clientId" value="@Model.ClientId" id="hfClient" />
+                    </div>
+
+                    <div class="form-group " style="margin-top:8px">
+                        <button class="btn btn-primary mt-4" type="submit" id="submitButton"><span class="fa-solid fa-magnifying-glass font-weight-bold font-size-lg mr-2"></span>Buscar Estoque</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<div class="row d-flex justify-content-center">
+
+    <div class="card col-md-6 mt-5 d-flex justify-content-center">
+        <div class="card-body ">
+            <h4 class="text-center">Dados do Depositante</h4>
+            <div class="form-row">
+                <div class="form-group col-md-12">
+                    <label for="SocialReason">Nome do Depositante</label>
+                    @if(Model.StockItems.Count == 0)
+                    {
+                        
+                        <input type="text" class="form-control" id="SocialReason" placeholder="" readonly>
+                    }
+                    else
+                    {
+                        <input type="text" value="@Model.ClientName" class="form-control" id="SocialReason" placeholder="" readonly>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@if(Model != null)
+{
+    <div class="d-grid gap-2 d-flex justify-content-md-end mx-3 mb-4 mt-5">
+        <a class="btn btn-primary font-size-md" onclick="generateReceiptNote()" role="button"><span class="fa-plus font-weight-bold font-size-lg mr-2"></span>Gerar Nota de Recebimento</a>
+    </div>
+    <input type="hidden"  id="idDepositante" value="@Model.DepositanteId">
+}
+
+<div class="col-lg-12 col-md-12 col-xs-12 mt-3" >
+    <div class="main-card mb-3 card">
+
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0" >
+                <thead>
+                    <tr>
+                        <th>
+                        
+                            <input type="checkbox" onchange="checkAll(event, this)" />
+                        </th>
+                        <th>
+                            Descrição
+                        </th>
+
+                        <th>
+                            SKU
+                        </th>
+
+                        <th>
+                            EAN
+                        </th>
+
+                        <th>
+                            Quantidade Disponível
+                        </th>
+
+                        <th>
+                            Valor
+                        </th>
+
+                        <th>
+                            Posição
+                        </th>
+
+                        <th>
+                            Lote
+                        </th>
+
+                        <th>
+                            Validade
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.StockItems.Any())
+                    {
+                        foreach (var item in Model.StockItems)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="checkbox" value="@item.Id" onchange="checkItem(event,this)"/>
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ProductName)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SKU)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.EAN)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+
+                                <td>
+                                    @{
+                                        decimal price = 0m;
+                                        try
+                                        {
+                                            price = decimal.Parse(item.UnitPrice.UnmaskOnlyNumbers());
+                                            price = price / item.Quantity / 100.0m;
+                                        }
+                                        catch { }
+                                    }
+                                    @(price.ToString("C2"))
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PositionAddress)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Lote)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Validade)
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script>
+        var ItemIds = [];
+
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "paging": false,
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+        });
+
+        function checkAll(event, checkbox) {
+            // Verifique se o checkbox no cabeçalho está marcado
+            var isChecked = $(checkbox).prop('checked');
+
+            // Marque todos os outros checkboxes na coluna
+            $(checkbox).closest('table').find('tbody input[type="checkbox"]').prop('checked', isChecked);
+
+            // Atualize a variável ItemIds com os IDs dos itens marcados
+            ItemIds = isChecked ? $(checkbox).closest('table').find('tbody input[type="checkbox"]').map(function () {
+                return this.value;
+            }).get() : [];
+        }
+
+        function checkItem(event, checkbox) {
+            // Implemente a lógica desejada ao clicar em checkboxes individuais, se necessário
+        }
+
+        //autocomplete function
+        $(function () {
+            $("#SocialReason").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Client/AutoComplete/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText)
+                        }
+                    });
+                },
+                select: function (e, i, v) {
+                    $("#hfClient").val(i.item.val);
+                    $("#cnpj").val(i.item.vald);
+                    //$("#cnpj").prop('disabled', true);
+                },
+                minLength: 1
+            });
+        });
+
+        function checkItem(ev, elem){
+            const itemId = elem.value;
+            const checked = ev.target.checked;
+            
+            if(checked && ItemIds.indexOf(itemId) == -1){
+                ItemIds.push(itemId);
+            }
+
+            if (!checked && ItemIds.indexOf(itemId) != -1) {
+                ItemIds.splice(ItemIds.indexOf(itemId), 1);
+            }
+           
+        }
+
+        function generateReceiptNote() {
+
+            var clientSelectedId = $("#hfClient").val();
+            var idDepositante = $("#idDepositante").val();
+
+            console.log(clientSelectedId);
+            console.log(idDepositante);
+            console.log(ItemIds);
+
+            if (ItemIds.length == 0) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Nenhum produto selecionado para importar"
+                });
+
+                return;
+            }
+
+            Swal.fire({
+                title: "Deseja criar uma nota de recebimento?",
+                html: '<p>Uma nota de recebimento será criada para os produtos importados</p>',
+                showCancelButton: true,
+                cancelButtonText: 'Voltar',
+                confirmButtonText: 'Criar'
+            }).then((result) => {
+                if (result.value) {
+                    
+                    // let url = `@Url.Action("CreateReciptNoteByImportStockIntens", "ReceiptNote")?stockId=${idDepositante}&clientId=${clientSelectedId}`;
+                    // window.location.href = url;
+
+                    $.ajax({
+                        url: '@Url.Action("CreateReciptNoteByImportStockItems", "ImportSmartGoStock")',
+                        method:'POST',
+                        data: {
+                            idDepositante: idDepositante,
+                            clientId: clientSelectedId, 
+                            itemIdsToImport: ItemIds
+                        },
+                        success: function (data) {
+                            console.log(data);
+                            Swal.fire({
+                                icon: data.status,
+                                text: data.message
+                            }).then(r => {
+                                window.location = '@Url.Action("Index", "ReceiptNoteDashboard")';
+                            });
+                        },
+                        error: function (err) {
+
+                        }
+                    })
+
+
+                }
+            });
+        }
+    </script>
+}
+
+
+

@@ -1,0 +1,56 @@
+﻿@model LOGHouseSystem.ViewModels.Cart.BarcodeViewModel
+
+
+<h2 class="text-center" style="margin-bottom: 100px; margin-top: 100px">Código de barras</h2>
+<div class="container d-flex justify-content-center mb-5">
+
+    
+    <div style="text-align:center;">
+        <img id="codigoBarras" src="data:image/png;base64,@Convert.ToBase64String(Model.Image)" alt="Código de Barras">
+        <br />
+        <div><h3>@Model.Name</h3></div>
+    </div>
+</div>
+<div class=" d-flex justify-content-center mt-5">
+    <span onclick="printBarCode()" class="btn btn-primary mb-5 col-md-2 mr-2">Imprimir</span>
+    <a class="btn btn-secondary mb-5 col-md-2 mr-2" asp-controller="Cart" asp-action="Index" role="button">Voltar</a>
+</div>
+
+<script>
+
+    function printBarCode() {
+        // Obtém o elemento da imagem do código de barras
+        var codigoBarras = document.getElementById('codigoBarras');
+
+        // Cria um novo elemento de imagem para evitar que outros elementos apareçam na impressão
+        var imgParaImpressao = new Image();
+
+
+        imgParaImpressao.src = codigoBarras.src;
+
+        imgParaImpressao.style.width = '600px'; 
+        imgParaImpressao.style.height = '300px';
+
+
+        // Abre uma janela de impressão
+        var janelaImpressao = window.open('', 'Impressão');
+
+        // Adiciona a imagem ao documento da janela de impressão
+        janelaImpressao.document.write('<html><head><title>Impressão</title></head><div style="width:100%;">');
+        janelaImpressao.document.write(`<div style="text-align:center;">${imgParaImpressao.outerHTML}<br/><h3 style="font-size:40px;">${'@Model.Name'}</h3></div></div></html>`);
+        
+
+        // Fecha o documento da janela de impressão e chama o comando de impressão
+        janelaImpressao.document.close();
+        janelaImpressao.focus();
+        janelaImpressao.print().then(() => { janelaImpressao.close(); });
+        
+
+        $('#codigoBarras').css({ width: '', height: '' });
+
+    }
+
+
+
+</script>
+

@@ -1,0 +1,181 @@
+﻿@model LOGHouseSystem.Models.ExpeditionOrder
+
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<input type="hidden" value="@Model.ClientName" id="clientName"/>
+<input type="hidden" value="@Model.ClientId" id="clientIdCheck" />
+
+@await Component.InvokeAsync("SetExpeditionOrderItem")
+
+<div class="col-lg-12 col-md-12 col-xs-12 mt-5">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            EAN
+                        </th>
+
+                        <th>
+                            Nome do Produto
+                        </th>
+
+                        <th>
+                            Quantidade
+                        </th>
+
+                        <th>
+                            Descrição
+                        </th>
+
+                        <th>
+                            
+                        </th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.ExpeditionOrderItems != null && Model.ExpeditionOrderItems.Any())
+                    {
+                        foreach (var item in Model.ExpeditionOrderItems)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Ean)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+
+                                <td class="d-flex justify-content-center">
+                                    <a href="@Url.Action("DeleteExpeditionOrdemItem","ExpeditionOrder", new{orderId=Model.Id, orderItem=item.Id})" style="color: red; cursor: pointer" title="Remover nota"><i class=" fa fa-fw fa-trash-can "></i></a>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row d-flex  justify-content-end">
+    <a class="btn btn-secondary mb-5 col-md-2 mr-3 mt-3" href="@Url.Action("FinalizeSetProducts", "ExpeditionOrder", new { origin = @Model.OrderOrigin, orderId = Model.Id })" role="button">Finalizar</a>
+</div>
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando START de END de um total de TOTAL registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de MAX registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar MENU resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+            $("#searchInputToClient").val($('#clientName').val())
+            $('#clientIds').val($('#clientIdCheck').val())
+            $('#clientId').val($('#clientIdCheck').val())
+        });
+
+        //autocomplete function (searchin product by loged client)
+        $(function () {
+            $("#searchInput").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Product/AutoCompleteByClient/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText)
+                        }
+                    });
+                },
+                select: function (e, i, x, c) {
+                    $("#hfClient").val(i.item.val);
+                    $("#ean").val(i.item.valx);
+                    $("#description").val(i.item.valy);
+                    $("#clientIds").val(i.item.valId);
+                },
+                minLength: 1
+
+            });
+        });
+
+        //autocomplete to product when admin already selected a client
+        $(function () {
+            $("#searchInputToProduct").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Product/AutoCompleteById/',
+                        data: { "prefix": request.term, "id": $('#clientIdCheck').val() },
+                        type: "POST",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText)
+                        }
+                    });
+                },
+                select: function (e, i,) {
+                    $("#hfClients").val(i.item.val);
+                    $("#eans").val(i.item.valx);
+                    $("#descriptions").val(i.item.valy);
+                },
+                minLength: 1
+            });
+        });
+    </script>
+}
+

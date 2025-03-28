@@ -1,0 +1,50 @@
+﻿
+@{
+    ViewBag.Title = "Coletor";
+    Layout = "~/Views/Shared/_LayoutClear.cshtml";
+}
+
+<h3 class="text-center mb-4">Teste Coletor</h3>
+
+<form id="form">
+
+    <div class="form-row d-flex align-items-center flex-column ">
+        <div class="form-group mb-2 col-md-4">
+            <label for="itemtxt">Codigo do produto</label>
+            <input id="itemtxt" name="itemtxt" type="text" class="form-control align-self-center" placeholder="">
+        </div>
+
+    </div>
+
+
+    <div class="d-grid d-flex gap-2 justify-content-md-center mt-2">
+        <button type="submit" class="btn btn-primary mr-2">Leitura</button>
+    </div>
+
+</form>
+
+<div id="items-container">
+
+</div>
+
+@section Scripts{
+    <script>
+        const itemsList = [];
+        $("form").submit(function (e) {
+            e.preventDefault();
+            const inputText = $("#itemtxt").val();
+            if(inputText == '') return;
+            itemsList.push(inputText);
+
+            writeItems();
+
+            $("#itemtxt").val('');
+            $("#itemtxt").focus();
+        });
+       
+
+        function writeItems(){
+            $("#items-container").html(itemsList.join('<br/>'));
+        }
+    </script>
+}

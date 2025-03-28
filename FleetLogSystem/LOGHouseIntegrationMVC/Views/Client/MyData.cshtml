@@ -1,0 +1,113 @@
+﻿@model LOGHouseSystem.ViewModels.ClientViewModel
+
+@{
+    ViewBag.Title = "Meus Dados";
+}
+
+<form asp-controller="Client" asp-action="MyData" method="post" id="CreateForm">
+    <div class="card">
+        <div class="card-body">
+            <div class="form-row">
+                <legend class="text-center">Dados do Cliente</legend>
+                <input type="hidden" asp-for="Id"/>
+                <div class="form-group col-md-4">
+                    <label for="SocialReason">@Html.DisplayNameFor(model => model.SocialReason)</label>
+                    <input asp-for="SocialReason" type="text" class="form-control" minlength="8" id="SocialReason" placeholder="Ex: José Fernando Alves" readonly>
+                    @Html.ValidationMessageFor(x => x.SocialReason)
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="cnpj">@Html.DisplayNameFor(model => model.Cnpj)</label>
+                    <input asp-for="Cnpj" type="text" class="form-control cnpj" minlength="14" maxlength="14" placeholder="00.000.000/0000-00" id="cnpj" readonly>
+                    @Html.ValidationMessageFor(x => x.Cnpj)
+                    @if (ViewBag != null)
+                    {
+                        <div>
+                            <p style="padding: 3px;border-radius: 20px;text-transform: uppercase;font-size: 11px;color: red;font-weight: bold">@ViewBag.CnpjError@Html.Raw(@TempData["ThanksMessage"])</p>
+                        </div>
+                    }
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="email">@Html.DisplayNameFor(model => model.Email)</label>
+                    <input asp-for="Email" type="email" maxlength="35" class="form-control" id="email" placeholder="Ex: seuemail@gmail.com" readonly>
+                    @Html.ValidationMessageFor(x => x.Email)
+                    @if (ViewBag != null)
+                    {
+                        <div>
+                            <p style="padding: 3px;border-radius: 20px;text-transform: uppercase;font-size: 11px;color: red;font-weight: bold">@ViewBag.EmailError@Html.Raw(@TempData["ThanksMessage"])</p>
+                        </div>
+                    }
+                </div>
+
+            </div>
+            <br />
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="adress">@Html.DisplayNameFor(model => model.Adress)</label>
+                    <input asp-for="Adress" type="text" minlenght="15" maxlength="60" class="form-control" id="adress" placeholder="Ex: São José dos Campos, Avenida Calcário de Assis, Rua 04, Lote 02" readonly>
+                    @Html.ValidationMessageFor(x => x.Adress)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="phone">@Html.DisplayNameFor(model => model.Phone)</label>
+                    <input asp-for="Phone" type="tel" minlength="10" class="form-control" id="phone" placeholder="(00) 00000-0000" readonly>
+                    @Html.ValidationMessageFor(x => x.Phone)
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="phone">@Html.DisplayNameFor(model => model.StateRegistration)</label>
+                    <input asp-for="StateRegistration" type="text" class="form-control" id="stateRegistration">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <br />
+
+    <div class="row d-flex  justify-content-end">
+
+        <button class="btn btn-light mb-5 col-md-2 mr-3" id="loadingSpinner" type="button">
+            <i class="fa-solid fa-spinner fa-spin"></i>
+        </button>
+
+        <a class="btn btn-warning mb-5 col-md-2 mr-3"  onclick="editButton()" id="editButton">Editar</a>
+        <button class="btn btn-success mb-5 col-md-2 mr-3" type="submit" id="saveButton">Salvar</button>
+    </div>
+
+
+</form>
+
+@section Scripts {
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+
+
+    <script>
+
+        $(document).ready(function () {
+            $('#cnpj').mask('00.000.000/0000-00', { reverse: true });
+            $('#phone').mask('(00) 00000-0000');
+            $('#contractValue').mask('000.000.000.000.000,00', { reverse: true });
+            $('#requestsValue').mask('000.000.000.000.000,00', { reverse: true });
+            $('#storageValue').mask('000.000.000.000.000,00', { reverse: true });
+            $('#surplusStorage').mask('000.000.000.000.000,00', { reverse: true });
+
+            $('#stateRegistration').attr('readonly', true);
+            $("#loadingSpinner").hide();
+            $("#saveButton").hide();
+            
+        });
+
+        function editButton(){
+            $('#editButton').hide();
+            $("#saveButton").show();
+            $('#stateRegistration').attr('readonly', false);
+
+        }
+
+        $("#CreateForm").submit(() => {
+            $("#saveButton").hide();
+            $("#loadingSpinner").show();
+        })
+
+
+
+    </script>
+}

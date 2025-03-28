@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LOGHouseSystem", "LOGHouseIntegrationMVC\LOGHouseSystem.csproj", "{370CB1A3-F3CE-4CBA-AC5A-CD99988FD0FF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5234C2A3-8650-4FA3-9EC4-96C15FB91E10}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{370CB1A3-F3CE-4CBA-AC5A-CD99988FD0FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{370CB1A3-F3CE-4CBA-AC5A-CD99988FD0FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{370CB1A3-F3CE-4CBA-AC5A-CD99988FD0FF}.Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{370CB1A3-F3CE-4CBA-AC5A-CD99988FD0FF}.Release|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4618C4D7-4D10-4C93-BAA8-F8AF7A8343B6}
+	EndGlobalSection
+EndGlobal

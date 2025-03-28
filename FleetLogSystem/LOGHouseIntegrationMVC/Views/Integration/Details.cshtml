@@ -1,0 +1,201 @@
+﻿@model LOGHouseSystem.ViewModels.IntegrationViewModel
+@using LOGHouseSystem.Infra.Enums
+
+<link rel="stylesheet" href="~/css/site.css">
+
+@{
+    ViewBag.Title = "Detalhes da Integração";
+}
+
+
+@if (Model.Name.ToLower().Contains("bling"))
+{
+    <div class="alert alert-warning text-center mb-4" role="alert">
+        Para que seus pedidos sejam enviados para a Loghouse, você precisa criar uma integração no bling e adicionar a <strong>@Model.UrlToBling</strong> de callback de pedidos, para saber como fazer a configuração do seu bling <a target="_blank" href="https://ajuda.bling.com.br/hc/pt-br/articles/360047064713-Callback-de-altera%C3%A7%C3%A3o-de-situa%C3%A7%C3%A3o"><strong>clique aqui!</strong></a>
+    </div>
+}
+
+@if (Model.Name.ToLower().Contains("tiny"))
+{
+    <div class="alert alert-warning text-center mb-4" role="alert">
+        Para que seus pedidos sejam enviados para a Loghouse, você precisa configurar a URL de callback <strong>@Model.UrlToTiny</strong> no seu ERP, para saber como fazer a configuração do seu Tiny <a target="_blank" href="https://tiny.com.br/api-docs/api2-webhooks-envio-nota-fiscal"><strong>clique aqui!</strong></a>
+    </div>
+}
+
+<form asp-controller="Integration" asp-action="Create" method="post" id="CreateForm">
+    <div class="row d-flex justify-content-center">
+        <div class="card col-md-8">
+            <div class="card-body">
+                <legend class="text-center">Detalhes da Integração</legend>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label for="name">@Html.DisplayNameFor(model => model.Name)</label>
+                        <br />
+                        <input class="form-control" type="text" asp-for="Name" readonly/>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="type">@Html.DisplayNameFor(model => model.Type)</label>
+                        <br />
+                        <input class="form-control" type="text" asp-for="Type" readonly/>
+                    </div>
+
+                    <div class="form-group col-md-6">
+                        <label for="type">@Html.DisplayNameFor(model => model.Status)</label>
+                        <br />
+                        <input class="form-control" type="text" asp-for="Status" readonly/>
+                    </div>
+
+                    <div class="form-group col-md-11">
+                        
+                    </div>
+
+                    <div class="form-group col-md-1">
+                        <a class="btn btn-danger btn-" href="@Url.Action("Delete", "Integration", new{ Id = Model.Id })" role="button">Deletar</a>            
+                    </div>
+                </div>
+                <br />
+            </div>
+
+        </div>
+        
+    </div>
+</form>
+
+<div class="col-lg-12 col-md-12 col-xs-12 mt-4">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+
+                        <th>
+                            Nome
+                        </th>
+
+                        <th>
+                            Valor
+                        </th>
+
+                        <th>Editar</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.Variables != null && Model.Variables.Any())
+                    {
+                        foreach (var item in Model.Variables)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </td>
+
+                                <td>
+                                    <input id="input-import-@item.Id" name="inputImport" type="text" class="form-control" value="@Html.DisplayFor(modelItem => item.Value)">
+                                </td>
+
+                                <td>
+                                    <div class="row d-flex justify-content-center">
+                                        <a class="btn btn-primary col-md-6 editButton" id="edit-button-@item.Id" onclick="disableInput(@item.Id)" name="editButton" role="button" title="Editar">Editar</a>
+                                    </div>
+                                    <div  class="row d-flex justify-content-center">
+                                        <a id="save-button-@item.Id" onclick="saveIntegrationValue(@item.Id)" class="btn btn-success  col-md-6 saveButton" role="button" title="Editar">Salvar</a>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="~/js/sweetalert2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+
+            $(".saveButton").hide();
+            $('[name="inputImport"]').prop('disabled', true);
+
+        });
+
+        function disableInput(id){
+            
+            $('#input-import-'+id).prop('disabled', false);
+
+            $("#edit-button-"+id).hide();
+            $("#save-button-"+id).show();
+        }
+
+        function saveIntegrationValue(id) {
+            var value = $('#input-import-' + id).val();
+
+            let url = `@Url.Action("SaveIntegrationVariableValue", "Integration")`;
+
+            var obj = {
+                "id": id,
+                "value": value
+            }
+
+            var data = JSON.stringify(obj);
+
+            $.ajax({
+                method: "POST",
+                url: url,
+                data: data,
+                contentType: 'application/json',
+                success:function(data){
+
+                    $("#save-button-" + id).hide();
+                    $("#edit-button-" + id).show();
+                    $('#input-import-' + id).prop('disabled', true);
+
+                    Swal.fire({ title: 'Sucesso!', text: "Valor alterado com sucesso!", icon: 'success', confirmButtonText: 'Continuar' })
+                    
+                },
+                error: function(err){
+                    Swal.fire({ title: 'Erro!', text: "Não foi possível alterar esse valor, tente novamente!", icon: 'error', confirmButtonText: 'Continuar' })
+                }
+            });
+
+
+            
+        }
+    </script>
+}

@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LOGHouseSystem</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+          rel="stylesheet">
+    <link rel="stylesheet" href="~/LOGHouseSystem.styles.css" asp-append-version="true" />
+    <link href="~/css/sb-admin-2.css" rel="stylesheet" />
+
+
+</head>
+
+
+<body class="bg-gradient-primary">
+
+    <style>
+        .bg-gradient-primary {
+            background-color: #21262c;
+            background-image: linear-gradient(180deg, #21262c 10%, #475e75 100%);
+            background-size: cover;
+        }
+    </style>
+    
+
+    <div class="container">
+        <br />
+        <!-- Outer Row -->
+        <div class="row justify-content-center">
+
+            <div class="col-xl-10 col-lg-12 col-md-9">
+
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <!-- Nested Row within Card Body -->
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-block mt-5" style="align-self: center; text-align: end;">
+                                <img src="~/img/fulfillment.png" style="width:95%; background-position: center; margin-top: 50px" />
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <div style="align-self: center; text-align: center;">
+                                        <img src="~/img/logo150100.png" style="width:60%; background-position: center;" />
+                                    </div>
+                                    <br />
+
+                                    @RenderBody()
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src='~/lib/fontawesome/js/all.js'></script>
+    <script src="~/vendor/jquery/jquery.min.js"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/sb-admin-2.min.js"></script>
+    <script src="~/js/sweetalert2.min.js"></script>
+
+    <script>
+
+        //Mostra menssagem de sucesso e erro
+        $(document).ready(function () {
+
+            const messageSuccess = "@Html.Raw(TempData["SuccessMessage"])";
+            const messageError = "@Html.Raw(TempData["ErrorMessage"])";
+
+            if (messageSuccess != "") {
+                Swal.fire({ title: 'Sucesso!', text: messageSuccess, icon: 'success', confirmButtonText: 'Continuar' })
+            }
+
+            if (messageError != "") {
+                Swal.fire({ title: 'Erro!', text: messageError, icon: 'error', confirmButtonText: 'Continuar' })
+            }
+        });
+
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

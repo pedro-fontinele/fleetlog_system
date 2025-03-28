@@ -1,0 +1,271 @@
+﻿@model LOGHouseSystem.ViewModels.ExpeditionOrderWithRouteUrlViewModel
+
+<style>
+    .signature {
+        height: 100px;
+        width: 300px;
+        object-fit: contain;
+    }
+</style>
+
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <a class="nav-item nav-link active " id="nav-products-tab" data-toggle="tab" href="#nav-products" role="tab" aria-controls="nav-products" aria-selected="true">Produtos</a>
+        @if (Model.PackingInfo != null)
+        {
+            <a class="nav-item nav-link" id="nav-packing-tab" data-toggle="tab" href="#nav-packing" role="tab" aria-controls="nav-packing">Empacotamento</a>
+        }
+
+        @if (Model.PackingListTransportation != null)
+        {
+            <a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-romaneio" role="tab" aria-controls="nav-romaneio">Romaneio</a>
+        }
+    </div>
+
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active col-lg-12 col-md-12 col-xs-12 mt-5" id="nav-products" role="tabpanel" aria-labelledby="nav-products-tab">
+            <div class="main-card mb-3 card">
+                <div class="card-body">
+                    <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th>
+                                    EAN
+                                </th>
+
+                                <th>
+                                    Nome do Produto
+                                </th>
+
+                                <th>
+                                    Quantidade
+                                </th>
+
+                                <th>
+                                    Descrição
+                                </th>
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (Model.Order.ExpeditionOrderItems != null && Model.Order.ExpeditionOrderItems.Any())
+                            {
+                                foreach (var item in Model.Order.ExpeditionOrderItems)
+                                {
+                                    <tr>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Ean)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Name)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Quantity)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Description)
+                                        </td>
+
+
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.PackingInfo != null)
+        {
+            <div class="tab-pane fade card" id="nav-packing" role="tabpanel" aria-labelledby="nav-packing-tab">
+                <div class="card-body">
+                    <div class="row">
+                        <legend class="text-center">Detalhes do Empacotamento</legend>
+                        <h4>Empacotamento #@Model.PackingInfo.PackingId</h4>
+                        <hr />
+
+                        <div class="col-md-7">
+                            <div class="form-row">
+
+                                <div>
+
+                                    <dl class="row">
+                                        <dt class="col-sm-4">
+                                            Status
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            @(Model.PackingInfo.Status)
+                                        </dd>
+                                        
+                                        <dt class="col-sm-4">
+                                            Observações
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            @Html.DisplayFor(model => model.PackingInfo.Observation)
+                                        </dd>
+
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <h3>Foto do Empacotamento</h3>
+                            @if (string.IsNullOrEmpty(Model.PackingInfo.Photo))
+                            {
+                                <h5>Ainda não existe foto do empacotamento</h5>
+                            }
+                            else
+                            {
+                                <a href="@Url.Content(Model.PackingInfo.Photo)" data-lity data-lity-desc="Foto do Empacotamento">
+                                    <img class="signature" src="@Url.Content(Model.PackingInfo.Photo)" onerror="this.src='@Url.Content($"~/files/Packing/Signatures/default.jpg")'" />
+                                </a>
+                            }
+                            
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        }
+
+        @if (Model.PackingListTransportation != null)
+        {
+            <div class="tab-pane fade card" id="nav-romaneio" role="tabpanel" aria-labelledby="nav-romaneio-tab">
+                <div class="card-body">
+                    <div class="row">
+                        <legend class="text-center">Detalhes do Romaneio</legend>
+                        <h4>Romaneio #@Model.PackingListTransportation.Id</h4>
+                        <hr />
+
+                        <div class="col-md-7">
+                            <div class="form-row">
+
+                                <div>
+
+                                    <dl class="row">
+                                        <dt class="col-sm-4">
+                                            @Html.DisplayNameFor(model => model.PackingListTransportation.CreatedAt)
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            @Html.DisplayFor(model => model.PackingListTransportation.CreatedAt)
+                                        </dd>
+                                        <dt class="col-sm-4">
+                                            Responsável pelo transporte
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            @Html.DisplayFor(model => model.PackingListTransportation.TransportationPerson.Name) (@Model.PackingListTransportation.TransportationPerson.Cpf)
+                                        </dd>
+                                        <dt class="col-sm-4">
+                                            Transportadora
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            @Html.DisplayFor(model => model.PackingListTransportation.ShippingCompany.Name)
+                                        </dd>
+                                        <dt class="col-sm-4">
+                                            @Html.DisplayNameFor(model => model.PackingListTransportation.Status)
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            @Html.DisplayFor(model => model.PackingListTransportation.Status)
+                                        </dd>
+                                        <dt class="col-sm-4">
+                                            Placa do Veículo
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            @Html.DisplayFor(model => model.PackingListTransportation.VehiclePlate)
+                                        </dd>
+                                        <dt class="col-sm-4">
+                                            Observações
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            @Html.DisplayFor(model => model.PackingListTransportation.Observation)
+                                        </dd>
+
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-5">
+                            <h3>Assinatura</h3>
+                            <a href="@Url.Content(Model.PackingListTransportation.SignatureImgPath)" data-lity data-lity-desc="Assinatura">
+                                <img class="signature" src="@Url.Content(Model.PackingListTransportation.SignatureImgPath)" onerror="this.src='@Url.Content($"~/files/Packing/Signatures/default.jpg")'" />
+                            </a>
+
+
+                            <h3>Placa do Veículo</h3>
+                            <a href="@Url.Content($"~/files/Packing/Plates/{Model.PackingListTransportation.Id}.jpg")" data-lity data-lity-desc="Placa do Veículo">
+                                <img class="signature" src="@Url.Content($"~/files/Packing/Plates/{Model.PackingListTransportation.Id}.jpg")" onerror="this.src='@Url.Content($"~/files/Packing/Plates/default.jpg")'" />
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+
+    
+</nav>
+
+
+
+
+
+    
+
+<div class="row d-flex  justify-content-end mt-3">
+    <a class="btn btn-secondary mb-5 col-md-2 mr-3" href="@Model.RouteUrl" role="button">Voltar</a>
+</div>
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando START de END de um total de TOTAL registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de MAX registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar MENU resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+            $("#searchInputToClient").val($('#clientName').val())
+            $('#clientIds').val($('#clientIdCheck').val())
+            $('#clientId').val($('#clientIdCheck').val())
+        });
+    </script>
+}
+

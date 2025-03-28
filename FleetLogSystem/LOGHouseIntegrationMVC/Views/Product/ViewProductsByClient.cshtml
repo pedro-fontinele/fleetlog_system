@@ -1,0 +1,361 @@
+﻿@model IEnumerable<LOGHouseSystem.ViewModels.ProductWithStockAdress>
+
+@{
+    ViewData["Title"] = "Visualizar produtos do Cliente";
+}
+
+<link rel="stylesheet" href="~/css/site.css">
+
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+<div class="app-page-title mb-4">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Procurar Produtos do Cliente</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form asp-controller="Product" asp-action="SearchClientProducts" method="post" id="CreateForm">
+    <div class="row d-flex justify-content-center">
+        <div class="card col-md-6">
+            <div class="card-body">
+
+                <div class="form-row">
+                    <div class="form-group col-md-5">
+                        <label for="SocialReason">Nome do cliente</label>
+                        <input type="text" class="form-control"  id="SocialReason" placeholder="Digite o nome do depositante">
+                             <input type="hidden"  id="hfClient" name="id" />
+                    </div>
+
+                    <div class="form-group col-md-5">
+                        <label for="cnpj">CNPJ</label>
+                        <input  type="text" class="form-control" id="cnpj" placeholder="Digite o CNPJ do fornecedor" readonly>
+                    </div>
+
+                    <div class="form-group " style="margin-top:8px">
+                        <button class="btn btn-primary mt-4" type="submit" id="submitButton">Pesquisar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<div class="col-lg-12 col-md-12 col-xs-12 mt-5">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-10">
+
+                </div>
+                <div class="col-md-2">
+                    @if (Model != null && Model.Any() && Model.Count() > 0){
+                                <button class="btn btn-primary btn-block" onclick="reprocessByClient(@Model.First().ClientId)">Reprocessar todo o estoque</button>
+                    }
+                    
+                </div>
+            </div>
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Code)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Description)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.Ean)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.PositionName)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.TotalStock)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.StockQuantity)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.StockReservationQuantity)
+                        </th>
+
+                        <th>
+                            #
+                        </th>
+                        <th>
+                            #
+                        </th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Code)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Ean)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PositionName)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.TotalStock)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.StockQuantity)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.StockReservationQuantity)
+                                </td>
+
+                                <td>
+                                    @*<a class="d-flex justify-content-center"  asp-route-id="@item.Id" asp-controller="Product" asp-action="Reprocess" title="Reprocessar estoque do produto"><i class="fa-solid fa-boxes-stacked"></i></a>*@
+                                    <a class="d-flex justify-content-center"  onclick="reprocessProduct(@item.Id);" href="javascript:void(0)" title="Reprocessar estoque do produto"><i class="fa fa-solid fa-boxes-stacked"></i></a>
+                                            
+                                </td>
+                                <td>
+                                    <a class="d-flex justify-content-center" onclick="editPosition(@item.Id, @item.ClientId)" title="Editar posição"><i class=" fa fa-fw fa-pen-to-square"></i></a>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<form asp-controller="Address" asp-action="CopyAdress" id="searchForm" method="post">
+    <input name="productId" type="hidden" id="productIdInput" />
+    <input name="positionId" type="hidden" id="positionIdInput" />
+    <input name="clientId" type="hidden" id="clientIdInput" />
+
+    <button style="display: none" id="submit-ids" type="submit"></button>
+</form>
+
+<div class="modal fade" id="loadModel" tabindex="-1" role="dialog" aria-labelledby="loadModelLabel" aria-hidden="true" data-keyboard="false" data-backdrop="static">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">            
+            <div class="modal-body text-center">
+                <h1>Reprocessando...</h1>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                }
+            });
+        });
+
+            function reprocessByClient(id){
+            
+            Swal.fire({
+                title: "Tem certeza que deseja reprocessar o estoque desse produto? Essa ação pode levar algum tempo. Digite 'REPROCESSAR' para continuar",
+                html: '<p>Essa ação não poderá ser revertida</p>',
+                showCancelButton: true,
+                cancelButtonText: 'Voltar',
+                confirmButtonText: 'Enviar',
+                input: 'textarea'
+            }).then((result) => {
+                if (result.isConfirmed) {
+
+                    var text = result.value;
+
+                    if(text != 'REPROCESSAR'){
+                            Swal.fire({
+                                title: "Ops!",
+                                text: "A texto digitado não confere, a ação será cancelada.",
+                                icon: "info"
+                            });
+                    }else{
+                        $('#loadModel').modal('show');
+
+                        $.get('/Product/ReprocessClient/' + id, (response) => {
+                                $("#loadModel").modal('hide');
+
+                                Swal.fire({
+                                    title: "Sucesso!",
+                                    text: "Todos os estoques serão reprocessados em segundo plano. Isso pode levar algum tempo. Acesse https://fms.loghouse.com.br/hangfire/jobs/processing para acompanhar a tarefa.",
+                                    icon: "success"
+                                });
+                        });
+                    }                   
+
+                }
+            });
+
+            
+        }
+
+                function reprocessProduct(id){
+            
+            Swal.fire({
+                title: "Tem certeza que deseja reprocessar todo o estoquer desse cliente?",
+                html: '<p>Essa ação não poderá ser revertida</p>',
+                showCancelButton: true,
+                cancelButtonText: 'Voltar',
+                confirmButtonText: 'Reprocessar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                        $('#loadModel').modal('show');
+
+                    $.get('/Product/Reprocess/' + id, (response) => {
+                            $("#loadModel").modal('hide');
+
+                            Swal.fire({
+                                title: "Sucesso!",
+                                text: "O estoque do produto foi reprocessado com sucesso",
+                                icon: "success"
+                            }).then((result) => {
+                                    $("#loadModel").modal('show');
+                                    location.reload();
+                            });
+                    });
+
+                }
+            });
+
+            
+        }
+
+         function editPosition(id, clientId){
+            $.ajax({
+                url: '/Address/GetAll', // Substitua pelo URL correto
+                method: 'GET',
+                dataType: 'json',
+                success: function (registros) {
+                    // Construir o HTML para o dropdown dentro do SweetAlert
+                    var dropdownHtml = '<select id="registroDropdown">';
+                    registros.forEach(function (registro) {
+                        dropdownHtml += '<option value="' + registro.addressingPositionID + '">' + registro.name + '</option>';
+                    });
+                    dropdownHtml += '</select>';
+
+                    // Exibir SweetAlert com o dropdown
+                    Swal.fire({
+                        title: 'Selecione uma posição:',
+                        html: dropdownHtml,
+                        showCancelButton: true,
+                        cancelButtonText: 'Cancelar',
+                        confirmButtonText: 'Selecionar',
+                        preConfirm: function () {
+                            var selectedValue = $('#registroDropdown').val();
+                            if (!selectedValue) {
+                                Swal.showValidationMessage('Selecione um registro');
+                            }
+                            return selectedValue;
+                        }
+                    }).then(function (result) {
+                        if (!result.dismiss) {
+                            $("#productIdInput").val(id);
+                            $("#positionIdInput").val(result.value);
+                            $("#clientIdInput").val(clientId);
+
+                            $("#submit-ids").click();
+                        }
+                    });
+                },
+                error: function () {
+                    console.error('Erro ao obter os registros da classe X.');
+                }
+            });
+        }
+
+        //autocomplete function
+        $(function () {
+            $("#SocialReason").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: '/Client/AutoComplete/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        success: function (data) {
+                            response($.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText)
+                        }
+                    });
+                },
+                select: function (e, i, v) {
+                    $("#hfClient").val(i.item.val);
+                    $("#cnpj").val(i.item.vald);
+                    //$("#cnpj").prop('disabled', true);
+                },
+                minLength: 1
+            });
+        });
+    </script>
+}

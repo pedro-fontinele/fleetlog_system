@@ -1,0 +1,229 @@
+﻿@model LOGHouseSystem.ViewModels.ExpeditionOrderWithRouteUrlViewModel
+@using LOGHouseSystem.Infra.Enums
+@using LOGHouseSystem.ViewModels.Components;
+@{
+    ViewBag.Title = "Lista de Pedidos";
+}
+
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<style>
+    #actionsSelection {
+        visibility: hidden;
+    }
+</style>
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Pedidos</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-2">
+        <br />        
+        <a class="btn btn-secondary btn-block" href="@Url.Action("CreateReturnInvoice", "ReturnInvoice")" style="margin-top: 7px;">Voltar</a>
+    </div>
+</div>
+<br />
+
+<div class="col-lg-12 col-md-12 col-xs-12 mt-5">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ExpeditionOrders[0].InvoiceNumber)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ExpeditionOrders[0].ClientName)
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.ExpeditionOrders[0].ExternalNumber)
+                        </th>
+
+                        @*<th style="max-width: 300px">
+                        @Html.DisplayNameFor(model => Model.Orders[0].Obs)
+                        </th>*@
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.ExpeditionOrders[0].IssueDate)
+                        </th>
+
+                        <th>
+                            Origem
+                        </th>
+
+                        <th>
+                            @Html.DisplayNameFor(model => model.ExpeditionOrders[0].ShippingMethod)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.ExpeditionOrders[0].Status)
+                        </th>
+
+                        <th class="text-center">
+                            #
+                        </th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model.ExpeditionOrders != null && Model.ExpeditionOrders.Any())
+                    {
+                        foreach (var item in Model.ExpeditionOrders)
+                        {
+                            <tr>
+                                <td>
+                                    @item.Id
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.InvoiceNumber)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ClientName)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ExternalNumber)
+                                </td>
+
+                                @*<td>
+                        @Html.DisplayFor(modelItem => item.Obs)
+                        </td>*@
+
+                                <td name="issueDate">
+                                    @item.IssueDate?.ToString("dd/MM/yyyy")
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.OrderOrigin)
+                                </td>
+
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ShippingMethod)
+                                </td>
+
+                                <td>
+
+                                    @switch (item.Status)
+                                    {
+                                        case ExpeditionOrderStatus.Processed:
+                                                                <span class="badge badge-warning">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                        case ExpeditionOrderStatus.Separated:
+                                                                <span class="badge badge-separeted-custom-color">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                        case ExpeditionOrderStatus.InPacking:
+                                                                <span  class="badge badge-packing-custom-color">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                        case ExpeditionOrderStatus.ProcessingPendenting:
+                                                                <span class="badge badge-warning">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                        case ExpeditionOrderStatus.ProcessingRefused:
+                                                                <span class="badge badge-danger">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                        case ExpeditionOrderStatus.ErrorProcessing:
+                                                                <span class="badge badge-dark">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                        case ExpeditionOrderStatus.ErrorIntegration:
+                                                                <span class="badge badge-info">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                        case ExpeditionOrderStatus.ErrorPickingList:
+                                                                <span class="badge badge-light">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                        case ExpeditionOrderStatus.InPickingList:
+                                                                <span class="badge badge-primary">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+                                        case ExpeditionOrderStatus.Packed:
+                                                                <span class="badge badge-packing-finalize-custom-color">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                        case ExpeditionOrderStatus.Dispatched:
+                                                                <span class="badge badge-success">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+                                        default:
+                                                                <span class="badge badge-default">@Html.DisplayFor(modelItem => item.Status)</span>
+                                            break;
+
+                                    }
+
+
+                                </td>
+
+                                <td>
+                                    <a title="Ver mais" href="@Url.Action("ViewMoreOrders", "ExpeditionOrder", new{id = item.Id, routeUrl = $"{Url.Action("ListExpeditionOrdersInGroup","ExpeditionOrder", new{orders = Model.Ids})}"})"><i class=" fa fa-fw fa-eye mr-2"></i>
+                                    </a>
+                                </td>
+
+                    
+
+
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#datatable').DataTable({
+                    "language": {
+                        "sEmptyTable": "Nenhum registro encontrado",
+                        "sInfo": "",
+                        "sInfoEmpty": "Mostrando 0 registros",
+                        "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                        "sInfoPostFix": "",
+                        "sInfoThousands": ".",
+                        "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                        "sLoadingRecords": "Carregando...",
+                        "sProcessing": "Processando...",
+                        "sZeroRecords": "Nenhum registro encontrado",
+                        "sSearch": "Pesquisar",
+                        "oPaginate": "",
+                        "oAria": {
+                            "sSortAscending": ": Ordenar colunas de forma ascendente",
+                            "sSortDescending": ": Ordenar colunas de forma descendente"
+                        }
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    },
+                            'iDisplayLength': 100,
+                },
+                
+            });
+            info: false
+        });
+    </script>
+}

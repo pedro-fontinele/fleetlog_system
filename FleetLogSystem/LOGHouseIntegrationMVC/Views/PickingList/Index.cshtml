@@ -1,0 +1,652 @@
+﻿@model PagedList.PagedList<LOGHouseSystem.ViewModels.PickingListWithUrlAndArrayByteViewModel>
+@using LOGHouseSystem.Infra.Enums
+@using LOGHouseSystem.ViewModels.Components;
+
+@{
+    ViewBag.Title = "Lista de Separação";
+}
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<link rel="stylesheet" href="/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.css">
+<link rel="stylesheet" href="~/css/site.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+
+<style>
+    #actionsSelection {
+        visibility: hidden;
+    }
+
+    .tl-date {
+        display: none;
+    }
+
+    .tl-wrap {
+        display: block;
+        margin-left: 0em;
+        padding: 15px 0 15px 20px;
+        border-style: solid;
+        border-color: #dee5e7;
+        border-width: 0 0 0 4px;
+    }
+</style>
+
+<div id="errorAlert" class="alert alert-danger alert-dismissible fade show text-center" role="alert">
+    <p id="messageError" class="text-center"><strong>ERRO!</strong> </p>
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Lista de Separação</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            <div class="row" >
+
+
+                <div class="col-md-6">
+                    <form asp-action="Index" id="filterForm">
+                        <div class="row">
+                            <input type="hidden" id="hiddenInputToPagination" name="Page" value="@Model.PageNumber" />
+
+                            <div class="col-md-4">
+                                <input class="form-control" type="tel" placeholder="Carrinho" name="CartId" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <input class="form-control" type="tel" placeholder="Numero da Nota" name="InvoiceNumber" />
+                            </div>
+
+                            <div class="col-md-4">
+                                <button class="btn btn-primary" type="submit">Pesquisar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                
+
+                <div class="col-md-3" style="text-align:right;">
+
+                    <a class="btn btn-warning btn-block" id="btn-simplified-list" role="button" title="Imprimir Danfe Simplificada">Imprimir Danfe Simplificada</a>
+
+                    <form id="frm-picking-list" action="/PickingList/GenerateSimplifiedDanfeList" target="_blank" method="GET" style="visibility: hidden;">
+                        <div id="content-simplified-list"></div>
+                        <button id="submit-simplified-list" type="submit"></button>
+                    </form>
+                </div>
+
+                <div class="col-md-3" style="text-align:right;">
+
+                    <a class="btn btn-primary btn-block" id="btn-packing" role="button" title="Gerar Empacotamento">Gerar Empacotamento</a>
+
+                    <form id="frm-picking-list" action="/Packing/CreatePackingFromPickingList" method="GET" style="visibility: hidden;">
+                        <div id="content-packing-list"></div>
+                        <button id="submit-packing-list" type="submit"></button>
+                    </form>
+                </div>
+
+
+            </div>
+            <br />
+
+            @if (Model.Count > 0)
+            {
+                <div style="overflow-x: auto;  max-height: 1000px;">
+                    <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>ID</th>
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].Description)
+                                </th>
+
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].Quantity)
+                                </th>
+
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].CreatedAt)
+                                </th>
+
+                                <th>
+                                    Quantidade de notas
+                                </th>
+
+                                <th>
+                                    Carrinho
+                                </th>
+
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].Status)
+                                </th>
+
+                                <th>
+                                    @Html.DisplayNameFor(model => model[0].MarketPlace)
+                                </th>
+
+                                <th></th>
+
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @item.Id
+                                        </td>
+                                        <td>
+                                            <span>LS</span>@item.Id
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Description)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Quantity)
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CreatedAt)
+                                        </td>
+
+                                        <td>
+                                            @item.ExpeditionOrder.Count
+                                        </td>
+
+
+
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Cart.Description)
+                                    </td>
+
+                                    <td onclick="viewHistory(@item.Id)" data-toggle="modal" data-target="#exampleModalCenter">
+                                        @switch (item.Status)
+                                        {
+                                            case PickingListStatus.Gerado:
+                                                <span class="badge badge-secondary">@(item.Status.GetDescription())</span>
+                                                break;
+
+                                                case PickingListStatus.EmAtendimento:
+                                                    <span class="badge badge-warning">@(item.Status.GetDescription())</span>
+                                                    break;
+
+                                                case PickingListStatus.Finalizado:
+                                                    <span class="badge badge-primary">@(item.Status.GetDescription())</span>
+                                                    break;
+                                            }
+                                    </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.MarketPlace)
+                                        </td>
+
+                                        <td class="d-flex">
+                                            <a style="cursor: pointer; color: blue" class=" text-center mx-2" title="Exibir notas" onclick="showOrders(@item.Id)"><i class=" fa fa-file mr-2"></i></a>
+
+                                            @if (item.Status == PickingListStatus.Finalizado)
+                                            {
+                                                <a class="text-center" title="Ver mais" href="@Url.Action("ViewMore", "PickingList", new{id = item.Id, routeUrl = $"{Url.Action("Index","PickingList")}"})"><i class=" fa fa-fw fa-eye"></i></a>
+                                            }
+
+                                            @if (item.Status == PickingListStatus.Gerado)
+                                            {
+                                                <a style="cursor: pointer; color: red" class=" text-center mx-2" title="Cancelar" onclick="actionToRecuse(@item.Id)"><i class=" fa fa-fw fa-ban mr-2"></i></a>
+                                            }
+                                        </td>
+
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+
+                    <!--Pagination nav-->
+                    @if (Model.PageCount > 1)
+                    {
+                        @Html.Partial("_PaginationListPager",new PaginationPagerModel{
+                Page = Model.PageNumber,
+                PageCount = Model.PageCount,
+                InputIdForPage = "hiddenInputToPagination",
+                FormToSubmit = "filterForm"
+                })
+
+                    }
+               </div>
+
+            }
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Histórico do Pedido</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="noContentHistory">Esse pedido não possui histórico!</div>
+                <div id="contentHistory"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="closeModal" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <div class="modal fade" id="exampleModalCenterr" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="false">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Ações</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <h5>Imprimir DANFE Simplificada</h5>
+                    <a id="generateDanfe" class="btn btn-primary">Imprimir</a>
+                    </div>
+                    <br/>
+                    <br />
+                <h5 class="text-center">Visualizar Etiquetas</h5>
+                <div id="buttonsContainer" class="text-center">
+                        <h5>Visualizar Etiquetas</h5>
+                    @*<a id="generateMEUrl" class="btn btn-primary">Visualizar Etiquetas</a>*@
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+<div class="modal fade" id="orderModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Notas</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Voltar">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table">
+            <thead>
+                <tr>
+                    <td scope="col">
+                        Numero
+                    </td>
+                    <td scope="col">
+                        Chave de acesso
+                    </td>
+                    <td scope="col">
+                        Cliente
+                    </td>
+                    <td scope="col">
+                        MarketPlace
+                    </td>
+                    <td scope="col">
+                        
+                    </td>
+                </tr>
+            </thead>
+            <tbody id="ordersTableBody">
+                
+            </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Voltar</button>        
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+@section Scripts {
+
+    <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+    <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+    <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+    <script src="~/vendor/bluebird/bluebird.min.js"></script>
+    <script src="~/vendor/JSPrintManager/JSPrintManager.js"></script>
+    <script src="~/js/moment.min.js"></script>
+    <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery-ui.js"></script>
+    <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.js"></script>
+
+
+    <link type="text/css" href="~/vendor/datatables/dataTables.checkboxes.css" rel="stylesheet" />
+    <script type="text/javascript" src="~/vendor/datatables/dataTables.checkboxes.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#errorAlert').hide()
+        });
+
+        var pickingListStatusDescriptionMapping = {
+            0: "Gerado",
+            1: "Em atendimento",
+            2: "Finalizado",
+            3: "Cancelado"
+        };
+
+
+        function showOrders(id){
+                $('#ordersTableBody').html('');               
+
+                    $.get(`/PickingList/GetExpeditionOrdersByPickingId?id=${id}`, (data) => {
+  
+                    var html = "";
+                    var btnViewMore = "<a title='Ver mais' target='_blank' href='@Url.Action("ViewMoreOrders", "ExpeditionOrder", new{id = "ID_PEDIDO", routeUrl = $"{Url.Action("Orders","ExpeditionOrder")}"})'><i class='fa fa-fw fa-eye mr-2'></i></a>";
+
+                    for(var i = 0; i < data.length; i++){
+                            var btnViewMoreOrder = btnViewMore.replace("ID_PEDIDO", data[i].id);
+
+                            html += "<tr>\
+                                        <td>" + data[i].invoiceNumber + "</td>\
+                                        <td>" + data[i].invoiceAccessKey + "</td>\
+                                        <td>" + data[i].socialReason + "</td>\
+                                        <td>" + data[i].marketPlace + "</td>\
+                                        <td>" + btnViewMoreOrder + "</td>\
+                                     </tr>";
+                    }
+
+                        $('#ordersTableBody').html(html);
+
+                    $("#orderModal").modal('show');
+                });
+        }
+
+        
+
+        function viewHistory(id) {
+            $.ajax({
+                url: `/PickingList/GetHistoryByPickingId?pickingId=${id}`,
+                method: 'GET',
+                success: (dataContent) => {
+                    try {
+                        $("#contentHistory").timeline("destroy"); // will destroy a timeline if exists
+                    } catch (e) {
+                    }
+
+                    $("#contentHistory").html('');
+                    if (dataContent.length === 0) {
+
+                        $("#noContentHistory").show();
+
+                    } else {
+                        $("#noContentHistory").hide();
+                        var timelineData = [];
+
+                        for (var i = 0; i < dataContent.length; i++) {
+                            var statusValue = dataContent[i].status;  // Assuming status value is present in dataContent[i]
+                            var statusDescription = pickingListStatusDescriptionMapping[statusValue];
+                            var content = dataContent[i].user.username + "<br>" + "Status atual: " + statusDescription + "<br>" + dataContent[i].observation + "<br>" + moment(dataContent[i].date).format('DD/MM/YYYY hh:mm');
+
+                            timelineData.push({
+                                time: new Date(dataContent[i].date),
+                                color: '#555',
+                                cssClass: 'success',
+                                content: content
+                            });
+                        }
+
+                        $("#contentHistory").timeline({
+                            data: timelineData
+                        });
+                    }
+
+                },
+                error: (err) => {
+                    if (err.status === 404) {
+                        Swal.fire({
+                            title: 'Ops! A operação falhou',
+                            text: 'Não foi possível vizualisar o histórico desse pedido',
+                            icon: 'error',
+                            confirmButtonText: 'Continuar'
+                        });
+                    }
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            var table = $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+                'columnDefs': [
+                    {
+                        'targets': 0,
+                        'checkboxes': {
+                            'selectRow': true
+                        }
+                    },
+                ],
+                'select': {
+                    'style': 'multi'
+                },
+                paging: false,
+                info: false
+            });
+
+            var selectedsArray = []
+            $('#btn-simplified-list').on('click', function (e) {
+                var form = $("#content-simplified-list");
+
+                var rows_selected = table.column(0).checkboxes.selected();
+
+                form.html("");
+
+                selectedsArray = [];
+
+                // Iterate over all selected checkboxes
+                $.each(rows_selected, function (index, rowId) {
+                    // Create a hidden element
+                    form.append(
+                        $('<input>')
+                            .attr('type', 'hidden')
+                            .attr('name', 'selecteds')
+                            .val(rowId)
+                    );
+
+                    selectedsArray.push(rowId);
+                });
+
+                if (rows_selected.length <= 0) {
+                    Swal.fire(
+                        'Opss.',
+                        'É necessário selecionar ao menos um pedido',
+                        'warning'
+                    );
+                    return;
+                }
+
+                $.ajax({
+                    url: '/PickingList/CheckIfOrderIsMelhorEnvio',
+                    type: 'GET',
+                    data: { selecteds: selectedsArray },
+                    traditional: true,
+                    dataType: 'json',
+                    success: function (result) {
+                        if (result.length > 0) {
+                            
+                            $('#buttonsContainer').empty();
+
+                            result.forEach(function (clientArray, index) {
+                                if (clientArray.length > 0) {
+                                    var button = $('<a>').addClass('btn btn-primary').text('Visualizar Etiquetas');
+                                    button.click(function () {
+                                        
+                                        handleButtonClick(clientArray);
+                                    });
+                                    $('#buttonsContainer').append(button);
+                                }
+                            });
+
+                            $('#exampleModalCenterr').modal('show');
+                        } else {
+                            
+                            $("#submit-simplified-list").click();
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $('#exampleModalCenterr').modal('hide');
+                        $('#errorAlert').show();
+                        $('#errorAlert').html('<strong>Erro:</strong> Não foi possível processar as listas de separações selecionadas!');
+                    }
+                });
+            });
+
+                $('#btn-packing').on('click', function (e) {
+                    var form = $("#content-packing-list");
+
+                    var rows_selected = table.column(0).checkboxes.selected();
+
+                    form.html("");
+
+                    selectedsArray = [];
+
+                    // Iterate over all selected checkboxes
+                    $.each(rows_selected, function (index, rowId) {
+                        // Create a hidden element
+                        form.append(
+                            $('<input>')
+                                .attr('type', 'hidden')
+                                .attr('name', 'selecteds')
+                                .val(rowId)
+                        );
+
+                        selectedsArray.push(rowId);
+                    });
+
+                    if (rows_selected.length <= 0) {
+                        Swal.fire(
+                            'Opss.',
+                            'É necessário selecionar ao menos um pedido',
+                            'warning'
+                        );
+                        return;
+                    }
+
+                    $("#submit-packing-list").click();
+
+                });
+
+            $('#generateDanfe').on('click', function () {
+                $("#submit-simplified-list").click();
+            
+            })
+
+            function handleButtonClick(ids) {
+                $.ajax({
+                    url: '/PickingList/GenerateMelhorEnvioUrl',
+                    type: 'GET',
+                    data: { selecteds: ids },
+                    traditional: true,
+                    success: function (url) {
+                            if (url && url.length > 0) {
+
+                                window.open(url, '_blank');
+                            } else if(url && url.length == 0){
+                                    $('#exampleModalCenterr').modal('hide');
+                                    $('#errorAlert').show();
+                                    $('#errorAlert').html('<strong>Erro:</strong> A etiqueta está cancelada ');
+                            }else{
+
+                                $('#exampleModalCenterr').modal('hide');
+                                $('#errorAlert').show();
+                                $('#errorAlert').html('<strong>Erro:</strong> Não foi possível gerar a URL dos pedidos selecionados. Confira se o Acess Token do Melhor Envio desse cliente ainda é valido! ');
+                            }
+                    },
+                    error: function (xhr, status, error) {
+                        $('#exampleModalCenterr').modal('hide');
+                        $('#errorAlert').show();
+                        $('#errorAlert').html('<strong>Erro:</strong> Não foi possível gerar a URL dos pedidos selecionados!'); 
+                    }
+                });
+            };
+
+        });
+
+        
+       
+
+        
+
+        function actionToRecuse(id) {
+            var form = $("#content-simplified-list");
+
+            //*orm.append($('<input>').attr('type', 'hidden').attr('name', 'action').val(action));*/
+            Swal.fire({
+                title: "Tem certeza que deseja cancelar essa lista de separação?",
+                html: '<p>Essa ação não poderá ser revertida posteriormente!</p>',
+                showCancelButton: true,
+                cancelButtonText: 'Voltar',
+                confirmButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.value) {
+                    const text = result.value; // Obtenha o valor do campo de texto
+                    var subject = "Cancelamento de pedido"
+                    let url = `@Url.Action("Cancel", "PickingList")?id=${id}`;
+                    window.location.href = url;
+                }
+            });
+        }
+
+    </script>
+}

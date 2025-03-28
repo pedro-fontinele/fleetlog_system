@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "Cadastrar Pedido com XML";
+}
+<link rel="stylesheet" href="~/css/site.css">
+
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Criar Pedido com XML</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <br>
+    <div class="form-row">
+        <div class="form-group col-md-3">
+        </div>
+        <div class="form-group col-md-6">
+            <button type="button" class="btn btn-primary btn-block" onclick="document.getElementById('xmlFiles').click()">Selecionar XML</button>
+        </div>
+        <div class="form-group col-md-3">
+        </div>
+    </div>
+
+
+
+<form asp-controller="ExpeditionOrder" asp-action="UploadFiles" id="form" method="post" enctype="multipart/form-data" style="display: none;">
+    <div class="form-group">
+        <div class="col-md-10">
+            <input type="file" name="files" id="xmlFiles" onchange="document.getElementById('sendXml').click()" multiple />
+        </div>
+    </div>
+
+    <div class="d-grid d-flex gap-2 justify-content-md-end mt-2">
+        <button id="sendXml" type="submit" class="btn btn-primary mr-2">Enviar</button>
+    </div>
+</form>

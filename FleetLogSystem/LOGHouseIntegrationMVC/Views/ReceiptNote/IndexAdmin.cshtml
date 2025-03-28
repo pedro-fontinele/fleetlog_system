@@ -1,0 +1,245 @@
+﻿@using LOGHouseSystem.ViewModels.Components;
+@using LOGHouseSystem.Infra.Enums
+@model PagedList.PagedList<LOGHouseSystem.Models.ReceiptNote>
+
+@{
+    ViewBag.Title = "Pedidos";
+}
+
+<link href="~/vendor/datatables/datatables.bootstrap4.css" rel="stylesheet" />
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+<link rel="stylesheet" href="/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.css">
+<link rel="stylesheet" href="~/css/site.css">
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+
+<div class="app-page-title">
+    <div class="page-title-wrapper">
+        <div class="page-title-heading">
+            <div class="page-title-icon">
+                <i class="pe-7s-cart icon-gradient bg-happy-itmeo">
+                </i>
+            </div>
+            <div>
+                <h3 class="text-center mb-3">Pedidos de Recebimento</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div>
+    @await Component.InvokeAsync("FilterReceiptNote")
+</div>
+
+
+<div class="col-lg-12 col-md-12 col-xs-12">
+    <div class="main-card mb-3 card">
+        <div class="card-body">
+            @if(Model.Count > 0)
+            {
+                <table id="datatable" class="table table-bordered" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].Id)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].Client.SocialReason)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].EntryDate)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].Number)
+                            </th>
+
+                            <th>
+                                @Html.DisplayNameFor(model => model[0].Status)
+                            </th>
+
+
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        R@(item.Id)
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Client.SocialReason)
+                                    </td>
+
+                                    <td>
+                                        @item.EntryDate?.ToString("dd/MM/yyyy")
+                                    </td>
+
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Number)
+                                    </td>
+
+                                    <td>
+                                        @if (item.IsDevolution == YesOrNo.Yes)
+                                        {
+                                            <span class="badge badge-danger">@item.Status.GetDescription() <span> - Devolução</span></span>
+                                        }
+                                        else
+                                        {
+                                            @switch (item.Status)
+                                            {
+                                                case NoteStatus.Aguardando:
+                                                    <span class="badge badge-secondary">@item.Status.GetDescription()</span>
+                                                    break;
+
+                                                case NoteStatus.EmAndamento:
+                                                    <span class="badge badge-primary">@item.Status.GetDescription()</span>
+                                                    break;
+
+                                                case NoteStatus.NotaOk:
+                                                    <span class="badge badge-warning">@item.Status.GetDescription()</span>
+                                                    break;
+
+                                                case NoteStatus.NotaDivergente:
+                                                    <span class="badge badge-danger">@item.Status.GetDescription()</span>
+                                                    break;
+
+                                                case NoteStatus.Finalizada:
+                                                    <span class="badge badge-dark">@item.Status.GetDescription()</span>
+                                                    break;
+
+                                                case NoteStatus.Rejeitada:
+                                                    <span class="badge badge-info">@item.Status.GetDescription()</span>
+                                                    break;
+
+                                                case NoteStatus.AguardandoEnderecamento:
+                                                    <span class="badge badge-light">@item.Status.GetDescription()</span>
+                                                    break;
+                                            }
+                                        }
+
+                                    </td>
+
+
+                                    <td>
+                                        <a class="float-left" title="Ver mais" href="@Url.Action("ViewItems", "ReceiptNote", new{id = item.Id, routeUrl = $"{Url.Action("IndexAdmin","ReceiptNote")}"})"><i class=" fa fa-fw fa-eye"></i></a>
+                                        
+                                        @if(item.Status == NoteStatus.AguardandoEnderecamento){
+                                            <a class="float-left" title="Ver mais" href="@Url.Action("SetPositionToItems", "ReceiptNote", new{id = item.Id})"><i class=" fa fa-fw fa-location-dot"></i></a>
+                                        }
+                                        <a onclick="RejectConfirmation(@item.Id)" style="cursor: pointer" class="text-center" title="Cancelar">
+                                            <i style="color: red" class=" fa fa-fw fa-ban mr-2"></i>
+                                        </a>
+                                    </td>
+
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+
+                <!--Pagination nav-->
+                @if (Model.PageCount > 1)
+                {
+                    @Html.Partial("_PaginationListPager",new PaginationPagerModel{
+                        Page = Model.PageNumber,
+                        PageCount = Model.PageCount,
+                        InputIdForPage = "hiddenInputToPagination",
+                        FormToSubmit = "searchForm",
+                        ShowSearch = false
+                    })
+
+                }
+            }
+            
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+        <script src="~/vendor/datatables/jquery.datatables.min.js"></script>
+        <script src="~/vendor/datatables/datatables.bootstrap4.min.js"></script>
+        <script src="~/lib/jQuery-Mask-Plugin-master/src/jquery.mask.js"></script>
+        <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery-ui.js"></script>
+        <script src="~/vendor/Tiny-Vertical-Timeline-Plugin-with-jQuery-jQuery-UI/src/jquery.timeline.js"></script>
+        <link type="text/css" href="~/vendor/datatables/dataTables.checkboxes.css" rel="stylesheet" />
+        <script type="text/javascript" src="~/vendor/datatables/dataTables.checkboxes.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+        <script src="~/js/moment.min.js"></script>
+
+    <script>
+
+        $(document).ready(function () {
+           
+
+            $('#datatable').DataTable({
+                "language": {
+                    "sEmptyTable": "Nenhum registro encontrado",
+                    "sInfo": "Mostrando _START_ de _END_ de um total de _TOTAL_ registros",
+                    "sInfoEmpty": "Mostrando 0 registros",
+                    "sInfoFiltered": "(Filtrados de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sInfoThousands": ".",
+                    "sLengthMenu": "Mostrar _MENU_ resultados por página",
+                    "sLoadingRecords": "Carregando...",
+                    "sProcessing": "Processando...",
+                    "sZeroRecords": "Nenhum registro encontrado",
+                    "sSearch": "Pesquisar",
+                    "oPaginate": {
+                        "sNext": "Próximo",
+                        "sPrevious": "Anterior",
+                        "sFirst": "Primeiro",
+                        "sLast": "Último"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Ordenar colunas de forma ascendente",
+                        "sSortDescending": ": Ordenar colunas de forma descendente"
+                    }
+                },
+                paging: true,
+                info: false,
+                search: false
+            });
+
+            $('.paginate_button').hide()
+        });
+
+
+        //RejectConfirmation
+        function RejectConfirmation(id) {
+            Swal.fire({
+                title: "Tem certeza que deseja cancelar esse recebimento?",
+                input: 'textarea',
+                html: '<p>Será enviado um Email ao cliente, por favor, digite o motivo da recusa abaixo:</p>',
+                inputPlaceholder: 'Escreva o motivo da recusa aqui...',
+                inputAttributes: {
+                    'aria-label': 'Escreva sua mensagem aqui.'
+                },
+                showCancelButton: true,
+                cancelButtonText: 'Voltar',
+                confirmButtonText: 'Enviar'
+            }).then((result) => {
+                if (result.value) {
+                    const text = result.value; // Obtenha o valor do campo de texto
+                    var subject = "Nota de Recebimento Rejeitada"
+                    var route = 1;
+                    let url = `@Url.Action("Reject", "ReceiptNoteDashboard")?id=${id}&subject=${subject}&route=${route}&message=${text}`;
+                    window.location.href = url;
+                }
+            });
+        }
+
+
+
+    </script>
+}
